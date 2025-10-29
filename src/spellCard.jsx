@@ -6,10 +6,11 @@ import {
 	CardHeader,
 	Heading,
 	Stat,
-	StatLabel
+	StatNumber
 } from '@chakra-ui/react'
 import { Tooltip } from './components/ui/tooltip.jsx'
 import { renderSVG } from './utilityComponents.jsx'
+import { Description } from './components/card-features/description.jsx'
 
 const createBadgeCopy = (spell) => {
 	const badges = []
@@ -22,13 +23,6 @@ const createBadgeCopy = (spell) => {
 }
 
 export default function SpellCard({ spell }) {
-	const pages = []
-	const spellDesc = spell.desc.join('\n\n')
-	// spell.desc.forEach((paragraph) => {
-	//   spellDesc.join({paragraph});
-	// });
-	console.log(spellDesc)
-
 	return (
 		<Card className="spell-card" variant="outline">
 			<CardHeader>
@@ -46,41 +40,37 @@ export default function SpellCard({ spell }) {
 					<Tooltip showArrow content="Casting Time">
 						<Stat>
 							{renderSVG('CastingTimeIcon')}
-							<StatLabel>{spell.casting_time}</StatLabel>
+							<StatNumber>{spell.casting_time}</StatNumber>
 						</Stat>
 					</Tooltip>
 					<Tooltip showArrow content="Range">
 						<Stat>
 							{renderSVG('RangeIcon')}
-							<StatLabel>{spell.range}</StatLabel>
+							<StatNumber>{spell.range}</StatNumber>
 						</Stat>
 					</Tooltip>
 					<Tooltip showArrow content="Components">
 						<Stat>
 							{renderSVG('ComponentIcon')}
-							<StatLabel>{spell.components.join(', ')}</StatLabel>
+							<StatNumber>
+								{spell.components.join(', ')}
+							</StatNumber>
 						</Stat>
 					</Tooltip>
 					<Tooltip showArrow content="Duration">
 						<Stat>
 							{renderSVG('DurationIcon')}
-							<StatLabel>{spell.duration}</StatLabel>
+							<StatNumber>{spell.duration}</StatNumber>
 						</Stat>
 					</Tooltip>
 				</div>
-				<div className="description">
-					{console.log(spell.desc)}
-					{console.log(spell.desc.length)}
-					{spell.desc.map((paragraph, index) => (
-						<p key={index}>{paragraph}</p>
-					))}
-				</div>
+				<Description spell={spell} />
 			</CardBody>
 			<CardFooter>
 				<div className="spell-level">
 					<Tooltip showArrow content="Spell Level">
 						<Stat>
-							<StatLabel>{spell.level}</StatLabel>
+							<StatNumber>{spell.level}</StatNumber>
 						</Stat>
 					</Tooltip>
 				</div>

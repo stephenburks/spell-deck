@@ -37,11 +37,11 @@ import { Tooltip as ChakraTooltip } from '@chakra-ui/react'
 import * as React from 'react'
 
 export function Tooltip({ showArrow, children, disabled, content, ...rest }) {
-  if (disabled) return children
+	if (disabled) return children
 
-  return (
-    <ChakraTooltip hasArrow={showArrow} label={content} {...rest}>
-      {children}
-    </ChakraTooltip>
-  )
+	return (
+		<ChakraTooltip hasArrow={showArrow} label={content} {...rest}>
+			{children}
+		</ChakraTooltip>
+	)
 }

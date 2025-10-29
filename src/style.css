@@ -13,6 +13,7 @@ body {
 
 p {
 	margin-bottom: 1rem;
+	font-size: 0.875rem;
 }
 
 .stats {
@@ -139,10 +140,18 @@ span.chakra-badge {
 }
 
 .description {
-	padding: 1rem 1.75rem;
+	padding: 1rem;
 	height: 100%;
-	max-height: 22rem;
+	max-height: 25.5rem;
 	overflow: hidden;
+	display: grid;
+	gap: 1rem;
+	grid-template-rows: auto;
+	text-align: left;
+}
+
+.description:has(.spell-higher-level) {
+	grid-template-rows: 3fr 1fr;
 }
 
 .spell-level {
@@ -151,6 +160,7 @@ span.chakra-badge {
 
 .spell-classes {
 	display: flex;
+	flex-wrap: wrap;
 }
 
 .spell-level .chakra-stat {
@@ -158,4 +168,9 @@ span.chakra-badge {
 	padding: 0.75rem 1rem;
 	border: 0.5rem solid;
 	border-radius: 50%;
+}
+
+.description-copy,
+.spell-higher-level {
+	overflow: scroll;
 }

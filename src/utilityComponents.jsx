@@ -1,4 +1,7 @@
-export const renderSVG = (name, props = {}) => {
+import React from 'react'
+import { Text } from '@chakra-ui/react'
+
+export const renderIcon = (name, props = {}) => {
 	switch (name) {
 		case 'RangeIcon':
 			return <RangeIcon {...props} />
@@ -8,6 +11,8 @@ export const renderSVG = (name, props = {}) => {
 			return <ComponentIcon {...props} />
 		case 'CastingTimeIcon':
 			return <CastingTimeIcon {...props} />
+		case 'ConcentrationIcon':
+			return <ConcentrationIcon {...props} />
 		default:
 			return null
 	}
@@ -73,4 +78,13 @@ export const CastingTimeIcon = (props) => (
 			d="M4 3L2 1H1v1l2 2zm1-3h1v2H5zm4 5h2v1H9zm1-3V1H9L7 3l1 1zM0 5h2v1H0zm5 4h1v2H5zM1 9v1h1l2-2l-1-1zm14.781 4.781L5.842 3.842a.752.752 0 0 0-1.061 0l-.939.939a.752.752 0 0 0 0 1.061l9.939 9.939a.752.752 0 0 0 1.061 0l.939-.939a.752.752 0 0 0 0-1.061zM7.5 8.5l-3-3l1-1l3 3l-1 1z"></path>
 		<title>Casting Time</title>
 	</svg>
+)
+
+export const ConcentrationIcon = (props) => (
+    // <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16" {...props}>
+    // 	<path fill="#171923" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM8.146 4.992c.961 0 1.641.633 1.729 1.512h1.295v-.088c-.094-1.518-1.348-2.572-3.03-2.572c-2.068 0-3.269 1.377-3.269 3.638v1.073c0 2.267 1.178 3.603 3.27 3.603c1.675 0 2.93-1.02 3.029-2.467v-.093H9.875c-.088.832-.75 1.418-1.729 1.418c-1.224 0-1.927-.891-1.927-2.461v-1.06c0-1.583.715-2.503 1.927-2.503Z"></path>
+	// </svg>
+	<Text as="b">
+		C
+	</Text>
 )

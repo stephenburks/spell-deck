@@ -9,7 +9,7 @@ import {
 	StatNumber
 } from '@chakra-ui/react'
 import { Tooltip } from './components/ui/tooltip.jsx'
-import { renderSVG } from './utilityComponents.jsx'
+import { renderIcon } from './utilityComponents.jsx'
 import { Description } from './components/card-features/description.jsx'
 
 const createBadgeCopy = (spell) => {
@@ -25,6 +25,15 @@ const createBadgeCopy = (spell) => {
 export default function SpellCard({ spell }) {
 	return (
 		<Card className="spell-card" variant="outline">
+
+			{spell.concentration === true && (
+				<Tooltip showArrow content="Concentration Required">
+					<div className="concentration-icon">
+						{renderIcon('ConcentrationIcon')}
+					</div>
+				</Tooltip>
+			)}
+			
 			<CardHeader>
 				<Heading as="h2" size="md">
 					{spell.name}
@@ -39,19 +48,19 @@ export default function SpellCard({ spell }) {
 				<div className="stats">
 					<Tooltip showArrow content="Casting Time">
 						<Stat>
-							{renderSVG('CastingTimeIcon')}
+							{renderIcon('CastingTimeIcon')}
 							<StatNumber>{spell.casting_time}</StatNumber>
 						</Stat>
 					</Tooltip>
 					<Tooltip showArrow content="Range">
 						<Stat>
-							{renderSVG('RangeIcon')}
+							{renderIcon('RangeIcon')}
 							<StatNumber>{spell.range}</StatNumber>
 						</Stat>
 					</Tooltip>
 					<Tooltip showArrow content="Components">
 						<Stat>
-							{renderSVG('ComponentIcon')}
+							{renderIcon('ComponentIcon')}
 							<StatNumber>
 								{spell.components.join(', ')}
 							</StatNumber>
@@ -59,7 +68,7 @@ export default function SpellCard({ spell }) {
 					</Tooltip>
 					<Tooltip showArrow content="Duration">
 						<Stat>
-							{renderSVG('DurationIcon')}
+							{renderIcon('DurationIcon')}
 							<StatNumber>{spell.duration}</StatNumber>
 						</Stat>
 					</Tooltip>

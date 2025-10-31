@@ -8,9 +8,9 @@ import {
 	Stat,
 	StatNumber
 } from '@chakra-ui/react'
-import { Tooltip } from './components/ui/tooltip.jsx'
+import { Tooltip } from './ui/tooltip.jsx'
 import { renderIcon } from './utilityComponents.jsx'
-import { Description } from './components/card-features/description.jsx'
+import { Description } from './card-features/description.jsx'
 
 const createBadgeCopy = (spell) => {
 	const badges = []

@@ -5,7 +5,7 @@ export function Description({ spell }) {
 				<p>
 					<strong>Description: </strong>
 					{spell.desc.map((paragraph, index) => (
-						<p key={index}>{paragraph}</p>
+						<span key={index}>{paragraph}</span>
 					))}
 				</p>
 			</div>

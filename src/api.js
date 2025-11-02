@@ -9,11 +9,7 @@ async function fetchSpellsBatch(spellIndexes, batchSize = 10, delayMs = 1000) {
 
 	for (let i = 0; i < spellIndexes.length; i += batchSize) {
 		const batch = spellIndexes.slice(i, i + batchSize)
-		const batchResults = await Promise.all(
-			batch.map((index) =>
-				fetch(BASE_URL + index.url).then((response) => response.json())
-			)
-		)
+		const batchResults = await Promise.all(batch.map((index) => fetch(BASE_URL + index.url).then((response) => response.json())))
 
 		results.push(...batchResults)
 
@@ -51,11 +47,7 @@ export async function fetchSpellPage(pageParam = 1) {
 	const end = start + SPELLS_PER_PAGE
 	const spellPageIndexes = spellsList.slice(start, end)
 
-	const spells = await Promise.all(
-		spellPageIndexes.map((index) =>
-			fetch(`${BASE_URL}${index.url}`).then((response) => response.json())
-		)
-	)
+	const spells = await Promise.all(spellPageIndexes.map((index) => fetch(`${BASE_URL}${index.url}`).then((response) => response.json())))
 
 	console.log(`Fetched page ${pageParam} with ${spells.length} spells.`)
 	console.log('Batch complete')

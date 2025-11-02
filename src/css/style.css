@@ -1,3 +1,10 @@
+:root {
+	--base-size: 5rem;
+	--base-height: 4.325rem;
+	--chakra-colors-gray-950: #111;
+	--chakra-colors-gray-50: #fafafa;
+}
+
 body {
 	background-color: #290000;
 }
@@ -5,10 +12,6 @@ body {
 .App {
 	font-family: sans-serif;
 	text-align: center;
-}
-
-.loading {
-	color: #f7ce65;
 }
 
 p {
@@ -20,7 +23,7 @@ p {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: auto;
-	background-color: var(--chakra-colors-gray-900);
+	background-color: var(--chakra-colors-gray-950);
 }
 
 .stat {
@@ -32,15 +35,15 @@ p {
 }
 
 .chakra-stat:nth-of-type(odd) {
-	border-right: calc(0.375rem / 2) solid var(--chakra-colors-gray-900);
+	border-right: calc(0.375rem / 2) solid var(--chakra-colors-gray-950);
 }
 
 .chakra-stat:nth-of-type(even) {
-	border-left: calc(0.375rem / 2) solid var(--chakra-colors-gray-900);
+	border-left: calc(0.375rem / 2) solid var(--chakra-colors-gray-950);
 }
 
 .chakra-stat {
-	border-bottom: 0.375rem solid var(--chakra-colors-gray-900);
+	border-bottom: 0.375rem solid var(--chakra-colors-gray-950);
 	background-color: var(--chakra-colors-gray-100);
 	margin-top: 0 !important;
 }
@@ -62,7 +65,7 @@ dd.chakra-stat__number {
 	justify-content: center;
 	gap: 16px;
 	padding: 2.5rem 1rem;
-	background-color: var(--chakra-colors-gray-600);
+	background-color: var(--chakra-colors-gray-950);
 }
 
 .spell-card {
@@ -92,7 +95,7 @@ dd.chakra-stat__number {
 	justify-content: space-between;
 	align-items: center;
 	margin: 0;
-	background: var(--chakra-colors-gray-900);
+	background: var(--chakra-colors-gray-950);
 	border-radius: 0;
 	max-height: 2.4rem;
 }
@@ -112,7 +115,7 @@ dd.chakra-stat__number {
 }
 
 .chakra-card.spell-card {
-	border: 0.5rem solid var(--chakra-colors-gray-900);
+	border: 0.5rem solid var(--chakra-colors-gray-950);
 	border-radius: 0.6rem;
 	background-color: var(--chakra-colors-gray-100);
 	position: relative;
@@ -120,13 +123,13 @@ dd.chakra-stat__number {
 
 .section-divider {
 	height: 0.375rem;
-	background: var(--chakra-colors-gray-900);
+	background: var(--chakra-colors-gray-950);
 	margin-top: -1rem;
 }
 
 span.chakra-badge {
 	background: var(--chakra-colors-gray-100) !important;
-	border: 0.375rem solid var(--chakra-colors-gray-900) !important;
+	border: 0.375rem solid var(--chakra-colors-gray-950) !important;
 	z-index: 1;
 	margin: auto;
 	padding: 0 0.5rem;
@@ -180,7 +183,7 @@ span.chakra-badge {
 	position: absolute;
 	top: 0;
 	right: 0;
-	background-color: var(--chakra-colors-gray-900);
+	background-color: var(--chakra-colors-gray-950);
 	border-bottom-left-radius: 50%;
 	color: var(--chakra-colors-gray-100);
 }
@@ -197,4 +200,190 @@ span.chakra-badge {
 	font-weight: bold;
 	line-height: 1rem;
 	padding: 0.25rem 0.25rem 0.375rem 0.375rem;
+}
+
+.loading-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: calc(100vh - 1rem - (var(--base-size) * 0.845));
+}
+
+.loading {
+	display: block;
+	margin-top: calc(var(--base-size) * 0.845);
+	font-size: 3rem;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 800;
+	text-align: center;
+	color: var(--chakra-colors-gray-50);
+}
+
+.d20 {
+	position: relative;
+	width: var(--base-size);
+	height: calc(var(--base-size) * 0.845);
+	transform-style: preserve-3d;
+}
+
+.loading span {
+	display: inline-block;
+	animation: loading 0.7s infinite alternate;
+}
+
+.loading span:nth-child(2) {
+	animation-delay: 0.1s;
+}
+.loading span:nth-child(3) {
+	animation-delay: 0.2s;
+}
+.loading span:nth-child(4) {
+	animation-delay: 0.3s;
+}
+.loading span:nth-child(5) {
+	animation-delay: 0.4s;
+}
+.loading span:nth-child(6) {
+	animation-delay: 0.5s;
+}
+.loading span:nth-child(7) {
+	animation-delay: 0.6s;
+}
+
+@keyframes loading {
+	0% {
+		transform: scale(1);
+	}
+	100% {
+		transform: scale(0.8);
+	}
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+	.d20 {
+		animation: rotate 10s infinite linear;
+	}
+}
+
+.d20,
+.d20 div {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+.d20 div {
+	width: var(--base-size);
+	height: var(--base-height);
+	position: absolute;
+	/*   opacity: 0.8; */
+	clip-path: polygon(0 0, 50% 100%, 100% 0);
+	transform-origin: top;
+	background-color: var(--chakra-colors-gray-950);
+	background:
+		linear-gradient(180deg, #fff 0, #fff 0%, #0000 2%, #0000 100%), linear-gradient(300deg, #fff 0, #fff 32.5%, #0000 35%, #0000 100%),
+		linear-gradient(60deg, #fff 0, #fff 32.5%, #0000 35%, #0000 100%),
+		linear-gradient(0deg, var(--chakra-colors-gray-950) 0, var(--chakra-colors-gray-950) 100%);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: calc(var(--base-size) * 0.4);
+	color: #fff;
+	line-height: -1;
+	padding-bottom: calc(var(--base-size) * 0.3);
+	--die-face: calc(var(--base-size) * 0.69);
+}
+
+/* Grouped faces so opposites are together. */
+/* They should add up to 21. */
+.d20 div:nth-child(1) {
+	transform: rotateY(0.7turn) translateZ(calc(var(--die-face) * -1)) rotateX(127deg);
+}
+.d20 div:nth-child(20) {
+	bottom: calc(var(--base-height) * -1);
+	transform: rotateY(0.7turn) translateZ(var(--die-face)) rotateX(307deg);
+}
+
+.d20 div:nth-child(2) {
+	transform: rotateY(0.6turn) translateZ(var(--die-face)) rotateX(11deg);
+}
+.d20 div:nth-child(19) {
+	bottom: calc(var(--base-height) * -1);
+	transform: rotateY(0.6turn) translateZ(calc(var(--die-face) * -1)) rotateX(191deg);
+}
+
+.d20 div:nth-child(3) {
+	bottom: calc(var(--base-height) * -1);
+	transform: rotateY(1turn) translateZ(calc(var(--die-face) * -1)) rotateX(191deg);
+}
+.d20 div:nth-child(18) {
+	transform: rotateY(1turn) translateZ(var(--die-face)) rotateX(11deg);
+}
+
+.d20 div:nth-child(4) {
+	transform: rotateY(0.3turn) translateZ(calc(var(--die-face) * -1)) rotateX(127deg);
+}
+.d20 div:nth-child(17) {
+	bottom: calc(var(--base-height) * -1);
+	transform: rotateY(0.3turn) translateZ(var(--die-face)) rotateX(307deg);
+}
+
+.d20 div:nth-child(5) {
+	transform: rotateY(0.8turn) translateZ(var(--die-face)) rotateX(11deg);
+}
+.d20 div:nth-child(16) {
+	bottom: calc(var(--base-height) * -1);
+	transform: rotateY(0.8turn) translateZ(calc(var(--die-face) * -1)) rotateX(191deg);
+}
+
+.d20 div:nth-child(6) {
+	transform: rotateY(0.9turn) translateZ(calc(var(--die-face) * -1)) rotateX(127deg);
+}
+.d20 div:nth-child(15) {
+	bottom: calc(var(--base-height) * -1);
+	transform: rotateY(0.9turn) translateZ(var(--die-face)) rotateX(307deg);
+}
+
+.d20 div:nth-child(7) {
+	bottom: calc(var(--base-height) * -1);
+	transform: rotateY(0.2turn) translateZ(calc(var(--die-face) * -1)) rotateX(191deg);
+}
+.d20 div:nth-child(14) {
+	transform: rotateY(0.2turn) translateZ(var(--die-face)) rotateX(11deg);
+}
+
+.d20 div:nth-child(8) {
+	transform: rotateY(0.1turn) translateZ(calc(var(--die-face) * -1)) rotateX(127deg);
+}
+.d20 div:nth-child(13) {
+	bottom: calc(var(--base-height) * -1);
+	transform: rotateY(0.1turn) translateZ(var(--die-face)) rotateX(307deg);
+}
+
+.d20 div:nth-child(9) {
+	transform: rotateY(0.4turn) translateZ(var(--die-face)) rotateX(11deg);
+}
+.d20 div:nth-child(12) {
+	bottom: calc(var(--base-height) * -1);
+	transform: rotateY(0.4turn) translateZ(calc(var(--die-face) * -1)) rotateX(191deg);
+}
+
+.d20 div:nth-child(10) {
+	transform: rotateY(0.5turn) translateZ(calc(var(--die-face) * -1)) rotateX(127deg);
+}
+.d20 div:nth-child(11) {
+	bottom: calc(var(--base-height) * -1);
+	transform: rotateY(0.5turn) translateZ(var(--die-face)) rotateX(307deg);
+}
+
+@keyframes rotate {
+	from {
+		transform: rotateX(0deg) rotateY(360deg) rotateZ(360deg);
+	}
+	to {
+		transform: rotateX(360deg) rotateY(0deg) rotateZ(-360deg);
+	}
 }

@@ -65,7 +65,7 @@ dd.chakra-stat__number {
 	justify-content: center;
 	gap: 16px;
 	padding: 2.5rem 1rem;
-	background-color: var(--chakra-colors-gray-950);
+	background-color: var(--chakra-colors-black);
 }
 
 .spell-card {
@@ -208,7 +208,7 @@ span.chakra-badge {
 	justify-content: center;
 	align-items: center;
 	width: 100%;
-	height: calc(100vh - 1rem - (var(--base-size) * 0.845));
+	height: calc(100vh - (var(--base-size) * 0.845));
 }
 
 .loading {

@@ -12,7 +12,7 @@ export default function SpellDeck() {
 			setSpells(JSON.parse(savedSpells))
 		} else {
 			getAllSpells().then((spells) => {
-				// setSpells(spells)
+				setSpells(spells)
 				localStorage.setItem('spells', JSON.stringify(spells))
 			})
 		}

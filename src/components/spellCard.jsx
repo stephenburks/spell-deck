@@ -1,104 +1,91 @@
-import {
-	Badge,
-	Card,
-	CardBody,
-	CardFooter,
-	CardHeader,
-	Heading,
-	Stat,
-	StatNumber
-} from '@chakra-ui/react'
+import { Badge, Card, Heading, Stat } from '@chakra-ui/react'
 import { Tooltip } from './ui/tooltip.jsx'
-import { renderIcon } from './utilityComponents.jsx'
 import { Description } from './card-features/description.jsx'
+import { renderIcon } from './utilityComponents.jsx'
 
 const createBadgeCopy = (spell) => {
 	const badges = []
 	if (spell.level > 0) badges.push(`Spell Level ${spell.level}`)
 	if (spell.school.name) badges.push(`(${spell.school.name})`)
 	if (spell.level === 0) badges.push('cantrip')
-
-	const badgeString = badges.join(' ')
-	return badgeString
+	return badges.join(' ')
 }
 
 export default function SpellCard({ spell }) {
 	return (
-		<Card className="spell-card" variant="outline">
-
+		<Card.Root className="spell-card" variant="outline">
 			{spell.concentration === true && (
-				<Tooltip showArrow content="Concentration Required">
-					<div className="concentration-icon">
-						{renderIcon('ConcentrationIcon')}
-					</div>
+				<Tooltip content="Concentration Required" interactive>
+					<div className="concentration-icon">{renderIcon('ConcentrationIcon')}</div>
 				</Tooltip>
 			)}
-			
-			<CardHeader>
+
+			<Card.Header>
 				<Heading as="h2" size="md">
 					{spell.name}
 				</Heading>
-			</CardHeader>
+			</Card.Header>
 
 			<Badge variant="surface">{createBadgeCopy(spell)}</Badge>
 
 			<div className="section-divider"></div>
 
-			<CardBody>
+			<Card.Body>
 				<div className="stats">
 					<Tooltip showArrow content="Casting Time">
-						<Stat>
+						<Stat.Root>
 							{renderIcon('CastingTimeIcon')}
-							<StatNumber>{spell.casting_time}</StatNumber>
-						</Stat>
+							<Stat.ValueText>{spell.casting_time}</Stat.ValueText>
+						</Stat.Root>
 					</Tooltip>
 					<Tooltip showArrow content="Range">
-						<Stat>
+						<Stat.Root>
 							{renderIcon('RangeIcon')}
-							<StatNumber>{spell.range}</StatNumber>
-						</Stat>
+							<Stat.ValueText>{spell.range}</Stat.ValueText>
+						</Stat.Root>
 					</Tooltip>
 					<Tooltip showArrow content="Components">
-						<Stat>
+						<Stat.Root>
 							{renderIcon('ComponentIcon')}
-							<StatNumber>
-								{spell.components.join(', ')}
-							</StatNumber>
-						</Stat>
+							<Stat.ValueText>{spell.components.join(', ')}</Stat.ValueText>
+						</Stat.Root>
 					</Tooltip>
 					<Tooltip showArrow content="Duration">
-						<Stat>
+						<Stat.Root>
 							{renderIcon('DurationIcon')}
-							<StatNumber>{spell.duration}</StatNumber>
-						</Stat>
+							<Stat.ValueText>{spell.duration}</Stat.ValueText>
+						</Stat.Root>
 					</Tooltip>
 				</div>
 				<Description spell={spell} />
-			</CardBody>
-			<CardFooter>
+			</Card.Body>
+			<Card.Footer>
+				<div className="spell-classes">
+					{spell.classes.map((spellClass) => (
+						// <Tooltip key={spellClass.index} hasArrow label={`Spell Class: ${spellClass.name}`}>
+						<Badge marginRight="0.25rem" variant="subtle" colorScheme="teal">
+							{spellClass.name}
+						</Badge>
+						// </Tooltip>
+					))}
+				</div>
 				<div className="spell-level">
-					<Tooltip showArrow content="Spell Level">
-						<Stat>
-							<StatNumber>{spell.level}</StatNumber>
-						</Stat>
+					<Tooltip content="Spell Level" interactive>
+						<Stat.Root>
+							<Stat.ValueText>{spell.level}</Stat.ValueText>
+						</Stat.Root>
 					</Tooltip>
 				</div>
 				<div className="spell-classes">
 					{spell.classes.map((spellClass) => (
-						<Tooltip
-							key={spellClass.index}
-							showArrow
-							content={'Spell Class: ' + spellClass.name}>
-							<Badge
-								marginRight="0.25rem"
-								variant="subtle"
-								colorScheme="teal">
+						<Tooltip key={spellClass.index} content={'Spell Class: ' + spellClass.name}>
+							<Badge marginRight="0.25rem" variant="subtle" colorScheme="teal">
 								{spellClass.name}
 							</Badge>
 						</Tooltip>
 					))}
 				</div>
-			</CardFooter>
-		</Card>
+			</Card.Footer>
+		</Card.Root>
 	)
 }

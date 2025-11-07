@@ -1,8 +1,10 @@
 :root {
 	--base-size: 5rem;
 	--base-height: 4.325rem;
-	--chakra-colors-gray-950: #111;
-	--chakra-colors-gray-50: #fafafa;
+	--chakra-colors-gray-950: var(--chakra-colors-blackAlpha-900);
+	--chakra-colors-gray-100: var(--chakra-colors-gray-100);
+	/* --chakra-colors-gray-950: #111;
+	--chakra-colors-gray-50: #fafafa; */
 }
 
 body {

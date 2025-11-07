@@ -1,5 +1,18 @@
 import { Text } from '@chakra-ui/react'
 
+/**
+ * Splits text into paragraphs and handles special formatting
+ * @param {string} text - The text to be formatted
+ * @returns {string[]} Array of formatted paragraphs
+ */
+export const formatSpellText = (text) => {
+	// Split on periods followed by spaces and new lines
+	return text
+		.split(/(?<=\.)\s+|\n+/)
+		.filter((paragraph) => paragraph.trim().length > 0)
+		.map((paragraph) => paragraph.trim())
+}
+
 export const renderIcon = (name, props = {}) => {
 	switch (name) {
 		case 'RangeIcon':

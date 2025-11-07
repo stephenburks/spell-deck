@@ -1,6 +1,7 @@
-import { Badge, Card, Heading, Stat, StatLabel } from '@chakra-ui/react'
+import { Badge, Card, Heading, Stat } from '@chakra-ui/react'
 import { Tooltip } from './ui/tooltip.jsx'
 import { Description } from './card-features/description.jsx'
+import { renderIcon } from './utilityComponents.jsx'
 
 const createBadgeCopy = (spell) => {
 	const badges = []
@@ -14,10 +15,11 @@ export default function SpellCard({ spell }) {
 	return (
 		<Card.Root className="spell-card" variant="outline">
 			{spell.concentration === true && (
-				<Tooltip content="Concentration" interactive>
-					<p>Concentration Testing</p>
+				<Tooltip content="Concentration Required" interactive>
+					<div className="concentration-icon">{renderIcon('ConcentrationIcon')}</div>
 				</Tooltip>
 			)}
+
 			<Card.Header>
 				<Heading as="h2" size="md">
 					{spell.name}
@@ -29,6 +31,32 @@ export default function SpellCard({ spell }) {
 			<div className="section-divider"></div>
 
 			<Card.Body>
+				<div className="stats">
+					<Tooltip showArrow content="Casting Time">
+						<Stat.Root>
+							{renderIcon('CastingTimeIcon')}
+							<Stat.ValueText>{spell.casting_time}</Stat.ValueText>
+						</Stat.Root>
+					</Tooltip>
+					<Tooltip showArrow content="Range">
+						<Stat.Root>
+							{renderIcon('RangeIcon')}
+							<Stat.ValueText>{spell.range}</Stat.ValueText>
+						</Stat.Root>
+					</Tooltip>
+					<Tooltip showArrow content="Components">
+						<Stat.Root>
+							{renderIcon('ComponentIcon')}
+							<Stat.ValueText>{spell.components.join(', ')}</Stat.ValueText>
+						</Stat.Root>
+					</Tooltip>
+					<Tooltip showArrow content="Duration">
+						<Stat.Root>
+							{renderIcon('DurationIcon')}
+							<Stat.ValueText>{spell.duration}</Stat.ValueText>
+						</Stat.Root>
+					</Tooltip>
+				</div>
 				<Description spell={spell} />
 			</Card.Body>
 			<Card.Footer>
@@ -39,6 +67,22 @@ export default function SpellCard({ spell }) {
 							{spellClass.name}
 						</Badge>
 						// </Tooltip>
+					))}
+				</div>
+				<div className="spell-level">
+					<Tooltip content="Spell Level" interactive>
+						<Stat.Root>
+							<Stat.ValueText>{spell.level}</Stat.ValueText>
+						</Stat.Root>
+					</Tooltip>
+				</div>
+				<div className="spell-classes">
+					{spell.classes.map((spellClass) => (
+						<Tooltip key={spellClass.index} content={'Spell Class: ' + spellClass.name}>
+							<Badge marginRight="0.25rem" variant="subtle" colorScheme="teal">
+								{spellClass.name}
+							</Badge>
+						</Tooltip>
 					))}
 				</div>
 			</Card.Footer>

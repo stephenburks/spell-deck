@@ -4,7 +4,6 @@ import Loading from '../loading'
 
 export default function SpellTabs({ spellsByClass, loading }) {
 	const classNames = spellsByClass
-	console.log('Rendering SpellTabs with classNames:', classNames)
 
 	return (
 		<div className="spell-class-tabs">

@@ -61,16 +61,4 @@ export function useSpells() {
 	return context
 }
 
-// useEffect(() => {
-// 	const savedSpells = localStorage.getItem('spells')
-// 	if (savedSpells) {
-// 		setSpells(JSON.parse(savedSpells))
-// 		getSpellsByClass(savedSpells)
-// 	} else {
-// 		getAllSpells().then((spells) => {
-// 			setSpells(spells)
-// 			localStorage.setItem('spells', JSON.stringify(spells))
-// 			getSpellsByClass(spells)
-// 		})
-// 	}
-// }, [])
+

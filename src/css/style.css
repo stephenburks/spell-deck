@@ -2,7 +2,6 @@
 	/* Layout Variables */
 	--dice-size: 5rem;
 	--dice-height: 4.325rem;
-
 	
 	/* D&D Class Colors */
 	--color-dnd-red: #c73032;
@@ -20,11 +19,26 @@
 	--color-wizard: #2a50a1;
 }
 
-/* Global Styles */
+/* Reset & Base Styles */
+* {
+	box-sizing: border-box;
+}
+
 body {
+	margin: 0;
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+		sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 	background-color: #290000;
 }
 
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* App Layout */
 .app-container {
 	background-color: var(--chakra-colors-black);
 	font-family: sans-serif;
@@ -32,7 +46,10 @@ body {
 }
 
 /* Typography */
-.content-text {
+.content-text,
+.content-text p, 
+.context-text ul, 
+.context-text li {
 	margin-bottom: 1rem;
 	font-size: 0.875rem;
 }

@@ -55,9 +55,11 @@ export function Description({ spell }) {
 			{spell.higher_level && spell.higher_level.length > 0 && (
 				<div className="scrollable-content">
 					<strong>At Higher Levels: </strong>
-					{formatSpellText(spell.higher_level).map((block, index) =>
-						renderFormatted(block, index, 'higher')
-					)}
+					<div className="content-text">
+						{formatSpellText(spell.higher_level).map((block, index) =>
+							renderFormatted(block, index, 'higher')
+						)}
+					</div>
 				</div>
 			)}
 		</div>

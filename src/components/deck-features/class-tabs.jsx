@@ -6,7 +6,7 @@ export default function SpellTabs({ spellsByClass, loading }) {
 	const classNames = spellsByClass
 
 	return (
-		<div className="spell-class-tabs">
+		<div className="spell-list-container">
 			{classNames.length === 0 && loading && <Loading />}
 
 			<Tabs.Root>

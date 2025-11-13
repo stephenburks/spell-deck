@@ -16,7 +16,7 @@ export default function SpellCard({ spell }) {
 		<Card.Root className="spell-card" variant="outline">
 			{spell.concentration === true && (
 				<Tooltip content="Concentration Required" interactive>
-					<div className="concentration-icon">{renderIcon('ConcentrationIcon')}</div>
+					<div className="concentration-indicator">{renderIcon('ConcentrationIcon')}</div>
 				</Tooltip>
 			)}
 
@@ -31,7 +31,7 @@ export default function SpellCard({ spell }) {
 			<div className="section-divider"></div>
 
 			<Card.Body>
-				<div className="stats">
+				<div className="stats-grid">
 					<Tooltip showArrow content="Casting Time">
 						<Stat.Root>
 							{renderIcon('CastingTimeIcon')}
@@ -60,14 +60,14 @@ export default function SpellCard({ spell }) {
 				<Description spell={spell} />
 			</Card.Body>
 			<Card.Footer>
-				<div className="spell-level">
+				<div className="spell-card__level">
 					<Tooltip content="Spell Level" interactive>
 						<Stat.Root>
 							<Stat.ValueText>{spell.level}</Stat.ValueText>
 						</Stat.Root>
 					</Tooltip>
 				</div>
-				<div className="spell-classes">
+				<div className="spell-card__classes">
 					{spell.classes.map((spellClass) => (
 						<Tooltip key={spellClass.index} content={'Spell Class: ' + spellClass.name}>
 							<Badge marginRight="0.25rem" variant="solid" size="md">

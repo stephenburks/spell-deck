@@ -7,7 +7,7 @@ export default function App() {
 	return (
 		<ChakraProvider value={defaultSystem}>
 			<SpellProvider>
-				<div className="App">
+				<div className="app-container">
 					<SpellDeck />
 				</div>
 			</SpellProvider>

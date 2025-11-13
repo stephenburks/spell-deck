@@ -1,55 +1,55 @@
 :root {
-	--base-size: 5rem;
-	--base-height: 4.325rem;
-	--chakra-colors-gray-950: var(--chakra-colors-blackAlpha-900);
-	--chakra-colors-gray-100: var(--chakra-colors-gray-100);
-	/* --chakra-colors-gray-950: #111;
-	--chakra-colors-gray-50: #fafafa; */
-	--chakra-colors-gray-900: #111;
-	--dnd-red: #c73032;
-	--dnd-barbarian: #e7623e;
-	--dnd-bard: #ab6dac;
-	--dnd-cleric: #91a1b2;
-	--dnd-druid: #7a853b;
-	--dnd-fighter: #7f513e;
-	--dnd-monk: #51a5c5;
-	--dnd-paladin: #b59e54;
-	--dnd-ranger: #507f62;
-	--dnd-rogue: #555752;
-	--dnd-sorcerer: #992e2e;
-	--dnd-warlock: #7b469b;
-	--dnd-wizard: #2a50a1;
+	/* Layout Variables */
+	--dice-size: 5rem;
+	--dice-height: 4.325rem;
+
+	
+	/* D&D Class Colors */
+	--color-dnd-red: #c73032;
+	--color-barbarian: #e7623e;
+	--color-bard: #ab6dac;
+	--color-cleric: #91a1b2;
+	--color-druid: #7a853b;
+	--color-fighter: #7f513e;
+	--color-monk: #51a5c5;
+	--color-paladin: #b59e54;
+	--color-ranger: #507f62;
+	--color-rogue: #555752;
+	--color-sorcerer: #992e2e;
+	--color-warlock: #7b469b;
+	--color-wizard: #2a50a1;
 }
 
+/* Global Styles */
 body {
 	background-color: #290000;
 }
 
-.App {
+.app-container {
 	background-color: var(--chakra-colors-black);
 	font-family: sans-serif;
 	text-align: center;
 }
 
-p,
-ul,
-li {
+/* Typography */
+.content-text {
 	margin-bottom: 1rem;
 	font-size: 0.875rem;
 }
 
-.spell-list-content {
+/* Layout Components */
+.spell-list-container {
 	margin: auto;
 	max-width: 90%;
 }
 
-.stats {
+.stats-grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: auto;
 }
 
-.stat {
+.stat-item {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -83,11 +83,12 @@ dd.chakra-stat__number {
 	color: var(--chakra-colors-gray-100);
 }
 
+/* Spell Components */
 .spell-list {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	gap: 16px;
+	gap: 1rem;
 	padding: 2.5rem 1rem;
 }
 
@@ -95,6 +96,9 @@ dd.chakra-stat__number {
 	border-radius: 0.6rem;
 	max-width: 420px;
 	aspect-ratio: 5/7;
+	border: 0.5rem solid var(--chakra-colors-gray-100);
+	background-color: var(--chakra-colors-black);
+	position: relative;
 }
 
 .chakra-card__header,
@@ -137,17 +141,41 @@ dd.chakra-stat__number {
 	margin: 0.1rem auto;
 }
 
-.chakra-card.spell-card {
-	border: 0.5rem solid var(--chakra-colors-gray-100);
-	border-radius: 0.6rem;
-	background-color: var(--chakra-colors-black);
-	position: relative;
+/* Card Content Areas */
+.spell-card__description {
+	padding: 1rem;
+	height: 100%;
+	max-height: 25.5rem;
+	overflow: hidden;
+	display: grid;
+	gap: 1rem;
+	grid-template-rows: auto;
+	text-align: left;
 }
 
+.spell-card__description.has-higher-level {
+	grid-template-rows: 3fr 1fr;
+}
+
+.spell-card__level {
+	margin-top: -2.5rem;
+}
+
+.spell-card__classes {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+/* Utility Classes */
 .section-divider {
 	height: 0.375rem;
 	background: var(--chakra-colors-gray-100);
 	margin-top: -1rem;
+}
+
+.scrollable-content {
+	overflow-y: scroll;
+	padding-right: 0.75rem;
 }
 
 span.chakra-badge {
@@ -164,48 +192,19 @@ span.chakra-badge {
 	border-radius: 0.25rem;
 }
 
-.description {
-	padding: 1rem;
-	height: 100%;
-	max-height: 25.5rem;
-	overflow: hidden;
-	display: grid;
-	gap: 1rem;
-	grid-template-rows: auto;
-	text-align: left;
-}
-
-.description:has(.spell-higher-level) {
-	grid-template-rows: 3fr 1fr;
-}
-
-.spell-level {
-	margin-top: -2.5rem;
-}
-
-.spell-classes {
-	display: flex;
-	flex-wrap: wrap;
-}
-
-.spell-level .chakra-stat {
+.spell-card__level .chakra-stat {
 	background-color: var(--chakra-colors-black);
 	padding: 0.75rem 1rem;
 	border: 0.5rem solid var(--chakra-colors-gray-100);
 	border-radius: 50%;
 }
 
-.description-copy,
-.spell-higher-level {
-	overflow-y: scroll;
-	padding-right: 0.75rem;
-}
-
 .chakra-table__root {
 	margin-bottom: 2rem;
 }
 
-.concentration-icon {
+/* Interactive Elements */
+.concentration-indicator {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -214,14 +213,14 @@ span.chakra-badge {
 	color: var(--chakra-colors-gray-100);
 }
 
-.concentration-icon svg {
+.concentration-indicator svg {
 	width: 1.5rem;
 	height: 1.5rem;
 	background-color: var(--chakra-colors-gray-100);
 	border-radius: 50%;
 }
 
-.concentration-icon .chakra-text {
+.concentration-indicator .chakra-text {
 	font-size: 1rem;
 	font-weight: bold;
 	line-height: 1rem;
@@ -240,18 +239,19 @@ span.chakra-badge {
 	font-size: 1rem;
 }
 
+/* Loading States */
 .loading-container {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	width: 100%;
-	height: calc(100vh - (var(--base-size) * 0.845));
+	height: calc(100vh - (var(--dice-size) * 0.845));
 }
 
-.loading {
+.loading-text {
 	display: block;
-	margin-top: calc(var(--base-size) * 0.845);
+	margin-top: calc(var(--dice-size) * 0.845);
 	font-size: 3rem;
 	font-family: 'Montserrat', sans-serif;
 	font-weight: 800;
@@ -259,65 +259,50 @@ span.chakra-badge {
 	color: var(--chakra-colors-gray-50);
 }
 
-.d20 {
+.dice-d20 {
 	position: relative;
-	width: var(--base-size);
-	height: calc(var(--base-size) * 0.845);
+	width: var(--dice-size);
+	height: calc(var(--dice-size) * 0.845);
 	transform-style: preserve-3d;
 }
 
-.loading span {
+/* Loading Animation */
+.loading-text span {
 	display: inline-block;
-	animation: loading 0.7s infinite alternate;
+	animation: pulse-scale 0.7s infinite alternate;
 }
 
-.loading span:nth-child(2) {
-	animation-delay: 0.1s;
-}
-.loading span:nth-child(3) {
-	animation-delay: 0.2s;
-}
-.loading span:nth-child(4) {
-	animation-delay: 0.3s;
-}
-.loading span:nth-child(5) {
-	animation-delay: 0.4s;
-}
-.loading span:nth-child(6) {
-	animation-delay: 0.5s;
-}
-.loading span:nth-child(7) {
-	animation-delay: 0.6s;
-}
+.loading-text span:nth-child(2) { animation-delay: 0.1s; }
+.loading-text span:nth-child(3) { animation-delay: 0.2s; }
+.loading-text span:nth-child(4) { animation-delay: 0.3s; }
+.loading-text span:nth-child(5) { animation-delay: 0.4s; }
+.loading-text span:nth-child(6) { animation-delay: 0.5s; }
+.loading-text span:nth-child(7) { animation-delay: 0.6s; }
 
-@keyframes loading {
-	0% {
-		transform: scale(1);
-	}
-	100% {
-		transform: scale(0.8);
-	}
+@keyframes pulse-scale {
+	0% { transform: scale(1); }
+	100% { transform: scale(0.8); }
 }
 
 @media screen and (prefers-reduced-motion: no-preference) {
-	.d20 {
-		animation: rotate 10s infinite linear;
+	.dice-d20 {
+		animation: rotate-3d 10s infinite linear;
 	}
 }
 
-.d20,
-.d20 div {
+/* D20 Dice Styling */
+.dice-d20,
+.dice-d20 div {
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
 }
 
-.d20 div {
-	width: var(--base-size);
-	height: var(--base-height);
+.dice-face {
+	width: var(--dice-size);
+	height: var(--dice-height);
 	position: absolute;
-	/*   opacity: 0.8; */
 	clip-path: polygon(0 0, 50% 100%, 100% 0);
 	transform-origin: top;
 	background-color: var(--chakra-colors-black);
@@ -329,96 +314,95 @@ span.chakra-badge {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: calc(var(--base-size) * 0.4);
+	font-size: calc(var(--dice-size) * 0.4);
 	color: #fff;
 	line-height: -1;
-	padding-bottom: calc(var(--base-size) * 0.3);
-	--die-face: calc(var(--base-size) * 0.69);
+	padding-bottom: calc(var(--dice-size) * 0.3);
+	--face-depth: calc(var(--dice-size) * 0.69);
 }
 
-/* Grouped faces so opposites are together. */
-/* They should add up to 21. */
-.d20 div:nth-child(1) {
-	transform: rotateY(0.7turn) translateZ(calc(var(--die-face) * -1)) rotateX(127deg);
+/* D20 Face Positioning (grouped by opposite pairs that sum to 21) */
+.dice-d20 .dice-face:nth-child(1) {
+	transform: rotateY(0.7turn) translateZ(calc(var(--face-depth) * -1)) rotateX(127deg);
 }
-.d20 div:nth-child(20) {
-	bottom: calc(var(--base-height) * -1);
-	transform: rotateY(0.7turn) translateZ(var(--die-face)) rotateX(307deg);
-}
-
-.d20 div:nth-child(2) {
-	transform: rotateY(0.6turn) translateZ(var(--die-face)) rotateX(11deg);
-}
-.d20 div:nth-child(19) {
-	bottom: calc(var(--base-height) * -1);
-	transform: rotateY(0.6turn) translateZ(calc(var(--die-face) * -1)) rotateX(191deg);
+.dice-d20 .dice-face:nth-child(20) {
+	bottom: calc(var(--dice-height) * -1);
+	transform: rotateY(0.7turn) translateZ(var(--face-depth)) rotateX(307deg);
 }
 
-.d20 div:nth-child(3) {
-	bottom: calc(var(--base-height) * -1);
-	transform: rotateY(1turn) translateZ(calc(var(--die-face) * -1)) rotateX(191deg);
+.dice-d20 .dice-face:nth-child(2) {
+	transform: rotateY(0.6turn) translateZ(var(--face-depth)) rotateX(11deg);
 }
-.d20 div:nth-child(18) {
-	transform: rotateY(1turn) translateZ(var(--die-face)) rotateX(11deg);
-}
-
-.d20 div:nth-child(4) {
-	transform: rotateY(0.3turn) translateZ(calc(var(--die-face) * -1)) rotateX(127deg);
-}
-.d20 div:nth-child(17) {
-	bottom: calc(var(--base-height) * -1);
-	transform: rotateY(0.3turn) translateZ(var(--die-face)) rotateX(307deg);
+.dice-d20 .dice-face:nth-child(19) {
+	bottom: calc(var(--dice-height) * -1);
+	transform: rotateY(0.6turn) translateZ(calc(var(--face-depth) * -1)) rotateX(191deg);
 }
 
-.d20 div:nth-child(5) {
-	transform: rotateY(0.8turn) translateZ(var(--die-face)) rotateX(11deg);
+.dice-d20 .dice-face:nth-child(3) {
+	bottom: calc(var(--dice-height) * -1);
+	transform: rotateY(1turn) translateZ(calc(var(--face-depth) * -1)) rotateX(191deg);
 }
-.d20 div:nth-child(16) {
-	bottom: calc(var(--base-height) * -1);
-	transform: rotateY(0.8turn) translateZ(calc(var(--die-face) * -1)) rotateX(191deg);
-}
-
-.d20 div:nth-child(6) {
-	transform: rotateY(0.9turn) translateZ(calc(var(--die-face) * -1)) rotateX(127deg);
-}
-.d20 div:nth-child(15) {
-	bottom: calc(var(--base-height) * -1);
-	transform: rotateY(0.9turn) translateZ(var(--die-face)) rotateX(307deg);
+.dice-d20 .dice-face:nth-child(18) {
+	transform: rotateY(1turn) translateZ(var(--face-depth)) rotateX(11deg);
 }
 
-.d20 div:nth-child(7) {
-	bottom: calc(var(--base-height) * -1);
-	transform: rotateY(0.2turn) translateZ(calc(var(--die-face) * -1)) rotateX(191deg);
+.dice-d20 .dice-face:nth-child(4) {
+	transform: rotateY(0.3turn) translateZ(calc(var(--face-depth) * -1)) rotateX(127deg);
 }
-.d20 div:nth-child(14) {
-	transform: rotateY(0.2turn) translateZ(var(--die-face)) rotateX(11deg);
-}
-
-.d20 div:nth-child(8) {
-	transform: rotateY(0.1turn) translateZ(calc(var(--die-face) * -1)) rotateX(127deg);
-}
-.d20 div:nth-child(13) {
-	bottom: calc(var(--base-height) * -1);
-	transform: rotateY(0.1turn) translateZ(var(--die-face)) rotateX(307deg);
+.dice-d20 .dice-face:nth-child(17) {
+	bottom: calc(var(--dice-height) * -1);
+	transform: rotateY(0.3turn) translateZ(var(--face-depth)) rotateX(307deg);
 }
 
-.d20 div:nth-child(9) {
-	transform: rotateY(0.4turn) translateZ(var(--die-face)) rotateX(11deg);
+.dice-d20 .dice-face:nth-child(5) {
+	transform: rotateY(0.8turn) translateZ(var(--face-depth)) rotateX(11deg);
 }
-.d20 div:nth-child(12) {
-	bottom: calc(var(--base-height) * -1);
-	transform: rotateY(0.4turn) translateZ(calc(var(--die-face) * -1)) rotateX(191deg);
-}
-
-.d20 div:nth-child(10) {
-	transform: rotateY(0.5turn) translateZ(calc(var(--die-face) * -1)) rotateX(127deg);
-}
-.d20 div:nth-child(11) {
-	bottom: calc(var(--base-height) * -1);
-	transform: rotateY(0.5turn) translateZ(var(--die-face)) rotateX(307deg);
+.dice-d20 .dice-face:nth-child(16) {
+	bottom: calc(var(--dice-height) * -1);
+	transform: rotateY(0.8turn) translateZ(calc(var(--face-depth) * -1)) rotateX(191deg);
 }
 
-@keyframes rotate {
+.dice-d20 .dice-face:nth-child(6) {
+	transform: rotateY(0.9turn) translateZ(calc(var(--face-depth) * -1)) rotateX(127deg);
+}
+.dice-d20 .dice-face:nth-child(15) {
+	bottom: calc(var(--dice-height) * -1);
+	transform: rotateY(0.9turn) translateZ(var(--face-depth)) rotateX(307deg);
+}
+
+.dice-d20 .dice-face:nth-child(7) {
+	bottom: calc(var(--dice-height) * -1);
+	transform: rotateY(0.2turn) translateZ(calc(var(--face-depth) * -1)) rotateX(191deg);
+}
+.dice-d20 .dice-face:nth-child(14) {
+	transform: rotateY(0.2turn) translateZ(var(--face-depth)) rotateX(11deg);
+}
+
+.dice-d20 .dice-face:nth-child(8) {
+	transform: rotateY(0.1turn) translateZ(calc(var(--face-depth) * -1)) rotateX(127deg);
+}
+.dice-d20 .dice-face:nth-child(13) {
+	bottom: calc(var(--dice-height) * -1);
+	transform: rotateY(0.1turn) translateZ(var(--face-depth)) rotateX(307deg);
+}
+
+.dice-d20 .dice-face:nth-child(9) {
+	transform: rotateY(0.4turn) translateZ(var(--face-depth)) rotateX(11deg);
+}
+.dice-d20 .dice-face:nth-child(12) {
+	bottom: calc(var(--dice-height) * -1);
+	transform: rotateY(0.4turn) translateZ(calc(var(--face-depth) * -1)) rotateX(191deg);
+}
+
+.dice-d20 .dice-face:nth-child(10) {
+	transform: rotateY(0.5turn) translateZ(calc(var(--face-depth) * -1)) rotateX(127deg);
+}
+.dice-d20 .dice-face:nth-child(11) {
+	bottom: calc(var(--dice-height) * -1);
+	transform: rotateY(0.5turn) translateZ(var(--face-depth)) rotateX(307deg);
+}
+
+@keyframes rotate-3d {
 	from {
 		transform: rotateX(0deg) rotateY(360deg) rotateZ(360deg);
 	}

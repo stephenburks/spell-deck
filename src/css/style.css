@@ -31,9 +31,16 @@ body {
 	text-align: center;
 }
 
-p {
+p,
+ul,
+li {
 	margin-bottom: 1rem;
 	font-size: 0.875rem;
+}
+
+.spell-list-content {
+	margin: auto;
+	max-width: 90%;
 }
 
 .stats {
@@ -190,7 +197,12 @@ span.chakra-badge {
 
 .description-copy,
 .spell-higher-level {
-	overflow: scroll;
+	overflow-y: scroll;
+	padding-right: 0.75rem;
+}
+
+.chakra-table__root {
+	margin-bottom: 2rem;
 }
 
 .concentration-icon {

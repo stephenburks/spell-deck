@@ -6,6 +6,19 @@
 	/* --chakra-colors-gray-950: #111;
 	--chakra-colors-gray-50: #fafafa; */
 	--chakra-colors-gray-900: #111;
+	--dnd-red: #c73032;
+	--dnd-barbarian: #e7623e;
+	--dnd-bard: #ab6dac;
+	--dnd-cleric: #91a1b2;
+	--dnd-druid: #7a853b;
+	--dnd-fighter: #7f513e;
+	--dnd-monk: #51a5c5;
+	--dnd-paladin: #b59e54;
+	--dnd-ranger: #507f62;
+	--dnd-rogue: #555752;
+	--dnd-sorcerer: #992e2e;
+	--dnd-warlock: #7b469b;
+	--dnd-wizard: #2a50a1;
 }
 
 body {
@@ -13,6 +26,7 @@ body {
 }
 
 .App {
+	background-color: var(--chakra-colors-black);
 	font-family: sans-serif;
 	text-align: center;
 }
@@ -26,7 +40,6 @@ p {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: auto;
-	background-color: var(--chakra-colors-black);
 }
 
 .stat {
@@ -69,7 +82,6 @@ dd.chakra-stat__number {
 	justify-content: center;
 	gap: 16px;
 	padding: 2.5rem 1rem;
-	background-color: var(--chakra-colors-black);
 }
 
 .spell-card {
@@ -132,8 +144,6 @@ dd.chakra-stat__number {
 }
 
 span.chakra-badge {
-	background: var(--chakra-colors-black) !important;
-	border: 0.375rem solid var(--chakra-colors-gray-100) !important;
 	z-index: 1;
 	margin: auto;
 	padding: 0 0.5rem;
@@ -206,6 +216,18 @@ span.chakra-badge {
 	padding: 0.25rem 0.25rem 0.375rem 0.375rem;
 }
 
+.chakra-tooltip__trigger {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.chakra-stat__valueText {
+	margin-left: 0.5rem;
+	font-size: 1rem;
+}
+
 .loading-container {
 	display: flex;
 	flex-direction: column;
@@ -222,7 +244,7 @@ span.chakra-badge {
 	font-family: 'Montserrat', sans-serif;
 	font-weight: 800;
 	text-align: center;
-	color: var(--chakra-colors-gray-100);
+	color: var(--chakra-colors-gray-50);
 }
 
 .d20 {

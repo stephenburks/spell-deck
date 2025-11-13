@@ -60,15 +60,6 @@ export default function SpellCard({ spell }) {
 				<Description spell={spell} />
 			</Card.Body>
 			<Card.Footer>
-				<div className="spell-classes">
-					{spell.classes.map((spellClass) => (
-						// <Tooltip key={spellClass.index} hasArrow label={`Spell Class: ${spellClass.name}`}>
-						<Badge marginRight="0.25rem" variant="subtle" colorScheme="teal">
-							{spellClass.name}
-						</Badge>
-						// </Tooltip>
-					))}
-				</div>
 				<div className="spell-level">
 					<Tooltip content="Spell Level" interactive>
 						<Stat.Root>
@@ -79,7 +70,7 @@ export default function SpellCard({ spell }) {
 				<div className="spell-classes">
 					{spell.classes.map((spellClass) => (
 						<Tooltip key={spellClass.index} content={'Spell Class: ' + spellClass.name}>
-							<Badge marginRight="0.25rem" variant="subtle" colorScheme="teal">
+							<Badge marginRight="0.25rem" variant="solid" size="md">
 								{spellClass.name}
 							</Badge>
 						</Tooltip>

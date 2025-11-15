@@ -24,9 +24,9 @@ export default function SpellCard({ spell }) {
 				<Heading as="h2" size="md">
 					{spell.name}
 				</Heading>
-			</Card.Header>
 
-			<Badge variant="surface">{createBadgeCopy(spell)}</Badge>
+				<Badge variant="surface">{createBadgeCopy(spell)}</Badge>
+			</Card.Header>
 
 			<div className="section-divider"></div>
 
@@ -70,7 +70,7 @@ export default function SpellCard({ spell }) {
 				<div className="spell-card__classes">
 					{spell.classes.map((spellClass) => (
 						<Tooltip key={spellClass.index} content={'Spell Class: ' + spellClass.name}>
-							<Badge marginRight="0.25rem" variant="solid" size="md">
+							<Badge marginRight="0.25rem" variant="outline" size="md">
 								{spellClass.name}
 							</Badge>
 						</Tooltip>

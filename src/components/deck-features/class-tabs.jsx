@@ -57,14 +57,6 @@ export default function SpellTabs({ spellsByClass, loading }) {
 							key={spellClass} 
 							value={spellClass[0]}
 							className={`spell-card__content-${spellClass[0].toLowerCase()}`}
-							_open={{
-								animationName: "fade-in, scale-in",
-								animationDuration: "300ms",
-							}}
-							_closed={{
-								animationName: "fade-out, scale-out",
-								animationDuration: "120ms",
-							}}
 							>
 							<div className="spell-list">
 								{spellClass[1].length === 0 && loading && <Loading />}

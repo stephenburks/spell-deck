@@ -43,24 +43,34 @@ export function Description({ spell }) {
 
 	return (
 		<div className={`spell-card__description ${spell.higher_level && spell.higher_level.length > 0 ? 'has-higher-level' : ''}`}>
+			<div className="spell-info__header-container">
+				<span className="spell-info__header">
+					<strong>Description</strong>
+				</span>
+			</div>
 			<div className="scrollable-content">
-				<strong>Description: </strong>
 				<div className="content-text">
 					{formatSpellText(spell.desc).map((block, index) =>
 						renderFormatted(block, index, 'desc')
 					)}
 				</div>
 			</div>
-
+			
 			{spell.higher_level && spell.higher_level.length > 0 && (
-				<div className="scrollable-content">
-					<strong>At Higher Levels: </strong>
-					<div className="content-text">
-						{formatSpellText(spell.higher_level).map((block, index) =>
-							renderFormatted(block, index, 'higher')
-						)}
+				<>
+					<div className="spell-info__header-container higher-level">
+						<span className="spell-info__header">
+							<strong>At Higher Levels</strong>
+						</span>
 					</div>
-				</div>
+					<div className="scrollable-content">
+						<div className="content-text">
+							{formatSpellText(spell.higher_level).map((block, index) =>
+								renderFormatted(block, index, 'higher')
+							)}
+						</div>
+					</div>
+				</>
 			)}
 		</div>
 	)

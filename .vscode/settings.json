@@ -1,6 +1,10 @@
 {
 	"svgeditor.indentStyle": "tab",
-	"cSpell.words": [
-		"Chakra"
-	]
+	"cSpell.words": ["Chakra"],
+	"editor.formatOnSave": true,
+	"prettier.configPath": "/Users/steeb/Documents/Interview Prep/spell-deck/.prettierrc",
+	"prettier.requireConfig": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnPaste": true,
+	"editor.formatOnSaveMode": "file"
 }

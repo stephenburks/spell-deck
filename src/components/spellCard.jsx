@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Badge, Card, Heading, Stat } from '@chakra-ui/react'
 import { Tooltip } from './ui/tooltip.jsx'
 import { Description } from './card-features/description.jsx'
@@ -12,7 +13,8 @@ const createBadgeCopy = (spell) => {
 }
 
 export default function SpellCard({ spell }) {
-	const spellClass = spell.classes[0]
+	const badgeText = useMemo(() => createBadgeCopy(spell), [spell])
+	const spellClass = useMemo(() => spell.classes[0], [spell])
 
 	return (
 		<div className={`spell-card__container spell-card__container-` + spellClass.index}>
@@ -20,7 +22,9 @@ export default function SpellCard({ spell }) {
 				<Card.Root className="spell-card">
 					{spell.concentration === true && (
 						<Tooltip content="Concentration Required" interactive>
-							<div className="concentration-indicator">{renderIcon('ConcentrationIcon')}</div>
+							<div className="concentration-indicator">
+								{renderIcon('ConcentrationIcon')}
+							</div>
 						</Tooltip>
 					)}
 
@@ -29,7 +33,7 @@ export default function SpellCard({ spell }) {
 							{spell.name}
 						</Heading>
 
-						<Badge variant="surface">{createBadgeCopy(spell)}</Badge>
+						<Badge variant="surface">{badgeText}</Badge>
 					</Card.Header>
 
 					<div className="section-divider"></div>
@@ -72,7 +76,9 @@ export default function SpellCard({ spell }) {
 							</Tooltip>
 						</div>
 						<div className="spell-card__classes">
-							<Tooltip key={spellClass.index} content={'Spell Class: ' + spellClass.name}>
+							<Tooltip
+								key={spellClass.index}
+								content={'Spell Class: ' + spellClass.name}>
 								<Badge marginRight="0.25rem" variant="outline" size="md">
 									{spellClass.name}
 								</Badge>

@@ -27,6 +27,7 @@
 - [ ] Session Spell Deck - this feature will need a lot of planning. But essentially allow users to
       select whatever cards they would like to add to their current session and give them option to
       'use' or 'burn' their card after usage for easy tracking within a play session.
+- [ ] When a spell has be used the card should 'flip over' to indicate its not longer available for usage   whichout being removed from your spell deck
 - [ ] Improve data loading plan - initial pass was to get things functional but there are a lot of
       inefficiencies to address. Also need to look at segmented loading options and improved caching
       strategy to improve overall experience and minimize resources.

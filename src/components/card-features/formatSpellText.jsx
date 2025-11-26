@@ -71,6 +71,8 @@ export const formatSpellText = (text) => {
 			.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
 			// Handle cases where there might be unmatched asterisks at the start of lines
 			.replace(/^\*\*\*([^*]+)\.\*\*\*/gm, '<strong>$1.</strong>')
+			// Handle quoted text for italics - matches text in double quotes
+			.replace(/"([^"]+)"/g, '<em>"$1"</em>')
 
 		// Regular paragraph
 		return { type: 'paragraph', content: processedContent }

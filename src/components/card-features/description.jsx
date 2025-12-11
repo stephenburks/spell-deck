@@ -18,16 +18,17 @@ export function Description({ spell }) {
 			case 'table':
 				return (
 					<Table.Root key={`${prefix}-${index}`} className="content-text">
-						{block.content.map((row, i) => (
-							<Table.Row key={`${prefix}-${index}-${i}`}>
-								{row.map((cell, j) => (
-									<Table.Cell
-										key={`${prefix}-${index}-${i}-${j}`} >
-										<span dangerouslySetInnerHTML={{ __html: cell }} />
-									</Table.Cell>
-								))}
-							</Table.Row>
-						))}
+						<Table.Body>
+							{block.content.map((row, i) => (
+								<Table.Row key={`${prefix}-${index}-${i}`}>
+									{row.map((cell, j) => (
+										<Table.Cell key={`${prefix}-${index}-${i}-${j}`}>
+											<span dangerouslySetInnerHTML={{ __html: cell }} />
+										</Table.Cell>
+									))}
+								</Table.Row>
+							))}
+						</Table.Body>
 					</Table.Root>
 				)
 
@@ -42,7 +43,8 @@ export function Description({ spell }) {
 	}
 
 	return (
-		<div className={`spell-card__description ${spell.higher_level && spell.higher_level.length > 0 ? 'has-higher-level' : ''}`}>
+		<div
+			className={`spell-card__description ${spell.higher_level && spell.higher_level.length > 0 ? 'has-higher-level' : ''}`}>
 			<div className="spell-info__header-container">
 				<span className="spell-info__header">
 					<strong>Description</strong>
@@ -55,7 +57,7 @@ export function Description({ spell }) {
 					)}
 				</div>
 			</div>
-			
+
 			{spell.higher_level && spell.higher_level.length > 0 && (
 				<>
 					<div className="spell-info__header-container higher-level">

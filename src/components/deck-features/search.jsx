@@ -1,7 +1,8 @@
-import { useCallback, useMemo, useState, useEffect } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { Input } from '@chakra-ui/react'
 import Loading from '../loading'
 import SpellCard from '../spellCard'
+import { useSpellSearch } from '../../hooks/useSearchIndex'
 
 function useDebounce(value, delay) {
 	const [debouncedValue, setDebouncedValue] = useState(value)
@@ -24,41 +25,22 @@ export default function SearchableSpellList({ spells, className, loading }) {
 	const [searchTerm, setSearchTerm] = useState('')
 	const debouncedSearchTerm = useDebounce(searchTerm, 300)
 
+	// Use the new Fuse.js powered search
+	const filteredSpells = useSpellSearch(spells, debouncedSearchTerm)
+
+	// Add debugging
+	console.log('SearchableSpellList Debug:', {
+		className,
+		spellsReceived: spells,
+		spellCount: spells?.length,
+		loading,
+		searchTerm,
+		filteredCount: filteredSpells?.length
+	})
+
 	const handleInputChange = useCallback((e) => {
 		setSearchTerm(e.target.value)
 	}, [])
-
-	const filteredSpells = useMemo(() => {
-		if (!debouncedSearchTerm?.trim()) return spells
-
-		const term = debouncedSearchTerm.toLowerCase()
-
-		// First pass: search primary fields only
-		const primaryMatches = spells.filter((spell) =>
-			[spell.name, spell.school?.name, spell.level, spell.casting_time].some((field) =>
-				field?.toString().toLowerCase().includes(term)
-			)
-		)
-
-		// If we found matches, return them sorted
-		if (primaryMatches.length > 0) {
-			return primaryMatches.sort(
-				(firstSpell, secondSpell) =>
-					secondSpell.name.toLowerCase().includes(term) -
-					firstSpell.name.toLowerCase().includes(term)
-			)
-		}
-
-		// Fallback: search descriptions only if no primary matches AND term is long enough
-		// if (term.length >= 3) {
-		// 	return spells.filter((spell) =>
-		// 		spell.desc?.some((desc) => desc.toLowerCase().includes(term))
-		// 	)
-		// }
-
-		// Return empty if term too short and no primary matches
-		return []
-	}, [spells, debouncedSearchTerm])
 
 	return (
 		<div>
@@ -68,12 +50,35 @@ export default function SearchableSpellList({ spells, className, loading }) {
 				onChange={(e) => handleInputChange(e)}
 			/>
 
+			{/* Search results summary */}
+			{searchTerm.trim() && filteredSpells.length > 0 && (
+				<div style={{ padding: '8px 0', fontSize: '14px', color: '#666' }}>
+					Found {filteredSpells.length} spell{filteredSpells.length !== 1 ? 's' : ''}{' '}
+					matching "{searchTerm}"
+				</div>
+			)}
+
 			<div className="spell-list">
 				{filteredSpells.length === 0 && loading && <Loading />}
 
-				{filteredSpells.length === 0 && !loading && searchTerm.trim() && (
-					<div className="no-results">No spells found matching "{searchTerm}"</div>
-				)}
+				{filteredSpells.length === 0 &&
+					!loading &&
+					searchTerm.trim() &&
+					searchTerm.length >= 2 && (
+						<div className="no-results">
+							No spells found matching "{searchTerm}". Try a different search term or
+							check spelling.
+						</div>
+					)}
+
+				{filteredSpells.length === 0 &&
+					!loading &&
+					searchTerm.trim() &&
+					searchTerm.length < 2 && (
+						<div className="no-results">
+							Enter at least 2 characters to search spells.
+						</div>
+					)}
 
 				{filteredSpells.map((spell) => (
 					<SpellCard key={spell.index} spell={spell} />

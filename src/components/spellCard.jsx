@@ -18,7 +18,7 @@ export default function SpellCard({ spell }) {
 
 	return (
 		<div className={`spell-card__container spell-card__container-` + spellClass.index}>
-			<div class="spell-card-inner">
+			<div className="spell-card-inner">
 				<Card.Root className="spell-card">
 					{spell.concentration === true && (
 						<Tooltip content="Concentration Required" interactive>

@@ -3,7 +3,7 @@ const BASE_URL = 'https://www.dnd5eapi.co'
 // Helper function to add delay between requests
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-// Helper function to process spells in batches
+// Helper function to process spells in batches (KEEP - still needed)
 async function fetchSpellsBatch(spellIndexes, batchSize = 10, delayMs = 1000) {
 	const results = []
 
@@ -16,27 +16,21 @@ async function fetchSpellsBatch(spellIndexes, batchSize = 10, delayMs = 1000) {
 		results.push(...batchResults)
 
 		if (i + batchSize < spellIndexes.length) {
-			await delay(delayMs) // Add delay between batches
+			await delay(delayMs)
 		}
 	}
 
 	return results
 }
 
-export async function getAllSpells() {
-	const response = await fetch(`${BASE_URL}/api/2014/spells`)
-	const spellIndexes = await response.json()
-
-	return fetchSpellsBatch(spellIndexes.results, 5, 2000) // 5 spells every 2 seconds
-}
-
+// KEEP - still needed by getSpellCastingClasses
 export async function getAllClasses() {
 	const response = await fetch(`${BASE_URL}/api/2014/classes`)
 	const classIndexes = await response.json()
-
 	return classIndexes.results
 }
 
+// KEEP - still needed by getSpellIndexesByClass
 export async function getSpellCastingClasses() {
 	const allClasses = await getAllClasses()
 	const spellClasses = []
@@ -60,33 +54,52 @@ export async function getSpellCastingClasses() {
 	return spellClasses
 }
 
-export async function getSpellsByClass(spellsObject) {
+// NEW - replaces the old approach
+export async function getSpellIndexesByClass() {
 	const spellCastingClasses = await getSpellCastingClasses()
-	const allSpells = JSON.parse(spellsObject)
-	const spellsByClass = []
+	const spellsByClass = {}
 
-	spellCastingClasses.forEach((spellClass) => {
-		spellsByClass[spellClass] = []
-	})
-
-	// Process each spell once
-	allSpells.forEach((spell) => {
-		// Create trimmed spell without subclasses
-		const { subclasses, ...spellWithoutSubclasses } = spell
-
-		// Add spell to each of its classes
-		spell.classes.forEach((cls) => {
-			if (spellsByClass[cls.name]) {
-				spellsByClass[cls.name].push({
-					...spellWithoutSubclasses,
-					classes: [cls] // Only include this specific class
-				})
+	await Promise.all(
+		spellCastingClasses.map(async (className) => {
+			try {
+				const response = await fetch(
+					`${BASE_URL}/api/2014/classes/${className.toLowerCase()}/spells`
+				)
+				if (response.ok) {
+					const classSpells = await response.json()
+					spellsByClass[className] = classSpells.results.map((spell) => spell.index)
+				} else {
+					console.warn(`No spells found for class: ${className}`)
+					spellsByClass[className] = []
+				}
+			} catch (error) {
+				console.warn(`Failed to fetch spells for ${className}:`, error)
+				spellsByClass[className] = []
 			}
 		})
-	})
+	)
 
 	return spellsByClass
 }
+
+// NEW - for lazy loading spell details
+export async function getSpellDetailsForClass(className, spellIds) {
+	if (!spellIds || spellIds.length === 0) {
+		return []
+	}
+
+	console.log(`Fetching ${spellIds.length} spells for ${className}...`)
+
+	const spellUrls = spellIds.map((id) => ({ url: `/api/2014/spells/${id}` }))
+	const spellDetails = await fetchSpellsBatch(spellUrls, 10, 500)
+
+	console.log(`Loaded ${spellDetails.length} spells for ${className}`)
+	return spellDetails
+}
+
+// REMOVE - no longer needed
+// export async function getAllSpells() { ... }
+// export async function getSpellsByClass(spellsObject) { ... }
 
 // const sampleSpellObject = {
 // 	index: 'acid-arrow',

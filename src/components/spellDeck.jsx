@@ -1,16 +1,22 @@
-import { useSpells } from '../data/context/spellDataContext'
+import { useSpellClasses } from '../hooks/useSpells'
 import SpellTabs from './deck-features/class-tabs'
+import Loading from './loading'
 
 export default function SpellDeck() {
-	const { spellsByClass, loading, error } = useSpells()
+	const { classes, isLoading, error, isError } = useSpellClasses()
 
-	if (error) return <div>Error: {error}</div>
+	if (isError) {
+		return (
+			<div>
+				Error: {error?.message || 'Failed to load spell classes'}
+				<button onClick={() => window.location.reload()}>Retry</button>
+			</div>
+		)
+	}
 
-	const spellClassEntries = Object.entries(spellsByClass)
+	if (isLoading) {
+		return <Loading />
+	}
 
-	return (
-		<>
-			<SpellTabs spellsByClass={spellClassEntries} loading={loading} />
-		</>
-	)
+	return <SpellTabs classes={classes} />
 }

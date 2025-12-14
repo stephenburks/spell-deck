@@ -93,8 +93,53 @@ export async function getSpellDetailsForClass(className, spellIds) {
 	const spellUrls = spellIds.map((id) => ({ url: `/api/2014/spells/${id}` }))
 	const spellDetails = await fetchSpellsBatch(spellUrls, 10, 500)
 
+	const sortedSpells = spellDetails.sort((a, b) => a.name.localeCompare(b.name))
+
 	console.log(`Loaded ${spellDetails.length} spells for ${className}`)
-	return spellDetails
+	return sortedSpells
+}
+
+// Add this new function to api.js
+export async function getSpellDetailsProgressively(className, spellIds, onBatchComplete) {
+	if (!spellIds || spellIds.length === 0) {
+		return []
+	}
+
+	console.log(`Starting progressive fetch of ${spellIds.length} spells for ${className}...`)
+
+	const spellUrls = spellIds.map((id) => ({ url: `/api/2014/spells/${id}` }))
+	const batchSize = 10
+	const delayMs = 500
+
+	for (let i = 0; i < spellUrls.length; i += batchSize) {
+		const batch = spellUrls.slice(i, i + batchSize)
+		const batchResults = await Promise.all(
+			batch.map((index) => fetch(BASE_URL + index.url).then((response) => response.json()))
+		)
+
+		// Sort this batch alphabetically
+		const sortedBatch = batchResults.sort((a, b) => a.name.localeCompare(b.name))
+
+		// Calculate progress info
+		const isLastBatch = i + batchSize >= spellUrls.length
+		const totalLoaded = Math.min(i + batchSize, spellUrls.length)
+
+		// Call the callback with batch data and progress info
+		onBatchComplete({
+			spells: sortedBatch,
+			isComplete: isLastBatch,
+			progress: {
+				loaded: totalLoaded,
+				total: spellUrls.length,
+				percentage: Math.round((totalLoaded / spellUrls.length) * 100)
+			}
+		})
+
+		// Add delay between batches (except for the last one)
+		if (!isLastBatch) {
+			await delay(delayMs)
+		}
+	}
 }
 
 // REMOVE - no longer needed

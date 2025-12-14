@@ -3,7 +3,7 @@ import { HStack, Tabs, ScrollArea } from '@chakra-ui/react'
 import SearchableSpellList from './search'
 import Loading from '../loading'
 import { Bard, Cleric, Druid, Paladin, Ranger, Sorcerer, Warlock, Wizard } from '../icons/index'
-import { useClassSpells, useSpellStructure } from '../../hooks/useSpells'
+import { useClassSpellsProgressive, useSpellStructure } from '../../hooks/useSpells'
 
 // Map class names to their corresponding icons
 const getClassIcon = (className) => {
@@ -39,14 +39,17 @@ export default function SpellTabs({ classes }) {
 	})
 
 	// Only load spells for the active tab - use the extracted class name
+	// In class-tabs.jsx, replace the useClassSpells call with:
 	const {
 		data: activeClassSpells = [],
 		isLoading: isLoadingSpells,
+		isComplete,
+		progress,
 		error: spellsError
-	} = useClassSpells(
-		activeClassName, // Use the extracted string, not the object
-		spellStructure?.[activeClassName], // Use the extracted string here too
-		!!activeClassName // Only enabled when we have a class name
+	} = useClassSpellsProgressive(
+		activeClassName,
+		spellStructure?.[activeClassName],
+		!!activeClassName
 	)
 
 	// Add more debugging
@@ -75,7 +78,9 @@ export default function SpellTabs({ classes }) {
 											{getClassIcon(className)}
 											{className}
 											{activeClassName === className && isLoadingSpells && (
-												<span style={{ marginLeft: '4px' }}>...</span>
+												<span style={{ marginLeft: '4px' }}>
+													{progress.percentage}%
+												</span>
 											)}
 										</Tabs.Trigger>
 									))}
@@ -86,6 +91,7 @@ export default function SpellTabs({ classes }) {
 				</Tabs.List>
 
 				{classes.map((className) => (
+					// Update your content area to show progress:
 					<Tabs.Content
 						key={className}
 						value={className}
@@ -95,13 +101,13 @@ export default function SpellTabs({ classes }) {
 								Error loading spells: {spellsError.message}
 								<button onClick={() => window.location.reload()}>Retry</button>
 							</div>
-						) : activeClassName === className && isLoadingSpells ? (
-							<Loading />
 						) : (
 							<SearchableSpellList
 								spells={activeClassName === className ? activeClassSpells : []}
 								className={className}
-								loading={false}
+								loading={isLoadingSpells}
+								progress={activeClassName === className ? progress : null}
+								isComplete={activeClassName === className ? isComplete : true}
 							/>
 						)}
 					</Tabs.Content>

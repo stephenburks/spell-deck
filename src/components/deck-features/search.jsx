@@ -21,7 +21,7 @@ function useDebounce(value, delay) {
 }
 
 // SearchableSpellList.jsx
-export default function SearchableSpellList({ spells, className, loading }) {
+export default function SearchableSpellList({ spells, className, loading, progress, isComplete }) {
 	const [searchTerm, setSearchTerm] = useState('')
 	const debouncedSearchTerm = useDebounce(searchTerm, 300)
 
@@ -50,11 +50,20 @@ export default function SearchableSpellList({ spells, className, loading }) {
 				onChange={(e) => handleInputChange(e)}
 			/>
 
-			{/* Search results summary */}
+			{/* Add progress indicator */}
+			{loading && progress && (
+				<div style={{ padding: '8px 0', fontSize: '14px', color: '#666' }}>
+					Loading spells... {progress.loaded} of {progress.total} ({progress.percentage}%)
+					{!isComplete && <span> - You can search what's loaded so far</span>}
+				</div>
+			)}
+
+			{/* Existing search results summary */}
 			{searchTerm.trim() && filteredSpells.length > 0 && (
 				<div style={{ padding: '8px 0', fontSize: '14px', color: '#666' }}>
 					Found {filteredSpells.length} spell{filteredSpells.length !== 1 ? 's' : ''}{' '}
 					matching "{searchTerm}"
+					{!isComplete && <span> (search may be incomplete - still loading)</span>}
 				</div>
 			)}
 

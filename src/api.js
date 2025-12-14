@@ -99,6 +99,117 @@ export async function getSpellDetailsForClass(className, spellIds) {
 	return sortedSpells
 }
 
+// New function to fetch all spells from the complete database
+export async function getAllSpellDetails() {
+	try {
+		// Get spell indexes by class
+		const spellsByClass = await getSpellIndexesByClass()
+
+		if (!spellsByClass || typeof spellsByClass !== 'object') {
+			throw new Error('Failed to fetch spell structure from API')
+		}
+
+		// Collect all unique spell indexes
+		const allSpellIndexes = new Set()
+		Object.values(spellsByClass).forEach((spellIds) => {
+			if (Array.isArray(spellIds)) {
+				spellIds.forEach((id) => {
+					if (typeof id === 'string' && id.trim()) {
+						allSpellIndexes.add(id.trim())
+					}
+				})
+			}
+		})
+
+		if (allSpellIndexes.size === 0) {
+			throw new Error('No spell indexes found in API response')
+		}
+
+		// Convert to array and create URL objects for fetchSpellsBatch
+		const spellIndexArray = Array.from(allSpellIndexes)
+		const spellUrls = spellIndexArray.map((index) => ({ url: `/api/2014/spells/${index}` }))
+
+		console.log(`Fetching ${spellUrls.length} unique spells...`)
+
+		// Use existing fetchSpellsBatch function with better error handling
+		const allSpells = []
+		const failedSpells = []
+		const batchSize = 10
+		const delayMs = 500
+
+		for (let i = 0; i < spellUrls.length; i += batchSize) {
+			const batch = spellUrls.slice(i, i + batchSize)
+
+			try {
+				const batchResults = await Promise.allSettled(
+					batch.map((index) =>
+						fetch(BASE_URL + index.url).then((response) => {
+							if (!response.ok) {
+								throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+							}
+							return response.json()
+						})
+					)
+				)
+
+				// Process batch results
+				batchResults.forEach((result, batchIndex) => {
+					if (result.status === 'fulfilled') {
+						const spell = result.value
+						if (validateSpellObject(spell)) {
+							allSpells.push(spell)
+						} else {
+							console.warn(`Invalid spell object:`, spell)
+							failedSpells.push(batch[batchIndex].url)
+						}
+					} else {
+						console.warn(
+							`Failed to fetch spell ${batch[batchIndex].url}:`,
+							result.reason
+						)
+						failedSpells.push(batch[batchIndex].url)
+					}
+				})
+
+				// Add delay between batches (except for the last one)
+				if (i + batchSize < spellUrls.length) {
+					await delay(delayMs)
+				}
+			} catch (error) {
+				console.error(`Batch fetch failed:`, error)
+				failedSpells.push(...batch.map((b) => b.url))
+			}
+		}
+
+		if (failedSpells.length > 0) {
+			console.warn(`Failed to fetch ${failedSpells.length} spells:`, failedSpells)
+		}
+
+		// Sort alphabetically by name
+		const sortedSpells = allSpells.sort((a, b) => a.name.localeCompare(b.name))
+
+		console.log(
+			`Successfully loaded ${sortedSpells.length} spells (${failedSpells.length} failed)`
+		)
+		return sortedSpells
+	} catch (error) {
+		console.error('getAllSpellDetails failed:', error)
+		throw error
+	}
+}
+
+// Helper function to validate spell objects
+function validateSpellObject(spell) {
+	return (
+		spell &&
+		typeof spell.index === 'string' &&
+		typeof spell.name === 'string' &&
+		typeof spell.level === 'number' &&
+		spell.level >= 0 &&
+		spell.level <= 9
+	)
+}
+
 // Add this new function to api.js
 export async function getSpellDetailsProgressively(className, spellIds, onBatchComplete) {
 	if (!spellIds || spellIds.length === 0) {
@@ -142,9 +253,7 @@ export async function getSpellDetailsProgressively(className, spellIds, onBatchC
 	}
 }
 
-// REMOVE - no longer needed
-// export async function getAllSpells() { ... }
-// export async function getSpellsByClass(spellsObject) { ... }
+// getAllSpellDetails is already exported above
 
 // const sampleSpellObject = {
 // 	index: 'acid-arrow',

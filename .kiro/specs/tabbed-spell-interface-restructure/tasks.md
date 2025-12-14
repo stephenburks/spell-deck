@@ -28,7 +28,7 @@
     - Integrate "Add to Session" functionality from spellbook to session deck
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
 
-- [ ]   5. Implement SessionDeckTab component
+- [x]   5. Implement SessionDeckTab component
     - Create session spell management with unique session IDs for each spell instance
     - Implement burn spell functionality for leveled spells (levels 1-9)
     - Add cantrip unlimited-use logic and visual indicators
@@ -36,7 +36,7 @@
     - Add level-based organization for session spells
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8_
 
-- [ ]   6. Create comprehensive spell fetching hook
+- [x]   6. Create comprehensive spell fetching hook
     - Implement useAllSpells hook that fetches complete spell database
     - Optimize data loading to work with existing API infrastructure
     - Add proper error handling and loading states

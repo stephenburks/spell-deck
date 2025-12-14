@@ -1,9 +1,14 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Box, Heading, Text, VStack, Alert, Button, HStack } from '@chakra-ui/react'
 import SpellCard from './spellCard.jsx'
-import { loadSessionDeck, saveSessionDeck } from '../utils/localStorage.js'
+import {
+	loadSessionDeck,
+	removeSpellFromSessionDeck,
+	saveSessionDeck
+} from '../utils/localStorage.js'
 import { groupSpellsByLevel, getLevelOrder, isCantrip } from '../utils/spellGrouping.js'
 import { validateSessionSpell, sanitizeSpellArray } from '../utils/validation.js'
+import eventBus, { EVENTS } from '../utils/eventBus.js'
 
 export default function SessionDeckTab() {
 	const [sessionSpells, setSessionSpells] = useState([])
@@ -33,8 +38,34 @@ export default function SessionDeckTab() {
 		setLoading(false)
 	}, [])
 
-	// Listen for localStorage changes to refresh session deck when other tabs add spells
+	// Listen for real-time session deck updates from other tabs
 	useEffect(() => {
+		const unsubscribeSessionUpdated = eventBus.on(EVENTS.SESSION_DECK_UPDATED, (data) => {
+			const validSessionSpells = sanitizeSpellArray(data.spells || []).filter(
+				(spell) => spell.sessionId && validateSessionSpell(spell)
+			)
+			setSessionSpells(validSessionSpells)
+		})
+
+		const unsubscribeSpellAdded = eventBus.on(EVENTS.SPELL_ADDED_TO_SESSION, (data) => {
+			const validSessionSpells = sanitizeSpellArray(data.spells || []).filter(
+				(spell) => spell.sessionId && validateSessionSpell(spell)
+			)
+			setSessionSpells(validSessionSpells)
+		})
+
+		const unsubscribeSpellBurned = eventBus.on(EVENTS.SPELL_BURNED_FROM_SESSION, (data) => {
+			const validSessionSpells = sanitizeSpellArray(data.spells || []).filter(
+				(spell) => spell.sessionId && validateSessionSpell(spell)
+			)
+			setSessionSpells(validSessionSpells)
+		})
+
+		const unsubscribeSessionCleared = eventBus.on(EVENTS.SESSION_CLEARED, () => {
+			setSessionSpells([])
+		})
+
+		// Also listen for localStorage changes from other browser tabs
 		const handleStorageChange = (event) => {
 			if (event.key === 'session-deck') {
 				loadSessionDeckData()
@@ -42,7 +73,12 @@ export default function SessionDeckTab() {
 		}
 
 		window.addEventListener('storage', handleStorageChange)
+
 		return () => {
+			unsubscribeSessionUpdated()
+			unsubscribeSpellAdded()
+			unsubscribeSpellBurned()
+			unsubscribeSessionCleared()
 			window.removeEventListener('storage', handleStorageChange)
 		}
 	}, [])
@@ -67,41 +103,32 @@ export default function SessionDeckTab() {
 
 	// Burn spell (remove leveled spell from session)
 	const burnSpell = (sessionId) => {
-		try {
-			// Find the spell to burn
-			const spellToBurn = sessionSpells.find((spell) => spell.sessionId === sessionId)
-			if (!spellToBurn) {
-				setError('Spell not found in session.')
-				return false
-			}
-
-			// Check if it's a cantrip (cantrips cannot be burned)
-			if (isCantrip(spellToBurn)) {
-				setError('Cantrips cannot be burned - they have unlimited use.')
-				return false
-			}
-
-			// Remove the spell from session
-			const updatedSessionSpells = sessionSpells.filter(
-				(spell) => spell.sessionId !== sessionId
-			)
-
-			// Save to localStorage
-			const success = saveSessionDeck(updatedSessionSpells)
-			if (!success) {
-				setError('Failed to burn spell from session.')
-				return false
-			}
-
-			// Update local state
-			setSessionSpells(updatedSessionSpells)
-			setError(null)
-			return true
-		} catch (err) {
-			console.error('Failed to burn spell:', err)
-			setError('Failed to burn spell from session.')
+		// Find the spell to burn
+		const spellToBurn = sessionSpells.find((spell) => spell.sessionId === sessionId)
+		if (!spellToBurn) {
+			setError('Spell not found in session.')
 			return false
 		}
+
+		// Check if it's a cantrip (cantrips cannot be burned)
+		if (isCantrip(spellToBurn)) {
+			setError('Cantrips cannot be burned - they have unlimited use.')
+			return false
+		}
+
+		const result = removeSpellFromSessionDeck(sessionId)
+		if (result.success) {
+			// Update local state immediately (optimistic update)
+			setSessionSpells(
+				sanitizeSpellArray(result.spells || []).filter(
+					(spell) => spell.sessionId && validateSessionSpell(spell)
+				)
+			)
+			setError(null)
+		} else {
+			setError(result.message)
+		}
+		return result.success
 	}
 
 	// Clear entire session
@@ -112,6 +139,13 @@ export default function SessionDeckTab() {
 			if (!success) {
 				setError('Failed to clear session.')
 				return false
+			}
+
+			// Emit session cleared event
+			try {
+				eventBus.emit(EVENTS.SESSION_CLEARED, { timestamp: new Date().toISOString() })
+			} catch (error) {
+				console.warn('Failed to emit session cleared event:', error)
 			}
 
 			// Update local state

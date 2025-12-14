@@ -4,11 +4,11 @@ import SpellCard from './spellCard.jsx'
 import {
 	loadSpellbook,
 	removeSpellFromSpellbook,
-	loadSessionDeck,
-	saveSessionDeck
+	addSpellToSessionDeck
 } from '../utils/localStorage.js'
-import { groupSpellsByLevel, getLevelOrder, addSessionId } from '../utils/spellGrouping.js'
+import { groupSpellsByLevel, getLevelOrder } from '../utils/spellGrouping.js'
 import { validateSpellObject, sanitizeSpellArray } from '../utils/validation.js'
+import eventBus, { EVENTS } from '../utils/eventBus.js'
 
 export default function SpellbookTab() {
 	const [spellbookSpells, setSpellbookSpells] = useState([])
@@ -34,8 +34,21 @@ export default function SpellbookTab() {
 		setLoading(false)
 	}, [])
 
-	// Listen for localStorage changes to refresh spellbook when other tabs add spells
+	// Listen for real-time spellbook updates from other tabs
 	useEffect(() => {
+		const unsubscribeSpellbookUpdated = eventBus.on(EVENTS.SPELLBOOK_UPDATED, (data) => {
+			setSpellbookSpells(sanitizeSpellArray(data.spells || []))
+		})
+
+		const unsubscribeSpellAdded = eventBus.on(EVENTS.SPELL_ADDED_TO_SPELLBOOK, (data) => {
+			setSpellbookSpells(sanitizeSpellArray(data.spells || []))
+		})
+
+		const unsubscribeSpellRemoved = eventBus.on(EVENTS.SPELL_REMOVED_FROM_SPELLBOOK, (data) => {
+			setSpellbookSpells(sanitizeSpellArray(data.spells || []))
+		})
+
+		// Also listen for localStorage changes from other browser tabs
 		const handleStorageChange = (event) => {
 			if (event.key === 'user-spellbook') {
 				loadSpellbookData()
@@ -43,7 +56,11 @@ export default function SpellbookTab() {
 		}
 
 		window.addEventListener('storage', handleStorageChange)
+
 		return () => {
+			unsubscribeSpellbookUpdated()
+			unsubscribeSpellAdded()
+			unsubscribeSpellRemoved()
 			window.removeEventListener('storage', handleStorageChange)
 		}
 	}, [])
@@ -64,10 +81,8 @@ export default function SpellbookTab() {
 		const result = removeSpellFromSpellbook(spell.index)
 
 		if (result.success) {
-			// Reload spellbook data to reflect changes
-			const spellbookData = loadSpellbook()
-			const sanitizedSpells = sanitizeSpellArray(spellbookData.spells || [])
-			setSpellbookSpells(sanitizedSpells)
+			// Update local state immediately (optimistic update)
+			setSpellbookSpells(sanitizeSpellArray(result.spells || []))
 			setError(null)
 		} else {
 			setError(result.message)
@@ -83,35 +98,13 @@ export default function SpellbookTab() {
 			return false
 		}
 
-		try {
-			// Load current session deck
-			const sessionDeckData = loadSessionDeck()
-			const currentSessionSpells = sessionDeckData.spells || []
-
-			// Add sessionId to the spell for session tracking
-			const sessionSpell = addSessionId(spell)
-			if (!sessionSpell) {
-				setError('Failed to prepare spell for session.')
-				return false
-			}
-
-			// Add to session deck
-			const updatedSessionSpells = [...currentSessionSpells, sessionSpell]
-
-			// Save to localStorage
-			const success = saveSessionDeck(updatedSessionSpells)
-			if (!success) {
-				setError('Failed to add spell to session.')
-				return false
-			}
-
+		const result = addSpellToSessionDeck(spell)
+		if (result.success) {
 			setError(null)
-			return true
-		} catch (err) {
-			console.error('Failed to add spell to session:', err)
-			setError('Failed to add spell to session.')
-			return false
+		} else {
+			setError(result.message)
 		}
+		return result.success
 	}
 
 	// Handle spell card actions

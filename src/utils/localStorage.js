@@ -3,6 +3,9 @@
  * Handles three data stores: spellbook, session-deck, daily-spells
  */
 
+import { addSessionId } from './spellGrouping.js'
+import eventBus, { EVENTS } from './eventBus.js'
+
 // Storage keys
 export const STORAGE_KEYS = {
 	SPELLBOOK: 'user-spellbook',
@@ -63,7 +66,19 @@ export const saveSpellbook = (spells) => {
 		spells,
 		lastModified: new Date().toISOString()
 	}
-	return safeSaveToStorage(STORAGE_KEYS.SPELLBOOK, data)
+	const success = safeSaveToStorage(STORAGE_KEYS.SPELLBOOK, data)
+
+	if (success) {
+		// Emit event for real-time updates
+		try {
+			eventBus.emit(EVENTS.SPELLBOOK_UPDATED, { spells, timestamp: data.lastModified })
+		} catch (error) {
+			// Event bus is optional, don't fail if it's not available
+			console.warn('Failed to emit spellbook update event:', error)
+		}
+	}
+
+	return success
 }
 
 /**
@@ -87,7 +102,19 @@ export const saveSessionDeck = (spells) => {
 		spells,
 		lastModified: new Date().toISOString()
 	}
-	return safeSaveToStorage(STORAGE_KEYS.SESSION_DECK, data)
+	const success = safeSaveToStorage(STORAGE_KEYS.SESSION_DECK, data)
+
+	if (success) {
+		// Emit event for real-time updates
+		try {
+			eventBus.emit(EVENTS.SESSION_DECK_UPDATED, { spells, timestamp: data.lastModified })
+		} catch (error) {
+			// Event bus is optional, don't fail if it's not available
+			console.warn('Failed to emit session deck update event:', error)
+		}
+	}
+
+	return success
 }
 
 /**
@@ -115,6 +142,122 @@ export const saveDailySpells = (spells, generatedDate) => {
 		lastModified: new Date().toISOString()
 	}
 	return safeSaveToStorage(STORAGE_KEYS.DAILY_SPELLS, data)
+}
+
+/**
+ * Add spell to session deck with sessionId
+ * @param {Object} spell - Spell object to add
+ * @returns {Object} Result object with success status and message
+ */
+export const addSpellToSessionDeck = (spell) => {
+	console.log('addSpellToSessionDeck: Starting with spell:', spell.name)
+
+	try {
+		console.log('addSpellToSessionDeck: Loading session deck data')
+		const sessionDeckData = loadSessionDeck()
+		const currentSpells = sessionDeckData.spells || []
+		console.log('addSpellToSessionDeck: Current session has', currentSpells.length, 'spells')
+
+		// Add sessionId to the spell
+		console.log('addSpellToSessionDeck: Adding sessionId to spell')
+		const sessionSpell = addSessionId(spell)
+		if (!sessionSpell) {
+			console.error('addSpellToSessionDeck: Failed to add sessionId')
+			return {
+				success: false,
+				message: 'Failed to prepare spell for session.'
+			}
+		}
+		console.log('addSpellToSessionDeck: SessionId added:', sessionSpell.sessionId)
+
+		// Add to session deck
+		const updatedSpells = [...currentSpells, sessionSpell]
+		console.log('addSpellToSessionDeck: Saving', updatedSpells.length, 'spells to session deck')
+		const success = saveSessionDeck(updatedSpells)
+
+		if (success) {
+			console.log('addSpellToSessionDeck: Successfully saved to localStorage')
+
+			// Emit specific event for spell addition to session
+			try {
+				console.log('addSpellToSessionDeck: Emitting SPELL_ADDED_TO_SESSION event')
+				eventBus.emit(EVENTS.SPELL_ADDED_TO_SESSION, {
+					spell: sessionSpell,
+					spells: updatedSpells
+				})
+			} catch (error) {
+				console.warn('Failed to emit spell added to session event:', error)
+			}
+
+			return {
+				success: true,
+				message: `"${spell.name}" added to session.`,
+				spells: updatedSpells,
+				sessionSpell
+			}
+		} else {
+			console.error('addSpellToSessionDeck: Failed to save to localStorage')
+			return {
+				success: false,
+				message: 'Failed to add spell to session.'
+			}
+		}
+	} catch (error) {
+		console.error('addSpellToSessionDeck: Exception occurred:', error)
+		return {
+			success: false,
+			message: 'Failed to add spell to session.'
+		}
+	}
+}
+
+/**
+ * Remove spell from session deck by sessionId
+ * @param {string} sessionId - Session ID of spell to remove
+ * @returns {Object} Result object with success status and message
+ */
+export const removeSpellFromSessionDeck = (sessionId) => {
+	try {
+		const sessionDeckData = loadSessionDeck()
+		const currentSpells = sessionDeckData.spells || []
+
+		// Find the spell being removed
+		const spellToRemove = currentSpells.find((spell) => spell.sessionId === sessionId)
+
+		// Filter out the spell
+		const updatedSpells = currentSpells.filter((spell) => spell.sessionId !== sessionId)
+		const success = saveSessionDeck(updatedSpells)
+
+		if (success) {
+			// Emit specific event for spell burning/removal
+			try {
+				eventBus.emit(EVENTS.SPELL_BURNED_FROM_SESSION, {
+					spell: spellToRemove,
+					sessionId,
+					spells: updatedSpells
+				})
+			} catch (error) {
+				console.warn('Failed to emit spell burned event:', error)
+			}
+
+			return {
+				success: true,
+				message: 'Spell removed from session.',
+				spells: updatedSpells
+			}
+		} else {
+			return {
+				success: false,
+				message: 'Failed to remove spell from session.'
+			}
+		}
+	} catch (error) {
+		console.error('Failed to remove spell from session:', error)
+		return {
+			success: false,
+			message: 'Failed to remove spell from session.'
+		}
+	}
 }
 
 /**
@@ -159,9 +302,17 @@ export const addSpellToSpellbook = (spell) => {
 		const success = saveSpellbook(updatedSpells)
 
 		if (success) {
+			// Emit specific event for spell addition
+			try {
+				eventBus.emit(EVENTS.SPELL_ADDED_TO_SPELLBOOK, { spell, spells: updatedSpells })
+			} catch (error) {
+				console.warn('Failed to emit spell added event:', error)
+			}
+
 			return {
 				success: true,
-				message: `"${spell.name}" added to spellbook.`
+				message: `"${spell.name}" added to spellbook.`,
+				spells: updatedSpells
 			}
 		} else {
 			return {
@@ -188,14 +339,29 @@ export const removeSpellFromSpellbook = (spellIndex) => {
 		const spellbookData = loadSpellbook()
 		const currentSpells = spellbookData.spells || []
 
+		// Find the spell being removed
+		const spellToRemove = currentSpells.find((spell) => spell.index === spellIndex)
+
 		// Filter out the spell
 		const updatedSpells = currentSpells.filter((spell) => spell.index !== spellIndex)
 		const success = saveSpellbook(updatedSpells)
 
 		if (success) {
+			// Emit specific event for spell removal
+			try {
+				eventBus.emit(EVENTS.SPELL_REMOVED_FROM_SPELLBOOK, {
+					spell: spellToRemove,
+					spellIndex,
+					spells: updatedSpells
+				})
+			} catch (error) {
+				console.warn('Failed to emit spell removed event:', error)
+			}
+
 			return {
 				success: true,
-				message: 'Spell removed from spellbook.'
+				message: 'Spell removed from spellbook.',
+				spells: updatedSpells
 			}
 		} else {
 			return {
@@ -214,14 +380,20 @@ export const removeSpellFromSpellbook = (spellIndex) => {
 
 /**
  * Initialize localStorage with empty data structures if they don't exist
+ * Also handles migration from old data formats
  * @returns {Object} Status of initialization for each store
  */
 export const initializeLocalStorage = () => {
 	const results = {
 		spellbook: false,
 		sessionDeck: false,
-		dailySpells: false
+		dailySpells: false,
+		migration: null
 	}
+
+	// Migration is handled separately to avoid circular dependencies
+	// Components should call runCompleteMigration() before initializeLocalStorage()
+	results.migration = { success: true, summary: 'Migration should be run separately' }
 
 	// Initialize spellbook if it doesn't exist
 	const spellbook = loadSpellbook()
@@ -231,7 +403,7 @@ export const initializeLocalStorage = () => {
 		results.spellbook = true
 	}
 
-	// Initialize session deck if it doesn't exist
+	// Initialize session deck if it doesn't exist (migration may have already handled this)
 	const sessionDeck = loadSessionDeck()
 	if (!sessionDeck.spells || !Array.isArray(sessionDeck.spells)) {
 		results.sessionDeck = saveSessionDeck([])

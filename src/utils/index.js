@@ -15,6 +15,10 @@ export {
 	loadDailySpells,
 	saveDailySpells,
 	clearAllSpellData,
+	addSpellToSpellbook,
+	removeSpellFromSpellbook,
+	addSpellToSessionDeck,
+	removeSpellFromSessionDeck,
 	initializeLocalStorage
 } from './localStorage.js'
 
@@ -48,3 +52,17 @@ export {
 	addSessionId,
 	removeSessionId
 } from './spellGrouping.js'
+
+// Migration utilities
+export {
+	migrateSessionData,
+	cleanupLegacyData,
+	runCompleteMigration,
+	isMigrationNeeded
+} from './migration.js'
+
+// Event bus utilities
+export { default as eventBus, EVENTS } from './eventBus.js'
+
+// API utilities
+export { getAllSpellIndexes, getSpellsByIndexes } from '../api.js'

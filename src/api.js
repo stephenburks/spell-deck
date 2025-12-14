@@ -3,26 +3,6 @@ const BASE_URL = 'https://www.dnd5eapi.co'
 // Helper function to add delay between requests
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-// Helper function to process spells in batches (KEEP - still needed)
-async function fetchSpellsBatch(spellIndexes, batchSize = 10, delayMs = 1000) {
-	const results = []
-
-	for (let i = 0; i < spellIndexes.length; i += batchSize) {
-		const batch = spellIndexes.slice(i, i + batchSize)
-		const batchResults = await Promise.all(
-			batch.map((index) => fetch(BASE_URL + index.url).then((response) => response.json()))
-		)
-
-		results.push(...batchResults)
-
-		if (i + batchSize < spellIndexes.length) {
-			await delay(delayMs)
-		}
-	}
-
-	return results
-}
-
 // KEEP - still needed by getSpellCastingClasses
 export async function getAllClasses() {
 	const response = await fetch(`${BASE_URL}/api/2014/classes`)
@@ -82,23 +62,6 @@ export async function getSpellIndexesByClass() {
 	return spellsByClass
 }
 
-// NEW - for lazy loading spell details
-export async function getSpellDetailsForClass(className, spellIds) {
-	if (!spellIds || spellIds.length === 0) {
-		return []
-	}
-
-	console.log(`Fetching ${spellIds.length} spells for ${className}...`)
-
-	const spellUrls = spellIds.map((id) => ({ url: `/api/2014/spells/${id}` }))
-	const spellDetails = await fetchSpellsBatch(spellUrls, 10, 500)
-
-	const sortedSpells = spellDetails.sort((a, b) => a.name.localeCompare(b.name))
-
-	console.log(`Loaded ${spellDetails.length} spells for ${className}`)
-	return sortedSpells
-}
-
 // New function to fetch all spells from the complete database
 export async function getAllSpellDetails() {
 	try {
@@ -131,7 +94,7 @@ export async function getAllSpellDetails() {
 
 		console.log(`Fetching ${spellUrls.length} unique spells...`)
 
-		// Use existing fetchSpellsBatch function with better error handling
+		// Fetch spells in batches with better error handling
 		const allSpells = []
 		const failedSpells = []
 		const batchSize = 10
@@ -210,46 +173,96 @@ function validateSpellObject(spell) {
 	)
 }
 
-// Add this new function to api.js
-export async function getSpellDetailsProgressively(className, spellIds, onBatchComplete) {
-	if (!spellIds || spellIds.length === 0) {
-		return []
-	}
+// Get all spell indexes without fetching full spell details (lightweight)
+export async function getAllSpellIndexes() {
+	try {
+		const spellsByClass = await getSpellIndexesByClass()
 
-	console.log(`Starting progressive fetch of ${spellIds.length} spells for ${className}...`)
+		if (!spellsByClass || typeof spellsByClass !== 'object') {
+			throw new Error('Failed to fetch spell structure from API')
+		}
 
-	const spellUrls = spellIds.map((id) => ({ url: `/api/2014/spells/${id}` }))
-	const batchSize = 10
-	const delayMs = 500
-
-	for (let i = 0; i < spellUrls.length; i += batchSize) {
-		const batch = spellUrls.slice(i, i + batchSize)
-		const batchResults = await Promise.all(
-			batch.map((index) => fetch(BASE_URL + index.url).then((response) => response.json()))
-		)
-
-		// Sort this batch alphabetically
-		const sortedBatch = batchResults.sort((a, b) => a.name.localeCompare(b.name))
-
-		// Calculate progress info
-		const isLastBatch = i + batchSize >= spellUrls.length
-		const totalLoaded = Math.min(i + batchSize, spellUrls.length)
-
-		// Call the callback with batch data and progress info
-		onBatchComplete({
-			spells: sortedBatch,
-			isComplete: isLastBatch,
-			progress: {
-				loaded: totalLoaded,
-				total: spellUrls.length,
-				percentage: Math.round((totalLoaded / spellUrls.length) * 100)
+		// Collect all unique spell indexes
+		const allSpellIndexes = new Set()
+		Object.values(spellsByClass).forEach((spellIds) => {
+			if (Array.isArray(spellIds)) {
+				spellIds.forEach((id) => {
+					if (typeof id === 'string' && id.trim()) {
+						allSpellIndexes.add(id.trim())
+					}
+				})
 			}
 		})
 
-		// Add delay between batches (except for the last one)
-		if (!isLastBatch) {
-			await delay(delayMs)
+		return Array.from(allSpellIndexes)
+	} catch (error) {
+		console.error('getAllSpellIndexes failed:', error)
+		throw error
+	}
+}
+
+// Fetch specific spells by their indexes (for daily spells)
+export async function getSpellsByIndexes(spellIndexes) {
+	if (!Array.isArray(spellIndexes) || spellIndexes.length === 0) {
+		return []
+	}
+
+	try {
+		const spells = []
+		const failedSpells = []
+		const batchSize = 5 // Smaller batches for daily spells
+		const delayMs = 300
+
+		for (let i = 0; i < spellIndexes.length; i += batchSize) {
+			const batch = spellIndexes.slice(i, i + batchSize)
+
+			try {
+				const batchResults = await Promise.allSettled(
+					batch.map((index) =>
+						fetch(`${BASE_URL}/api/2014/spells/${index}`).then((response) => {
+							if (!response.ok) {
+								throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+							}
+							return response.json()
+						})
+					)
+				)
+
+				// Process batch results
+				batchResults.forEach((result, batchIndex) => {
+					if (result.status === 'fulfilled') {
+						const spell = result.value
+						if (validateSpellObject(spell)) {
+							spells.push(spell)
+						} else {
+							console.warn(`Invalid spell object:`, spell)
+							failedSpells.push(batch[batchIndex])
+						}
+					} else {
+						console.warn(`Failed to fetch spell ${batch[batchIndex]}:`, result.reason)
+						failedSpells.push(batch[batchIndex])
+					}
+				})
+
+				// Add delay between batches (except for the last one)
+				if (i + batchSize < spellIndexes.length) {
+					await delay(delayMs)
+				}
+			} catch (error) {
+				console.error(`Batch fetch failed:`, error)
+				failedSpells.push(...batch)
+			}
 		}
+
+		if (failedSpells.length > 0) {
+			console.warn(`Failed to fetch ${failedSpells.length} spells:`, failedSpells)
+		}
+
+		console.log(`Successfully loaded ${spells.length} spells (${failedSpells.length} failed)`)
+		return spells
+	} catch (error) {
+		console.error('getSpellsByIndexes failed:', error)
+		throw error
 	}
 }
 

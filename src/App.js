@@ -1,7 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
-import { SpellProvider } from './data/context/spellDataContext'
-import SpellDeck from './components/spellDeck'
+import SpellInterface from './components/SpellInterface'
 import './css/style.css'
 
 const queryClient = new QueryClient({
@@ -19,11 +18,9 @@ export default function App() {
 	return (
 		<ChakraProvider value={defaultSystem}>
 			<QueryClientProvider client={queryClient}>
-				<SpellProvider>
-					<div className="app-container">
-						<SpellDeck />
-					</div>
-				</SpellProvider>
+				<div className="app-container">
+					<SpellInterface />
+				</div>
 			</QueryClientProvider>
 		</ChakraProvider>
 	)

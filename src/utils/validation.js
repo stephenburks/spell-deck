@@ -261,7 +261,8 @@ export const sanitizeSpellObject = (spell) => {
 		'school',
 		'classes',
 		'subclasses',
-		'url'
+		'url',
+		'sessionId' // For session deck spells
 	]
 
 	optionalFields.forEach((field) => {

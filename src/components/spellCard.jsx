@@ -12,9 +12,19 @@ const createBadgeCopy = (spell) => {
 	return badges.join(' ')
 }
 
-export default function SpellCard({ spell }) {
+export default function SpellCard({ spell, currentClass }) {
 	const badgeText = useMemo(() => createBadgeCopy(spell), [spell])
-	const spellClass = useMemo(() => spell.classes[0], [spell])
+
+	const spellClass = useMemo(() => {
+		if (currentClass) {
+			// Find the matching class object from the spell's classes array
+			const matchingClass = spell.classes.find(
+				(cls) => cls.name.toLowerCase() === currentClass.toLowerCase()
+			)
+			return matchingClass || spell.classes[0] // Fallback to first if not found
+		}
+		return spell.classes[0]
+	}, [spell, currentClass])
 
 	return (
 		<div className={`spell-card__container spell-card__container-` + spellClass.index}>
@@ -71,7 +81,9 @@ export default function SpellCard({ spell }) {
 						<div className="spell-card__level">
 							<Tooltip content="Spell Level" interactive>
 								<Stat.Root>
-									<Stat.ValueText>{spell.level}</Stat.ValueText>
+									<Stat.ValueText>
+										{spell.level === 0 ? 'C' : spell.level}
+									</Stat.ValueText>
 								</Stat.Root>
 							</Tooltip>
 						</div>

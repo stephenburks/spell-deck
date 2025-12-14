@@ -38,6 +38,22 @@ export default function SearchableSpellList({ spells, className, loading, progre
 		filteredCount: filteredSpells?.length
 	})
 
+	// In your SearchableSpellList component, add this:
+	useEffect(() => {
+		console.log('=== SEARCH DATA DEBUG ===')
+		console.log('Spells count:', spells?.length)
+		console.log('Is complete:', isComplete)
+		console.log('Loading:', loading)
+		console.log('Search term:', debouncedSearchTerm)
+		console.log('Filtered results:', filteredSpells?.length)
+
+		if (spells?.length > 0) {
+			const spellNames = spells.map((s) => s.name).sort()
+			console.log('Available spell names:', spellNames)
+			console.log('Last spell alphabetically:', spellNames[spellNames.length - 1])
+		}
+	}, [spells, isComplete, loading, debouncedSearchTerm, filteredSpells])
+
 	const handleInputChange = useCallback((e) => {
 		setSearchTerm(e.target.value)
 	}, [])
@@ -90,7 +106,7 @@ export default function SearchableSpellList({ spells, className, loading, progre
 					)}
 
 				{filteredSpells.map((spell) => (
-					<SpellCard key={spell.index} spell={spell} />
+					<SpellCard key={spell.index} spell={spell} currentClass={className} />
 				))}
 			</div>
 		</div>

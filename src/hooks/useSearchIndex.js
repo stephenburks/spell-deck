@@ -37,28 +37,49 @@ export function useSpellSearchIndex(spells) {
 }
 
 export function useSpellSearch(spells, searchTerm) {
-	const searchIndex = useSpellSearchIndex(spells)
-
 	return useMemo(() => {
-		// Return all spells if no search term
-		if (!searchTerm?.trim() || !searchIndex) {
+		if (!searchTerm?.trim() || !spells?.length) {
 			return spells || []
 		}
 
 		const term = searchTerm.trim()
-
-		// Don't search with very short terms to avoid too many results
 		if (term.length < 2) {
 			return []
 		}
 
-		// Perform the search
-		const searchResults = searchIndex.fuse.search(term)
+		const fuseOptions = {
+			keys: [
+				{ name: 'name', weight: 0.4 },
+				{ name: 'school.name', weight: 0.2 },
+				{ name: 'level', weight: 0.15 },
+				{ name: 'casting_time', weight: 0.1 },
+				{ name: 'desc', weight: 0.15 },
+				// Add computed field for level/cantrip searching
+				{
+					name: 'searchableLevel',
+					weight: 0.2,
+					getFn: (spell) => {
+						if (spell.level === 0) {
+							return 'cantrip 0 level0' // Multiple search terms for level 0
+						}
+						return `level${spell.level} ${spell.level}` // "level1 1", "level2 2", etc.
+					}
+				}
+			],
+			threshold: 0.3,
+			includeScore: true,
+			minMatchCharLength: 2,
+			ignoreLocation: true,
+			findAllMatches: true,
+			useExtendedSearch: false
+		}
 
-		// Extract the spell objects and sort by relevance score (lower score = better match)
+		const fuse = new Fuse(spells, fuseOptions)
+		const searchResults = fuse.search(term)
+
 		return searchResults
 			.sort((a, b) => a.score - b.score)
 			.map((result) => result.item)
-			.slice(0, 50) // Limit results to prevent UI overload
-	}, [spells, searchTerm, searchIndex])
+			.slice(0, 50)
+	}, [spells, searchTerm])
 }

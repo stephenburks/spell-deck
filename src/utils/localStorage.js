@@ -134,6 +134,85 @@ export const clearAllSpellData = () => {
 }
 
 /**
+ * Add spell to spellbook with duplicate prevention
+ * @param {Object} spell - Spell object to add
+ * @returns {Object} Result object with success status and message
+ */
+export const addSpellToSpellbook = (spell) => {
+	try {
+		const spellbookData = loadSpellbook()
+		const currentSpells = spellbookData.spells || []
+
+		// Check for duplicates
+		const isDuplicate = currentSpells.some(
+			(existingSpell) => existingSpell.index === spell.index
+		)
+		if (isDuplicate) {
+			return {
+				success: false,
+				message: `"${spell.name}" is already in your spellbook.`
+			}
+		}
+
+		// Add spell and save
+		const updatedSpells = [...currentSpells, spell]
+		const success = saveSpellbook(updatedSpells)
+
+		if (success) {
+			return {
+				success: true,
+				message: `"${spell.name}" added to spellbook.`
+			}
+		} else {
+			return {
+				success: false,
+				message: 'Failed to save spellbook changes.'
+			}
+		}
+	} catch (error) {
+		console.error('Failed to add spell to spellbook:', error)
+		return {
+			success: false,
+			message: 'Failed to add spell to spellbook.'
+		}
+	}
+}
+
+/**
+ * Remove spell from spellbook
+ * @param {string} spellIndex - Index of spell to remove
+ * @returns {Object} Result object with success status and message
+ */
+export const removeSpellFromSpellbook = (spellIndex) => {
+	try {
+		const spellbookData = loadSpellbook()
+		const currentSpells = spellbookData.spells || []
+
+		// Filter out the spell
+		const updatedSpells = currentSpells.filter((spell) => spell.index !== spellIndex)
+		const success = saveSpellbook(updatedSpells)
+
+		if (success) {
+			return {
+				success: true,
+				message: 'Spell removed from spellbook.'
+			}
+		} else {
+			return {
+				success: false,
+				message: 'Failed to save spellbook changes.'
+			}
+		}
+	} catch (error) {
+		console.error('Failed to remove spell from spellbook:', error)
+		return {
+			success: false,
+			message: 'Failed to remove spell from spellbook.'
+		}
+	}
+}
+
+/**
  * Initialize localStorage with empty data structures if they don't exist
  * @returns {Object} Status of initialization for each store
  */

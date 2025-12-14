@@ -825,3 +825,74 @@ span.chakra-badge {
 		transform: rotateX(360deg) rotateY(0deg) rotateZ(-360deg);
 	}
 }
+/* Enhanced SpellCard Context-Aware Styles */
+.spell-card__container--cantrip {
+	position: relative;
+}
+
+.spell-card__container--cantrip::before {
+	content: '';
+	position: absolute;
+	top: -2px;
+	left: -2px;
+	right: -2px;
+	bottom: -2px;
+	background: linear-gradient(45deg, #48bb78, #38a169, #2f855a);
+	border-radius: 1rem;
+	z-index: -1;
+	animation: cantrip-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes cantrip-glow {
+	0% {
+		box-shadow: 0 0 5px rgba(72, 187, 120, 0.5);
+	}
+	100% {
+		box-shadow:
+			0 0 20px rgba(72, 187, 120, 0.8),
+			0 0 30px rgba(72, 187, 120, 0.6);
+	}
+}
+
+.spell-card__cantrip-indicator {
+	display: flex;
+	align-items: center;
+	margin-left: auto;
+}
+
+.spell-card__actions {
+	display: flex;
+	align-items: center;
+	margin-left: auto;
+	gap: 0.5rem;
+}
+
+.chakra-card__footer {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5rem;
+	min-height: 3rem;
+	max-height: none;
+}
+
+.spell-card__actions .chakra-button {
+	font-size: 0.75rem;
+	padding: 0.25rem 0.5rem;
+	height: auto;
+	min-height: 1.5rem;
+}
+
+@media (max-width: 480px) {
+	.chakra-card__footer {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0.25rem;
+	}
+
+	.spell-card__actions {
+		margin-left: 0;
+		justify-content: center;
+	}
+}

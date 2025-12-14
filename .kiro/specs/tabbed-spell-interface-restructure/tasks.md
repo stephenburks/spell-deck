@@ -7,7 +7,7 @@
     - Create spell grouping utilities for level-based organization (Cantrips, Level 1-9)
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 7.4_
 
-- [ ]   2. Create enhanced SpellCard component with context-aware actions
+- [x]   2. Create enhanced SpellCard component with context-aware actions
     - Modify existing SpellCard component to accept context prop and dynamic action callbacks
     - Implement context-specific action buttons (daily, spellbook, session, deck contexts)
     - Add visual differentiation for cantrips vs leveled spells in session context

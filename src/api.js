@@ -3,40 +3,14 @@ const BASE_URL = 'https://www.dnd5eapi.co'
 // Helper function to add delay between requests
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-// Helper function to process spells in batches
-async function fetchSpellsBatch(spellIndexes, batchSize = 10, delayMs = 1000) {
-	const results = []
-
-	for (let i = 0; i < spellIndexes.length; i += batchSize) {
-		const batch = spellIndexes.slice(i, i + batchSize)
-		const batchResults = await Promise.all(
-			batch.map((index) => fetch(BASE_URL + index.url).then((response) => response.json()))
-		)
-
-		results.push(...batchResults)
-
-		if (i + batchSize < spellIndexes.length) {
-			await delay(delayMs) // Add delay between batches
-		}
-	}
-
-	return results
-}
-
-export async function getAllSpells() {
-	const response = await fetch(`${BASE_URL}/api/2014/spells`)
-	const spellIndexes = await response.json()
-
-	return fetchSpellsBatch(spellIndexes.results, 5, 2000) // 5 spells every 2 seconds
-}
-
+// KEEP - still needed by getSpellCastingClasses
 export async function getAllClasses() {
 	const response = await fetch(`${BASE_URL}/api/2014/classes`)
 	const classIndexes = await response.json()
-
 	return classIndexes.results
 }
 
+// KEEP - still needed by getSpellIndexesByClass
 export async function getSpellCastingClasses() {
 	const allClasses = await getAllClasses()
 	const spellClasses = []
@@ -60,33 +34,239 @@ export async function getSpellCastingClasses() {
 	return spellClasses
 }
 
-export async function getSpellsByClass(spellsObject) {
+// NEW - replaces the old approach
+export async function getSpellIndexesByClass() {
 	const spellCastingClasses = await getSpellCastingClasses()
-	const allSpells = JSON.parse(spellsObject)
-	const spellsByClass = []
+	const spellsByClass = {}
 
-	spellCastingClasses.forEach((spellClass) => {
-		spellsByClass[spellClass] = []
-	})
-
-	// Process each spell once
-	allSpells.forEach((spell) => {
-		// Create trimmed spell without subclasses
-		const { subclasses, ...spellWithoutSubclasses } = spell
-
-		// Add spell to each of its classes
-		spell.classes.forEach((cls) => {
-			if (spellsByClass[cls.name]) {
-				spellsByClass[cls.name].push({
-					...spellWithoutSubclasses,
-					classes: [cls] // Only include this specific class
-				})
+	await Promise.all(
+		spellCastingClasses.map(async (className) => {
+			try {
+				const response = await fetch(
+					`${BASE_URL}/api/2014/classes/${className.toLowerCase()}/spells`
+				)
+				if (response.ok) {
+					const classSpells = await response.json()
+					spellsByClass[className] = classSpells.results.map((spell) => spell.index)
+				} else {
+					console.warn(`No spells found for class: ${className}`)
+					spellsByClass[className] = []
+				}
+			} catch (error) {
+				console.warn(`Failed to fetch spells for ${className}:`, error)
+				spellsByClass[className] = []
 			}
 		})
-	})
+	)
 
 	return spellsByClass
 }
+
+// New function to fetch all spells from the complete database
+export async function getAllSpellDetails() {
+	try {
+		// Get spell indexes by class
+		const spellsByClass = await getSpellIndexesByClass()
+
+		if (!spellsByClass || typeof spellsByClass !== 'object') {
+			throw new Error('Failed to fetch spell structure from API')
+		}
+
+		// Collect all unique spell indexes
+		const allSpellIndexes = new Set()
+		Object.values(spellsByClass).forEach((spellIds) => {
+			if (Array.isArray(spellIds)) {
+				spellIds.forEach((id) => {
+					if (typeof id === 'string' && id.trim()) {
+						allSpellIndexes.add(id.trim())
+					}
+				})
+			}
+		})
+
+		if (allSpellIndexes.size === 0) {
+			throw new Error('No spell indexes found in API response')
+		}
+
+		// Convert to array and create URL objects for fetchSpellsBatch
+		const spellIndexArray = Array.from(allSpellIndexes)
+		const spellUrls = spellIndexArray.map((index) => ({ url: `/api/2014/spells/${index}` }))
+
+		console.log(`Fetching ${spellUrls.length} unique spells...`)
+
+		// Fetch spells in batches with better error handling
+		const allSpells = []
+		const failedSpells = []
+		const batchSize = 10
+		const delayMs = 500
+
+		for (let i = 0; i < spellUrls.length; i += batchSize) {
+			const batch = spellUrls.slice(i, i + batchSize)
+
+			try {
+				const batchResults = await Promise.allSettled(
+					batch.map((index) =>
+						fetch(BASE_URL + index.url).then((response) => {
+							if (!response.ok) {
+								throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+							}
+							return response.json()
+						})
+					)
+				)
+
+				// Process batch results
+				batchResults.forEach((result, batchIndex) => {
+					if (result.status === 'fulfilled') {
+						const spell = result.value
+						if (validateSpellObject(spell)) {
+							allSpells.push(spell)
+						} else {
+							console.warn(`Invalid spell object:`, spell)
+							failedSpells.push(batch[batchIndex].url)
+						}
+					} else {
+						console.warn(
+							`Failed to fetch spell ${batch[batchIndex].url}:`,
+							result.reason
+						)
+						failedSpells.push(batch[batchIndex].url)
+					}
+				})
+
+				// Add delay between batches (except for the last one)
+				if (i + batchSize < spellUrls.length) {
+					await delay(delayMs)
+				}
+			} catch (error) {
+				console.error(`Batch fetch failed:`, error)
+				failedSpells.push(...batch.map((b) => b.url))
+			}
+		}
+
+		if (failedSpells.length > 0) {
+			console.warn(`Failed to fetch ${failedSpells.length} spells:`, failedSpells)
+		}
+
+		// Sort alphabetically by name
+		const sortedSpells = allSpells.sort((a, b) => a.name.localeCompare(b.name))
+
+		console.log(
+			`Successfully loaded ${sortedSpells.length} spells (${failedSpells.length} failed)`
+		)
+		return sortedSpells
+	} catch (error) {
+		console.error('getAllSpellDetails failed:', error)
+		throw error
+	}
+}
+
+// Helper function to validate spell objects
+function validateSpellObject(spell) {
+	return (
+		spell &&
+		typeof spell.index === 'string' &&
+		typeof spell.name === 'string' &&
+		typeof spell.level === 'number' &&
+		spell.level >= 0 &&
+		spell.level <= 9
+	)
+}
+
+// Get all spell indexes without fetching full spell details (lightweight)
+export async function getAllSpellIndexes() {
+	try {
+		const spellsByClass = await getSpellIndexesByClass()
+
+		if (!spellsByClass || typeof spellsByClass !== 'object') {
+			throw new Error('Failed to fetch spell structure from API')
+		}
+
+		// Collect all unique spell indexes
+		const allSpellIndexes = new Set()
+		Object.values(spellsByClass).forEach((spellIds) => {
+			if (Array.isArray(spellIds)) {
+				spellIds.forEach((id) => {
+					if (typeof id === 'string' && id.trim()) {
+						allSpellIndexes.add(id.trim())
+					}
+				})
+			}
+		})
+
+		return Array.from(allSpellIndexes)
+	} catch (error) {
+		console.error('getAllSpellIndexes failed:', error)
+		throw error
+	}
+}
+
+// Fetch specific spells by their indexes (for daily spells)
+export async function getSpellsByIndexes(spellIndexes) {
+	if (!Array.isArray(spellIndexes) || spellIndexes.length === 0) {
+		return []
+	}
+
+	try {
+		const spells = []
+		const failedSpells = []
+		const batchSize = 5 // Smaller batches for daily spells
+		const delayMs = 300
+
+		for (let i = 0; i < spellIndexes.length; i += batchSize) {
+			const batch = spellIndexes.slice(i, i + batchSize)
+
+			try {
+				const batchResults = await Promise.allSettled(
+					batch.map((index) =>
+						fetch(`${BASE_URL}/api/2014/spells/${index}`).then((response) => {
+							if (!response.ok) {
+								throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+							}
+							return response.json()
+						})
+					)
+				)
+
+				// Process batch results
+				batchResults.forEach((result, batchIndex) => {
+					if (result.status === 'fulfilled') {
+						const spell = result.value
+						if (validateSpellObject(spell)) {
+							spells.push(spell)
+						} else {
+							console.warn(`Invalid spell object:`, spell)
+							failedSpells.push(batch[batchIndex])
+						}
+					} else {
+						console.warn(`Failed to fetch spell ${batch[batchIndex]}:`, result.reason)
+						failedSpells.push(batch[batchIndex])
+					}
+				})
+
+				// Add delay between batches (except for the last one)
+				if (i + batchSize < spellIndexes.length) {
+					await delay(delayMs)
+				}
+			} catch (error) {
+				console.error(`Batch fetch failed:`, error)
+				failedSpells.push(...batch)
+			}
+		}
+
+		if (failedSpells.length > 0) {
+			console.warn(`Failed to fetch ${failedSpells.length} spells:`, failedSpells)
+		}
+
+		console.log(`Successfully loaded ${spells.length} spells (${failedSpells.length} failed)`)
+		return spells
+	} catch (error) {
+		console.error('getSpellsByIndexes failed:', error)
+		throw error
+	}
+}
+
+// getAllSpellDetails is already exported above
 
 // const sampleSpellObject = {
 // 	index: 'acid-arrow',

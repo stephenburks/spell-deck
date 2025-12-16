@@ -11,13 +11,15 @@ import {
 	Button,
 	Flex,
 	Wrap,
-	WrapItem
+	WrapItem,
+	SimpleGrid
 } from '@chakra-ui/react'
 import SpellCard from './spellCard.jsx'
 import Loading from './loading.jsx'
 import { useAllSpells } from '../hooks/useAllSpells.js'
 import { addSpellToSpellbook, addSpellToSessionDeck } from '../utils/localStorage.js'
 import { validateSpellObject } from '../utils/validation.js'
+import { useSpellSearch } from '../hooks/useSearchIndex.js'
 
 // Custom hook for debouncing search input
 function useDebounce(value, delay) {
@@ -86,11 +88,15 @@ export default function SpellDeckTab() {
 		}
 	}, [spells])
 
+	// Use Fuse.js for fast search (only when there's a search term)
+	const searchResults = useSpellSearch(spells, debouncedSearchTerm)
+
 	// Apply filters and search
 	const filteredSpells = useMemo(() => {
 		if (!spells || spells.length === 0) return []
 
-		let filtered = spells
+		// Start with search results if there's a search term, otherwise use all spells
+		let filtered = debouncedSearchTerm.trim() ? searchResults : spells
 
 		// Apply class filters
 		if (selectedClasses.length > 0) {
@@ -113,26 +119,25 @@ export default function SpellDeckTab() {
 			})
 		}
 
-		// Apply search term (search within filtered results)
-		if (debouncedSearchTerm.trim()) {
-			const searchLower = debouncedSearchTerm.toLowerCase().trim()
-			filtered = filtered.filter((spell) => {
-				// Search in spell name
-				if (spell.name && spell.name.toLowerCase().includes(searchLower)) {
-					return true
-				}
-
-				// Search in spell description
-				if (spell.desc && Array.isArray(spell.desc)) {
-					return spell.desc.some((desc) => desc.toLowerCase().includes(searchLower))
-				}
-
-				return false
-			})
+		// Limit results for performance (show first 100 when no search term)
+		if (
+			!debouncedSearchTerm.trim() &&
+			selectedClasses.length === 0 &&
+			selectedLevels.length === 0 &&
+			selectedSchools.length === 0
+		) {
+			return filtered.slice(0, 100)
 		}
 
 		return filtered
-	}, [spells, selectedClasses, selectedLevels, selectedSchools, debouncedSearchTerm])
+	}, [
+		spells,
+		searchResults,
+		selectedClasses,
+		selectedLevels,
+		selectedSchools,
+		debouncedSearchTerm
+	])
 
 	// Handle filter changes
 	const handleClassFilter = useCallback((className) => {
@@ -392,6 +397,16 @@ export default function SpellDeckTab() {
 					<Flex justify="space-between" align="center">
 						<Text fontSize="sm" color="gray.600">
 							Showing {filteredSpells.length} of {spellCount} spells
+							{!debouncedSearchTerm.trim() &&
+								selectedClasses.length === 0 &&
+								selectedLevels.length === 0 &&
+								selectedSchools.length === 0 &&
+								filteredSpells.length === 100 && (
+									<Text as="span" fontSize="xs" color="gray.500" ml={2}>
+										(limited to first 100 for performance - use search or
+										filters to narrow results)
+									</Text>
+								)}
 						</Text>
 						{(selectedClasses.length > 0 ||
 							selectedLevels.length > 0 ||
@@ -442,7 +457,10 @@ export default function SpellDeckTab() {
 
 				{/* Spell Results */}
 				{filteredSpells.length > 0 && (
-					<VStack spacing={4} align="stretch">
+					<SimpleGrid
+						columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
+						className="spell-list-container"
+						spacing={3}>
 						{filteredSpells.map((spell) => (
 							<SpellCard
 								key={spell.index}
@@ -451,7 +469,7 @@ export default function SpellDeckTab() {
 								onAction={handleSpellAction}
 							/>
 						))}
-					</VStack>
+					</SimpleGrid>
 				)}
 			</VStack>
 		</Box>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Box, Heading, Text, VStack, Alert } from '@chakra-ui/react'
+import { Box, Heading, Text, VStack, Alert, SimpleGrid } from '@chakra-ui/react'
 import SpellCard from './spellCard.jsx'
 import {
 	loadSpellbook,
@@ -181,7 +181,10 @@ export default function SpellbookTab() {
 						<Heading as="h3" size="md" mb={4} color="blue.600">
 							{level} ({groupedSpells[level].length})
 						</Heading>
-						<VStack spacing={4} align="stretch">
+						<SimpleGrid
+							columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
+							className="spell-list-container"
+							spacing={3}>
 							{groupedSpells[level].map((spell) => (
 								<SpellCard
 									key={spell.index}
@@ -190,7 +193,7 @@ export default function SpellbookTab() {
 									onAction={handleSpellAction}
 								/>
 							))}
-						</VStack>
+						</SimpleGrid>
 					</Box>
 				))}
 			</VStack>

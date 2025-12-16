@@ -4,6 +4,13 @@ import { Tooltip } from './ui/tooltip.jsx'
 import { Description } from './card-features/description.jsx'
 import { renderIcon } from './utilityComponents.jsx'
 
+// Helper function to render class icons
+const renderClassIcon = (className) => {
+	const classKey = className.toLowerCase()
+
+	return <div className={`class-icon class-icon--${classKey}`} aria-label={className} />
+}
+
 const createBadgeCopy = (spell) => {
 	const badges = []
 	if (spell.level > 0) badges.push(`Spell Level ${spell.level}`)
@@ -43,27 +50,60 @@ export default function SpellCard({
 		switch (context) {
 			case 'daily':
 				return [
-					{ label: 'Add to Spellbook', action: 'addToSpellbook', variant: 'outline' },
-					{ label: 'Add to Session', action: 'addToSession', variant: 'solid' }
+					{
+						label: 'Add to Spellbook',
+						action: 'addToSpellbook',
+						copy: '+ Spellbook',
+						variant: 'surface'
+					},
+					{
+						label: 'Add to Session',
+						action: 'addToSession',
+						copy: '+ Session',
+						variant: 'solid'
+					}
 				]
 			case 'spellbook':
 				return [
 					{
 						label: 'Remove from Spellbook',
 						action: 'removeFromSpellbook',
-						variant: 'outline'
+						copy: 'Remove Spell',
+						variant: 'surface'
 					},
-					{ label: 'Add to Session', action: 'addToSession', variant: 'solid' }
+					{
+						label: 'Add to Session',
+						action: 'addToSession',
+						copy: '+ Session',
+						variant: 'solid'
+					}
 				]
 			case 'session':
 				if (spellIsCantrip || isCantrip) {
 					return [] // Cantrips have no burn action, just visual indicator
 				}
-				return [{ label: 'Burn Spell', action: 'burnSpell', variant: 'outline' }]
+				return [
+					{
+						label: 'Burn Spell',
+						action: 'burnSpell',
+						copy: 'Burn Spell',
+						variant: 'surface'
+					}
+				]
 			case 'deck':
 				return [
-					{ label: 'Add to Spellbook', action: 'addToSpellbook', variant: 'outline' },
-					{ label: 'Add to Session', action: 'addToSession', variant: 'solid' }
+					{
+						label: 'Add to Spellbook',
+						action: 'addToSpellbook',
+						copy: '+ Spellbook',
+						variant: 'surface'
+					},
+					{
+						label: 'Add to Session',
+						action: 'addToSession',
+						copy: '+ Session',
+						variant: 'solid'
+					}
 				]
 			default:
 				return []
@@ -99,6 +139,16 @@ export default function SpellCard({
 							</div>
 						</Tooltip>
 					)}
+
+					<div className="spell-card__level">
+						<Tooltip content="Spell Level" interactive>
+							<Stat.Root>
+								<Stat.ValueText>
+									{spell.level === 0 ? 'C' : spell.level}
+								</Stat.ValueText>
+							</Stat.Root>
+						</Tooltip>
+					</div>
 
 					<Card.Header>
 						<Heading as="h2" size="md">
@@ -140,7 +190,7 @@ export default function SpellCard({
 						<Description spell={spell} />
 					</Card.Body>
 					<Card.Footer>
-						<div className="spell-card__level">
+						{/* <div className="spell-card__level">
 							<Tooltip content="Spell Level" interactive>
 								<Stat.Root>
 									<Stat.ValueText>
@@ -148,15 +198,24 @@ export default function SpellCard({
 									</Stat.ValueText>
 								</Stat.Root>
 							</Tooltip>
-						</div>
+						</div> */}
 						<div className="spell-card__classes">
-							<Tooltip
-								key={spellClass.index}
-								content={'Spell Class: ' + spellClass.name}>
+							{spell.classes && spell.classes.length > 0 ? (
+								spell.classes.map((classItem, index) => (
+									<Tooltip
+										key={classItem.index || index}
+										content={`Spell Class: ${classItem.name}`}>
+										<div
+											className={`class-icon-container class-icon-container--${classItem.name.toLowerCase()}`}>
+											{renderClassIcon(classItem.name)}
+										</div>
+									</Tooltip>
+								))
+							) : (
 								<Badge marginRight="0.25rem" variant="outline" size="md">
-									{spellClass.name}
+									Unknown Class
 								</Badge>
-							</Tooltip>
+							)}
 						</div>
 
 						{/* Cantrip indicator for session context */}
@@ -178,7 +237,7 @@ export default function SpellCard({
 											size="sm"
 											variant={action.variant}
 											onClick={() => handleAction(action.action)}>
-											{action.label}
+											{action.copy}
 										</Button>
 									))}
 								</HStack>

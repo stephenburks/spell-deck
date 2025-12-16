@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Box, Heading, Text, VStack, Alert, Button, HStack } from '@chakra-ui/react'
+import { Box, Heading, Text, VStack, Alert, Button, HStack, SimpleGrid } from '@chakra-ui/react'
 import SpellCard from './spellCard.jsx'
 import {
 	loadSessionDeck,
@@ -263,7 +263,10 @@ export default function SessionDeckTab() {
 								</Text>
 							)}
 						</Heading>
-						<VStack spacing={4} align="stretch">
+						<SimpleGrid
+							columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
+							className="spell-list-container"
+							spacing={3}>
 							{groupedSpells[level].map((spell) => (
 								<SpellCard
 									key={spell.sessionId}
@@ -274,7 +277,7 @@ export default function SessionDeckTab() {
 									isCantrip={isCantrip(spell)}
 								/>
 							))}
-						</VStack>
+						</SimpleGrid>
 					</Box>
 				))}
 			</VStack>

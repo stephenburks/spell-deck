@@ -169,7 +169,10 @@ export default function DailySpellsTab() {
 				</Button>
 			</HStack>
 
-			<SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+			<SimpleGrid
+				columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
+				className="spell-list-container"
+				spacing={3}>
 				{dailySpells.map((spell, index) => (
 					<SpellCard
 						key={`${spell.index}-${index}`}

@@ -7,5 +7,5 @@
 export { useAllSpells } from './useAllSpells.js'
 export { useDailySpells } from './useDailySpells.js'
 
-// Search hooks
+// Search hooks (Fuse.js powered)
 export { useSpellSearchIndex, useSpellSearch } from './useSearchIndex.js'

@@ -143,7 +143,7 @@ export default function DailySpellsTab() {
 
 	return (
 		<Box p={6}>
-			<HStack justify="space-between" align="flex-start" mb={6}>
+			<HStack justify="center" align="flex-start" mb={6}>
 				<Box>
 					<Heading size="lg" mb={2}>
 						Spells of the Day
@@ -164,7 +164,9 @@ export default function DailySpellsTab() {
 					size="sm"
 					onClick={refreshDailySpells}
 					disabled={isGenerating}
-					title={needsRefresh ? 'Generate new daily spells' : 'Refresh current spells'}>
+					title={needsRefresh ? 'Generate new daily spells' : 'Refresh current spells'}
+					position="absolute"
+					right="1.5rem">
 					{isGenerating ? 'Generating...' : needsRefresh ? 'Generate New' : 'Refresh'}
 				</Button>
 			</HStack>

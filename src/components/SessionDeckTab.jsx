@@ -193,7 +193,7 @@ export default function SessionDeckTab() {
 			<VStack spacing={6} align="stretch">
 				{/* Header */}
 				<Box>
-					<HStack justify="space-between" align="flex-start" mb={2}>
+					<HStack justify="center" align="flex-start" mb={2}>
 						<Box>
 							<Heading as="h2" size="lg" mb={2}>
 								Session Deck
@@ -229,7 +229,9 @@ export default function SessionDeckTab() {
 								variant="outline"
 								colorScheme="red"
 								size="sm"
-								onClick={clearSession}>
+								onClick={clearSession}
+								position="absolute"
+								right="1.5rem">
 								Clear Session
 							</Button>
 						)}

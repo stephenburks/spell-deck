@@ -321,12 +321,26 @@ export default function SpellDeckTab() {
 									<WrapItem key={className}>
 										<Button
 											size="sm"
+											fontWeight="bold"
+											color="white"
+											backgroundColor={`var(--color-${className.toLowerCase()})`}
 											variant={
 												selectedClasses.includes(className)
 													? 'solid'
-													: 'outline'
+													: 'subtle'
 											}
 											onClick={() => handleClassFilter(className)}>
+											<Box
+												as="span"
+												display="inline-block"
+												width="1.5rem"
+												height="1.5rem"
+												backgroundImage={`var(--${className.toLowerCase()}-icon)`}
+												backgroundSize="contain"
+												backgroundRepeat="no-repeat"
+												backgroundPosition="center"
+												mr={1}
+											/>
 											{className}
 										</Button>
 									</WrapItem>
@@ -371,6 +385,17 @@ export default function SpellDeckTab() {
 													: 'outline'
 											}
 											onClick={() => handleSchoolFilter(school)}>
+											<Box
+												as="span"
+												display="inline-block"
+												width="1.5rem"
+												height="1.5rem"
+												backgroundImage={`var(--${school.toLowerCase()}-icon)`}
+												backgroundSize="contain"
+												backgroundRepeat="no-repeat"
+												backgroundPosition="center"
+												mr={1}
+											/>
 											{school}
 										</Button>
 									</WrapItem>

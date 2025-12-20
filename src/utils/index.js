@@ -53,13 +53,5 @@ export {
 	removeSessionId
 } from './spellGrouping.js'
 
-// Migration utilities
-export {
-	migrateSessionData,
-	cleanupLegacyData,
-	runCompleteMigration,
-	isMigrationNeeded
-} from './migration.js'
-
 // API utilities
 export { getAllSpellIndexes, getSpellsByIndexes } from '../api.js'

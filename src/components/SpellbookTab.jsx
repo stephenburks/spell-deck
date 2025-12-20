@@ -25,6 +25,7 @@ export default function SpellbookTab() {
 	const [spellbookSpells, setSpellbookSpells] = useState([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
+	const [openAccordions, setOpenAccordions] = useState([])
 
 	// Load spellbook data
 	const loadSpellbookData = () => {
@@ -76,6 +77,30 @@ export default function SpellbookTab() {
 		return levelOrder.filter((level) => groupedSpells[level] && groupedSpells[level].length > 0)
 	}, [groupedSpells])
 
+	// Initialize accordion state when spells first load
+	useEffect(() => {
+		if (!loading && openAccordions.length === 0) {
+			setOpenAccordions(levelsWithSpells)
+		}
+	}, [loading, levelsWithSpells, openAccordions.length])
+
+	// Update open accordions when spells change
+	useEffect(() => {
+		setOpenAccordions((prevOpen) => {
+			// Keep currently open accordions that still have spells
+			const stillValidOpen = prevOpen.filter(
+				(level) => groupedSpells[level] && groupedSpells[level].length > 0
+			)
+
+			// Add any new levels that have spells but aren't open yet
+			const newLevelsWithSpells = levelsWithSpells.filter(
+				(level) => !stillValidOpen.includes(level)
+			)
+
+			return [...stillValidOpen, ...newLevelsWithSpells]
+		})
+	}, [levelsWithSpells, groupedSpells])
+
 	// Remove spell from spellbook
 	const removeFromSpellbook = (spell) => {
 		const result = removeSpellFromSpellbook(spell.index)
@@ -101,6 +126,16 @@ export default function SpellbookTab() {
 		const result = addSpellToSessionDeck(spell)
 		if (result.success) {
 			setError(null)
+			// Trigger localStorage event to update session deck tab
+			window.dispatchEvent(
+				new StorageEvent('storage', {
+					key: 'session-deck',
+					newValue: JSON.stringify({
+						spells: result.spells,
+						lastModified: new Date().toISOString()
+					})
+				})
+			)
 		} else {
 			setError(result.message)
 		}
@@ -175,8 +210,11 @@ export default function SpellbookTab() {
 					</Box>
 				)}
 
-				{/* Spell Groups by Level - Show all levels, expand only those with spells */}
-				<AccordionRoot collapsible="true" defaultValue={levelsWithSpells}>
+				{/* Spell Groups by Level - Show all levels, expand those with spells */}
+				<AccordionRoot
+					collapsible="true"
+					value={openAccordions}
+					onValueChange={(details) => setOpenAccordions(details.value)}>
 					{allLevels.map((level) => {
 						const spellsForLevel = groupedSpells[level] || []
 						const hasSpells = spellsForLevel.length > 0

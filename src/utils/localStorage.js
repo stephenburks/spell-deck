@@ -316,20 +316,14 @@ export const removeSpellFromSpellbook = (spellIndex) => {
 
 /**
  * Initialize localStorage with empty data structures if they don't exist
- * Also handles migration from old data formats
  * @returns {Object} Status of initialization for each store
  */
 export const initializeLocalStorage = () => {
 	const results = {
 		spellbook: false,
 		sessionDeck: false,
-		dailySpells: false,
-		migration: null
+		dailySpells: false
 	}
-
-	// Migration is handled separately to avoid circular dependencies
-	// Components should call runCompleteMigration() before initializeLocalStorage()
-	results.migration = { success: true, summary: 'Migration should be run separately' }
 
 	// Initialize spellbook if it doesn't exist
 	const spellbook = loadSpellbook()
@@ -339,7 +333,7 @@ export const initializeLocalStorage = () => {
 		results.spellbook = true
 	}
 
-	// Initialize session deck if it doesn't exist (migration may have already handled this)
+	// Initialize session deck if it doesn't exist
 	const sessionDeck = loadSessionDeck()
 	if (!sessionDeck.spells || !Array.isArray(sessionDeck.spells)) {
 		results.sessionDeck = saveSessionDeck([])

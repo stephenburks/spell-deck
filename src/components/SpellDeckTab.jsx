@@ -203,6 +203,16 @@ export default function SpellDeckTab() {
 		const result = addSpellToSpellbook(spell)
 		if (result.success) {
 			setActionError(null)
+			// Trigger localStorage event to update spellbook tab
+			window.dispatchEvent(
+				new StorageEvent('storage', {
+					key: 'user-spellbook',
+					newValue: JSON.stringify({
+						spells: result.spells,
+						lastModified: new Date().toISOString()
+					})
+				})
+			)
 		} else {
 			setActionError(result.message)
 		}
@@ -226,6 +236,16 @@ export default function SpellDeckTab() {
 		if (result.success) {
 			console.log('SpellDeckTab: Successfully added spell to session')
 			setActionError(null)
+			// Trigger localStorage event to update session deck tab
+			window.dispatchEvent(
+				new StorageEvent('storage', {
+					key: 'session-deck',
+					newValue: JSON.stringify({
+						spells: result.spells,
+						lastModified: new Date().toISOString()
+					})
+				})
+			)
 		} else {
 			console.error('SpellDeckTab: Failed to add spell to session:', result.message)
 			setActionError(result.message)

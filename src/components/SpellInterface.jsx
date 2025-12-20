@@ -5,7 +5,6 @@ import SpellbookTab from './SpellbookTab.jsx'
 import SessionDeckTab from './SessionDeckTab.jsx'
 import SpellDeckTab from './SpellDeckTab.jsx'
 import { initializeLocalStorage } from '../utils/localStorage.js'
-import { runCompleteMigration, isMigrationNeeded } from '../utils/migration.js'
 
 /**
  * SpellInterface - Main container component with tabbed interface
@@ -31,14 +30,7 @@ export default function SpellInterface() {
 
 	// Initialize localStorage data on component mount
 	useEffect(() => {
-		// Run migration first if needed
-		if (isMigrationNeeded()) {
-			console.log('Running data migration...')
-			const migrationResult = runCompleteMigration()
-			console.log('Migration result:', migrationResult.summary)
-		}
-
-		// Then initialize localStorage
+		// Initialize localStorage
 		const initResults = initializeLocalStorage()
 
 		// Log initialization results for debugging
@@ -46,7 +38,7 @@ export default function SpellInterface() {
 
 		// Check if any initialization failed
 		const failedInits = Object.entries(initResults)
-			.filter(([key, success]) => key !== 'migration' && !success)
+			.filter(([key, success]) => !success)
 			.map(([store]) => store)
 
 		if (failedInits.length > 0) {

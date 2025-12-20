@@ -33,6 +33,16 @@ export default function DailySpellsTab() {
 		const result = addSpellToSpellbook(spell)
 		if (result.success) {
 			console.log(`Added "${spell.name}" to spellbook`)
+			// Trigger localStorage event to update other tabs
+			window.dispatchEvent(
+				new StorageEvent('storage', {
+					key: 'user-spellbook',
+					newValue: JSON.stringify({
+						spells: result.spells,
+						lastModified: new Date().toISOString()
+					})
+				})
+			)
 		} else {
 			console.log(`Failed to add to spellbook: ${result.message}`)
 		}
@@ -45,6 +55,16 @@ export default function DailySpellsTab() {
 		const result = addSpellToSessionDeck(spell)
 		if (result.success) {
 			console.log(`Added "${spell.name}" to session deck`)
+			// Trigger localStorage event to update other tabs
+			window.dispatchEvent(
+				new StorageEvent('storage', {
+					key: 'session-deck',
+					newValue: JSON.stringify({
+						spells: result.spells,
+						lastModified: new Date().toISOString()
+					})
+				})
+			)
 		} else {
 			console.log(`Failed to add to session: ${result.message}`)
 		}

@@ -741,7 +741,8 @@ span.chakra-badge {
 }
 
 /* Interactive Elements */
-.concentration-indicator {
+.concentration-indicator,
+.ritual-indicator {
 	position: absolute;
 	top: 0;
 	left: 0;

@@ -140,6 +140,14 @@ export default function SpellCard({
 						</Tooltip>
 					)}
 
+					{spell.ritual === true && (
+						<Tooltip content="Ritual" interactive>
+							<div className="ritual-indicator">
+								<Icon name="ritual" folder="spell" />
+							</div>
+						</Tooltip>
+					)}
+
 					<div className="spell-card__level">
 						<Tooltip content="Spell Level" interactive>
 							<Stat.Root>
@@ -190,15 +198,6 @@ export default function SpellCard({
 						<Description spell={spell} />
 					</Card.Body>
 					<Card.Footer>
-						{/* <div className="spell-card__level">
-							<Tooltip content="Spell Level" interactive>
-								<Stat.Root>
-									<Stat.ValueText>
-										{spell.level === 0 ? 'C' : spell.level}
-									</Stat.ValueText>
-								</Stat.Root>
-							</Tooltip>
-						</div> */}
 						<div className="spell-card__classes">
 							{spell.classes && spell.classes.length > 0 ? (
 								spell.classes.map((classItem, index) => (

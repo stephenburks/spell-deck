@@ -23,31 +23,15 @@ export {
 } from './localStorage.js'
 
 // Validation utilities
-export {
-	validateSpellObject,
-	validateSpellArray,
-	validateSessionSpell,
-	validateSessionSpellArray,
-	validateSpellbookData,
-	validateSessionDeckData,
-	validateDailySpellsData,
-	sanitizeSpellObject,
-	sanitizeSpellArray
-} from './validation.js'
+export { validateSpellObject, validateSessionSpell, getValidSpells } from './validation.js'
 
 // Spell grouping utilities
 export {
-	getLevelOrder,
 	getLevelLabel,
-	isCantrip,
-	isLeveledSpell,
 	groupSpellsByLevel,
 	getOrderedSpellGroups,
 	getSpellsForLevel,
-	getCantrips,
-	getLeveledSpells,
 	countSpellsByLevel,
-	getTotalSpellCount,
 	generateSessionId,
 	addSessionId,
 	removeSessionId

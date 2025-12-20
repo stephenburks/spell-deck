@@ -18,8 +18,8 @@ import {
 	removeSpellFromSpellbook,
 	addSpellToSessionDeck
 } from '../utils/localStorage.js'
-import { groupSpellsByLevel, getLevelOrder } from '../utils/spellGrouping.js'
-import { validateSpellObject, sanitizeSpellArray } from '../utils/validation.js'
+import { groupSpellsByLevel } from '../utils/spellGrouping.js'
+import { validateSpellObject, getValidSpells } from '../utils/validation.js'
 
 export default function SpellbookTab() {
 	const [spellbookSpells, setSpellbookSpells] = useState([])
@@ -31,8 +31,8 @@ export default function SpellbookTab() {
 	const loadSpellbookData = () => {
 		try {
 			const spellbookData = loadSpellbook()
-			const sanitizedSpells = sanitizeSpellArray(spellbookData.spells || [])
-			setSpellbookSpells(sanitizedSpells)
+			const validSpells = getValidSpells(spellbookData.spells || [])
+			setSpellbookSpells(validSpells)
 		} catch (err) {
 			console.error('Failed to load spellbook:', err)
 			setError('Failed to load your spellbook. Starting with an empty collection.')
@@ -68,13 +68,35 @@ export default function SpellbookTab() {
 
 	// Get all levels (always show all levels, even if empty)
 	const allLevels = useMemo(() => {
-		return getLevelOrder()
+		return [
+			'Cantrips',
+			'Level 1',
+			'Level 2',
+			'Level 3',
+			'Level 4',
+			'Level 5',
+			'Level 6',
+			'Level 7',
+			'Level 8',
+			'Level 9'
+		]
 	}, [])
 
 	// Get levels that have spells (for default expanded state)
 	const levelsWithSpells = useMemo(() => {
-		const levelOrder = getLevelOrder()
-		return levelOrder.filter((level) => groupedSpells[level] && groupedSpells[level].length > 0)
+		const levels = [
+			'Cantrips',
+			'Level 1',
+			'Level 2',
+			'Level 3',
+			'Level 4',
+			'Level 5',
+			'Level 6',
+			'Level 7',
+			'Level 8',
+			'Level 9'
+		]
+		return levels.filter((level) => groupedSpells[level] && groupedSpells[level].length > 0)
 	}, [groupedSpells])
 
 	// Initialize accordion state when spells first load
@@ -107,7 +129,7 @@ export default function SpellbookTab() {
 
 		if (result.success) {
 			// Update local state immediately (optimistic update)
-			setSpellbookSpells(sanitizeSpellArray(result.spells || []))
+			setSpellbookSpells(getValidSpells(result.spells || []))
 			setError(null)
 		} else {
 			setError(result.message)

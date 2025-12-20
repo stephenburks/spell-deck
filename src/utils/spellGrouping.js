@@ -1,13 +1,8 @@
 /**
  * Spell grouping utilities for level-based organization
- * Handles grouping spells by level (Cantrips, Level 1-9)
  */
 
-/**
- * Get the ordered list of spell levels for consistent display
- * @returns {Array<string>} Ordered array of level labels
- */
-export const getLevelOrder = () => [
+const SPELL_LEVELS = [
 	'Cantrips',
 	'Level 1',
 	'Level 2',
@@ -21,169 +16,81 @@ export const getLevelOrder = () => [
 ]
 
 /**
- * Get the display label for a spell level
+ * Get display label for a spell level
  * @param {number} level - Spell level (0-9)
- * @returns {string} Display label for the level
+ * @returns {string} Display label
  */
 export const getLevelLabel = (level) => {
-	if (level === 0) {
-		return 'Cantrips'
-	}
-	if (level >= 1 && level <= 9) {
-		return `Level ${level}`
-	}
-	return 'Unknown Level'
+	return level === 0 ? 'Cantrips' : `Level ${level}`
 }
 
 /**
- * Check if a spell is a cantrip (level 0)
- * @param {Object} spell - Spell object
- * @returns {boolean} True if spell is a cantrip
- */
-export const isCantrip = (spell) => {
-	return spell && spell.level === 0
-}
-
-/**
- * Check if a spell is a leveled spell (levels 1-9)
- * @param {Object} spell - Spell object
- * @returns {boolean} True if spell is a leveled spell
- */
-export const isLeveledSpell = (spell) => {
-	return spell && spell.level >= 1 && spell.level <= 9
-}
-
-/**
- * Group spells by their level with alphabetical sorting within each level
+ * Group spells by level with alphabetical sorting
  * @param {Array} spells - Array of spell objects
- * @returns {Object} Object with level labels as keys and sorted spell arrays as values
+ * @returns {Object} Grouped spells by level
  */
 export const groupSpellsByLevel = (spells) => {
-	if (!Array.isArray(spells)) {
-		return {}
-	}
+	if (!Array.isArray(spells)) return {}
 
-	// Group spells by level
 	const grouped = spells.reduce((acc, spell) => {
-		if (!spell || typeof spell.level !== 'number') {
-			return acc
-		}
+		if (!spell || typeof spell.level !== 'number') return acc
 
 		const levelKey = getLevelLabel(spell.level)
-		if (!acc[levelKey]) {
-			acc[levelKey] = []
-		}
+		if (!acc[levelKey]) acc[levelKey] = []
 		acc[levelKey].push(spell)
 		return acc
 	}, {})
 
-	// Sort spells within each level alphabetically by name
-	Object.keys(grouped).forEach((level) => {
-		grouped[level].sort((a, b) => {
-			const nameA = a.name || ''
-			const nameB = b.name || ''
-			return nameA.localeCompare(nameB)
-		})
+	// Sort alphabetically within each level
+	Object.values(grouped).forEach((levelSpells) => {
+		levelSpells.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
 	})
 
 	return grouped
 }
 
 /**
- * Get spells organized by level in the correct display order
+ * Get spells organized by level in display order
  * @param {Array} spells - Array of spell objects
- * @returns {Array<Object>} Array of objects with level and spells properties
+ * @returns {Array} Ordered spell groups with metadata
  */
 export const getOrderedSpellGroups = (spells) => {
 	const grouped = groupSpellsByLevel(spells)
-	const levelOrder = getLevelOrder()
 
-	return levelOrder
-		.filter((level) => grouped[level] && grouped[level].length > 0)
-		.map((level) => ({
-			level,
-			spells: grouped[level],
-			count: grouped[level].length
-		}))
+	return SPELL_LEVELS.filter((level) => grouped[level]?.length > 0).map((level) => ({
+		level,
+		spells: grouped[level],
+		count: grouped[level].length
+	}))
 }
 
 /**
- * Get spells for a specific level
+ * Get spells for a specific level, sorted alphabetically
  * @param {Array} spells - Array of spell objects
- * @param {number} level - Spell level to filter by (0-9)
- * @returns {Array} Array of spells for the specified level, sorted alphabetically
+ * @param {number} level - Spell level (0-9)
+ * @returns {Array} Filtered and sorted spells
  */
 export const getSpellsForLevel = (spells, level) => {
-	if (!Array.isArray(spells) || typeof level !== 'number') {
-		return []
-	}
+	if (!Array.isArray(spells)) return []
 
 	return spells
-		.filter((spell) => spell && spell.level === level)
-		.sort((a, b) => {
-			const nameA = a.name || ''
-			const nameB = b.name || ''
-			return nameA.localeCompare(nameB)
-		})
-}
-
-/**
- * Get cantrips from a spell array
- * @param {Array} spells - Array of spell objects
- * @returns {Array} Array of cantrip spells, sorted alphabetically
- */
-export const getCantrips = (spells) => {
-	return getSpellsForLevel(spells, 0)
-}
-
-/**
- * Get leveled spells (levels 1-9) from a spell array
- * @param {Array} spells - Array of spell objects
- * @returns {Array} Array of leveled spells, sorted alphabetically
- */
-export const getLeveledSpells = (spells) => {
-	if (!Array.isArray(spells)) {
-		return []
-	}
-
-	return spells
-		.filter((spell) => spell && spell.level >= 1 && spell.level <= 9)
-		.sort((a, b) => {
-			// First sort by level, then by name
-			if (a.level !== b.level) {
-				return a.level - b.level
-			}
-			const nameA = a.name || ''
-			const nameB = b.name || ''
-			return nameA.localeCompare(nameB)
-		})
+		.filter((spell) => spell?.level === level)
+		.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
 }
 
 /**
  * Count spells by level
  * @param {Array} spells - Array of spell objects
- * @returns {Object} Object with level labels as keys and counts as values
+ * @returns {Object} Counts by level
  */
 export const countSpellsByLevel = (spells) => {
-	if (!Array.isArray(spells)) {
-		return {}
-	}
+	if (!Array.isArray(spells)) return {}
 
-	const counts = {}
-	const levelOrder = getLevelOrder()
+	const counts = Object.fromEntries(SPELL_LEVELS.map((level) => [level, 0]))
 
-	// Initialize all levels with 0
-	levelOrder.forEach((level) => {
-		counts[level] = 0
-	})
-
-	// Count spells for each level
 	spells.forEach((spell) => {
-		if (spell && typeof spell.level === 'number') {
-			const levelKey = getLevelLabel(spell.level)
-			if (counts.hasOwnProperty(levelKey)) {
-				counts[levelKey]++
-			}
+		if (spell?.level >= 0 && spell?.level <= 9) {
+			counts[getLevelLabel(spell.level)]++
 		}
 	})
 
@@ -191,55 +98,27 @@ export const countSpellsByLevel = (spells) => {
 }
 
 /**
- * Get total spell count
- * @param {Array} spells - Array of spell objects
- * @returns {number} Total number of valid spells
+ * Generate unique session ID
+ * @returns {string} Unique session ID
  */
-export const getTotalSpellCount = (spells) => {
-	if (!Array.isArray(spells)) {
-		return 0
-	}
-
-	return spells.filter(
-		(spell) => spell && typeof spell.level === 'number' && spell.level >= 0 && spell.level <= 9
-	).length
-}
+export const generateSessionId = () => `${Date.now()}_${Math.floor(Math.random() * 1000)}`
 
 /**
- * Generate a unique session ID for session spells
- * @returns {string} Unique session ID in format: timestamp_random
- */
-export const generateSessionId = () => {
-	const timestamp = Date.now()
-	const random = Math.floor(Math.random() * 1000)
-	return `${timestamp}_${random}`
-}
-
-/**
- * Add session ID to a spell object for session deck usage
+ * Add session ID to spell object
  * @param {Object} spell - Spell object
- * @returns {Object} Spell object with added sessionId property
+ * @returns {Object|null} Spell with sessionId or null if invalid
  */
 export const addSessionId = (spell) => {
-	if (!spell || typeof spell !== 'object') {
-		return null
-	}
-
-	return {
-		...spell,
-		sessionId: generateSessionId()
-	}
+	return spell && typeof spell === 'object' ? { ...spell, sessionId: generateSessionId() } : null
 }
 
 /**
- * Remove session ID from a spell object (for moving from session to spellbook)
- * @param {Object} sessionSpell - Session spell object with sessionId
- * @returns {Object} Spell object without sessionId property
+ * Remove session ID from spell object
+ * @param {Object} sessionSpell - Session spell object
+ * @returns {Object|null} Spell without sessionId or null if invalid
  */
 export const removeSessionId = (sessionSpell) => {
-	if (!sessionSpell || typeof sessionSpell !== 'object') {
-		return null
-	}
+	if (!sessionSpell || typeof sessionSpell !== 'object') return null
 
 	const { sessionId, ...spell } = sessionSpell
 	return spell

@@ -79,7 +79,7 @@ export default function SpellCard({
 					}
 				]
 			case 'session':
-				if (spellIsCantrip || isCantrip) {
+				if (spellIsCantrip) {
 					return [] // Cantrips have no burn action, just visual indicator
 				}
 				return [
@@ -108,7 +108,7 @@ export default function SpellCard({
 			default:
 				return []
 		}
-	}, [context, onAction, spellIsCantrip, isCantrip])
+	}, [context, onAction, spellIsCantrip])
 
 	// Handle action button clicks
 	const handleAction = (actionType) => {
@@ -121,7 +121,7 @@ export default function SpellCard({
 	const getContainerClass = () => {
 		let baseClass = `spell-card__container spell-card__container-${spellClass.index}`
 
-		if (context === 'session' && (spellIsCantrip || isCantrip)) {
+		if (context === 'session' && spellIsCantrip) {
 			baseClass += ' spell-card__container--cantrip'
 		}
 
@@ -219,7 +219,7 @@ export default function SpellCard({
 						</div>
 
 						{/* Cantrip indicator for session context */}
-						{context === 'session' && (spellIsCantrip || isCantrip) && (
+						{context === 'session' && spellIsCantrip && (
 							<div className="spell-card__cantrip-indicator">
 								<Badge variant="solid" colorScheme="green" size="sm">
 									Unlimited Use

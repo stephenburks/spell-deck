@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getAllSpellIndexes, getSpellsByIndexes } from '../api'
 import { loadDailySpells, saveDailySpells } from '../utils/localStorage'
-import { sanitizeSpellObject } from '../utils/validation'
+import { validateSpellObject } from '../utils/validation'
 
 /**
  * Hook for managing daily spells with optimized loading
@@ -89,10 +89,8 @@ export function useDailySpells() {
 			// Fetch only the 12 selected spells
 			const fetchedSpells = await getSpellsByIndexes(randomIndexes)
 
-			// Validate and sanitize spells
-			const validSpells = fetchedSpells
-				.map((spell) => sanitizeSpellObject(spell))
-				.filter(Boolean)
+			// Validate spells
+			const validSpells = fetchedSpells.filter(validateSpellObject)
 
 			if (validSpells.length === 0) {
 				throw new Error('No valid spells fetched')

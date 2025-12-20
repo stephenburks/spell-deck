@@ -6,8 +6,8 @@ import {
 	removeSpellFromSessionDeck,
 	saveSessionDeck
 } from '../utils/localStorage.js'
-import { groupSpellsByLevel, getLevelOrder, isCantrip } from '../utils/spellGrouping.js'
-import { validateSessionSpell, sanitizeSpellArray } from '../utils/validation.js'
+import { groupSpellsByLevel } from '../utils/spellGrouping.js'
+import { validateSessionSpell, getValidSpells } from '../utils/validation.js'
 
 export default function SessionDeckTab() {
 	const [sessionSpells, setSessionSpells] = useState([])
@@ -18,9 +18,9 @@ export default function SessionDeckTab() {
 	const loadSessionDeckData = () => {
 		try {
 			const sessionDeckData = loadSessionDeck()
-			const sanitizedSpells = sanitizeSpellArray(sessionDeckData.spells || [])
+			const validSpells = getValidSpells(sessionDeckData.spells || [])
 			// Filter to only include spells with sessionId (session spells)
-			const validSessionSpells = sanitizedSpells.filter(
+			const validSessionSpells = validSpells.filter(
 				(spell) => spell.sessionId && validateSessionSpell(spell)
 			)
 			setSessionSpells(validSessionSpells)
@@ -59,14 +59,25 @@ export default function SessionDeckTab() {
 
 	// Get ordered level groups for consistent display
 	const orderedLevels = useMemo(() => {
-		const levelOrder = getLevelOrder()
-		return levelOrder.filter((level) => groupedSpells[level] && groupedSpells[level].length > 0)
+		const levels = [
+			'Cantrips',
+			'Level 1',
+			'Level 2',
+			'Level 3',
+			'Level 4',
+			'Level 5',
+			'Level 6',
+			'Level 7',
+			'Level 8',
+			'Level 9'
+		]
+		return levels.filter((level) => groupedSpells[level] && groupedSpells[level].length > 0)
 	}, [groupedSpells])
 
 	// Count cantrips and leveled spells for display
 	const spellCounts = useMemo(() => {
-		const cantrips = sessionSpells.filter((spell) => isCantrip(spell)).length
-		const leveledSpells = sessionSpells.filter((spell) => !isCantrip(spell)).length
+		const cantrips = sessionSpells.filter((spell) => spell.level === 0).length
+		const leveledSpells = sessionSpells.filter((spell) => spell.level > 0).length
 		return { cantrips, leveledSpells, total: sessionSpells.length }
 	}, [sessionSpells])
 
@@ -80,7 +91,7 @@ export default function SessionDeckTab() {
 		}
 
 		// Check if it's a cantrip (cantrips cannot be burned)
-		if (isCantrip(spellToBurn)) {
+		if (spellToBurn.level === 0) {
 			setError('Cantrips cannot be burned - they have unlimited use.')
 			return false
 		}
@@ -89,7 +100,7 @@ export default function SessionDeckTab() {
 		if (result.success) {
 			// Update local state immediately (optimistic update)
 			setSessionSpells(
-				sanitizeSpellArray(result.spells || []).filter(
+				getValidSpells(result.spells || []).filter(
 					(spell) => spell.sessionId && validateSessionSpell(spell)
 				)
 			)
@@ -238,7 +249,7 @@ export default function SessionDeckTab() {
 									context="session"
 									onAction={handleSpellAction}
 									sessionId={spell.sessionId}
-									isCantrip={isCantrip(spell)}
+									isCantrip={spell.level === 0}
 								/>
 							))}
 						</SimpleGrid>

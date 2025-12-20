@@ -8,7 +8,6 @@ import {
 } from '../utils/localStorage.js'
 import { groupSpellsByLevel, getLevelOrder, isCantrip } from '../utils/spellGrouping.js'
 import { validateSessionSpell, sanitizeSpellArray } from '../utils/validation.js'
-import eventBus, { EVENTS } from '../utils/eventBus.js'
 
 export default function SessionDeckTab() {
 	const [sessionSpells, setSessionSpells] = useState([])
@@ -38,34 +37,8 @@ export default function SessionDeckTab() {
 		setLoading(false)
 	}, [])
 
-	// Listen for real-time session deck updates from other tabs
+	// Listen for localStorage changes from other browser tabs
 	useEffect(() => {
-		const unsubscribeSessionUpdated = eventBus.on(EVENTS.SESSION_DECK_UPDATED, (data) => {
-			const validSessionSpells = sanitizeSpellArray(data.spells || []).filter(
-				(spell) => spell.sessionId && validateSessionSpell(spell)
-			)
-			setSessionSpells(validSessionSpells)
-		})
-
-		const unsubscribeSpellAdded = eventBus.on(EVENTS.SPELL_ADDED_TO_SESSION, (data) => {
-			const validSessionSpells = sanitizeSpellArray(data.spells || []).filter(
-				(spell) => spell.sessionId && validateSessionSpell(spell)
-			)
-			setSessionSpells(validSessionSpells)
-		})
-
-		const unsubscribeSpellBurned = eventBus.on(EVENTS.SPELL_BURNED_FROM_SESSION, (data) => {
-			const validSessionSpells = sanitizeSpellArray(data.spells || []).filter(
-				(spell) => spell.sessionId && validateSessionSpell(spell)
-			)
-			setSessionSpells(validSessionSpells)
-		})
-
-		const unsubscribeSessionCleared = eventBus.on(EVENTS.SESSION_CLEARED, () => {
-			setSessionSpells([])
-		})
-
-		// Also listen for localStorage changes from other browser tabs
 		const handleStorageChange = (event) => {
 			if (event.key === 'session-deck') {
 				loadSessionDeckData()
@@ -75,10 +48,6 @@ export default function SessionDeckTab() {
 		window.addEventListener('storage', handleStorageChange)
 
 		return () => {
-			unsubscribeSessionUpdated()
-			unsubscribeSpellAdded()
-			unsubscribeSpellBurned()
-			unsubscribeSessionCleared()
 			window.removeEventListener('storage', handleStorageChange)
 		}
 	}, [])
@@ -139,13 +108,6 @@ export default function SessionDeckTab() {
 			if (!success) {
 				setError('Failed to clear session.')
 				return false
-			}
-
-			// Emit session cleared event
-			try {
-				eventBus.emit(EVENTS.SESSION_CLEARED, { timestamp: new Date().toISOString() })
-			} catch (error) {
-				console.warn('Failed to emit session cleared event:', error)
 			}
 
 			// Update local state

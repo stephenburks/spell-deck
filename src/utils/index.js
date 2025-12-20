@@ -61,8 +61,5 @@ export {
 	isMigrationNeeded
 } from './migration.js'
 
-// Event bus utilities
-export { default as eventBus, EVENTS } from './eventBus.js'
-
 // API utilities
 export { getAllSpellIndexes, getSpellsByIndexes } from '../api.js'

@@ -4,7 +4,6 @@
  */
 
 import { addSessionId } from './spellGrouping.js'
-import eventBus, { EVENTS } from './eventBus.js'
 
 // Storage keys
 export const STORAGE_KEYS = {
@@ -67,17 +66,6 @@ export const saveSpellbook = (spells) => {
 		lastModified: new Date().toISOString()
 	}
 	const success = safeSaveToStorage(STORAGE_KEYS.SPELLBOOK, data)
-
-	if (success) {
-		// Emit event for real-time updates
-		try {
-			eventBus.emit(EVENTS.SPELLBOOK_UPDATED, { spells, timestamp: data.lastModified })
-		} catch (error) {
-			// Event bus is optional, don't fail if it's not available
-			console.warn('Failed to emit spellbook update event:', error)
-		}
-	}
-
 	return success
 }
 
@@ -103,17 +91,6 @@ export const saveSessionDeck = (spells) => {
 		lastModified: new Date().toISOString()
 	}
 	const success = safeSaveToStorage(STORAGE_KEYS.SESSION_DECK, data)
-
-	if (success) {
-		// Emit event for real-time updates
-		try {
-			eventBus.emit(EVENTS.SESSION_DECK_UPDATED, { spells, timestamp: data.lastModified })
-		} catch (error) {
-			// Event bus is optional, don't fail if it's not available
-			console.warn('Failed to emit session deck update event:', error)
-		}
-	}
-
 	return success
 }
 
@@ -177,18 +154,6 @@ export const addSpellToSessionDeck = (spell) => {
 
 		if (success) {
 			console.log('addSpellToSessionDeck: Successfully saved to localStorage')
-
-			// Emit specific event for spell addition to session
-			try {
-				console.log('addSpellToSessionDeck: Emitting SPELL_ADDED_TO_SESSION event')
-				eventBus.emit(EVENTS.SPELL_ADDED_TO_SESSION, {
-					spell: sessionSpell,
-					spells: updatedSpells
-				})
-			} catch (error) {
-				console.warn('Failed to emit spell added to session event:', error)
-			}
-
 			return {
 				success: true,
 				message: `"${spell.name}" added to session.`,
@@ -229,17 +194,6 @@ export const removeSpellFromSessionDeck = (sessionId) => {
 		const success = saveSessionDeck(updatedSpells)
 
 		if (success) {
-			// Emit specific event for spell burning/removal
-			try {
-				eventBus.emit(EVENTS.SPELL_BURNED_FROM_SESSION, {
-					spell: spellToRemove,
-					sessionId,
-					spells: updatedSpells
-				})
-			} catch (error) {
-				console.warn('Failed to emit spell burned event:', error)
-			}
-
 			return {
 				success: true,
 				message: 'Spell removed from session.',
@@ -302,13 +256,6 @@ export const addSpellToSpellbook = (spell) => {
 		const success = saveSpellbook(updatedSpells)
 
 		if (success) {
-			// Emit specific event for spell addition
-			try {
-				eventBus.emit(EVENTS.SPELL_ADDED_TO_SPELLBOOK, { spell, spells: updatedSpells })
-			} catch (error) {
-				console.warn('Failed to emit spell added event:', error)
-			}
-
 			return {
 				success: true,
 				message: `"${spell.name}" added to spellbook.`,
@@ -347,17 +294,6 @@ export const removeSpellFromSpellbook = (spellIndex) => {
 		const success = saveSpellbook(updatedSpells)
 
 		if (success) {
-			// Emit specific event for spell removal
-			try {
-				eventBus.emit(EVENTS.SPELL_REMOVED_FROM_SPELLBOOK, {
-					spell: spellToRemove,
-					spellIndex,
-					spells: updatedSpells
-				})
-			} catch (error) {
-				console.warn('Failed to emit spell removed event:', error)
-			}
-
 			return {
 				success: true,
 				message: 'Spell removed from spellbook.',

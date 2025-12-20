@@ -20,7 +20,6 @@ import {
 } from '../utils/localStorage.js'
 import { groupSpellsByLevel, getLevelOrder } from '../utils/spellGrouping.js'
 import { validateSpellObject, sanitizeSpellArray } from '../utils/validation.js'
-import eventBus, { EVENTS } from '../utils/eventBus.js'
 
 export default function SpellbookTab() {
 	const [spellbookSpells, setSpellbookSpells] = useState([])
@@ -46,21 +45,8 @@ export default function SpellbookTab() {
 		setLoading(false)
 	}, [])
 
-	// Listen for real-time spellbook updates from other tabs
+	// Listen for localStorage changes from other browser tabs
 	useEffect(() => {
-		const unsubscribeSpellbookUpdated = eventBus.on(EVENTS.SPELLBOOK_UPDATED, (data) => {
-			setSpellbookSpells(sanitizeSpellArray(data.spells || []))
-		})
-
-		const unsubscribeSpellAdded = eventBus.on(EVENTS.SPELL_ADDED_TO_SPELLBOOK, (data) => {
-			setSpellbookSpells(sanitizeSpellArray(data.spells || []))
-		})
-
-		const unsubscribeSpellRemoved = eventBus.on(EVENTS.SPELL_REMOVED_FROM_SPELLBOOK, (data) => {
-			setSpellbookSpells(sanitizeSpellArray(data.spells || []))
-		})
-
-		// Also listen for localStorage changes from other browser tabs
 		const handleStorageChange = (event) => {
 			if (event.key === 'user-spellbook') {
 				loadSpellbookData()
@@ -70,9 +56,6 @@ export default function SpellbookTab() {
 		window.addEventListener('storage', handleStorageChange)
 
 		return () => {
-			unsubscribeSpellbookUpdated()
-			unsubscribeSpellAdded()
-			unsubscribeSpellRemoved()
 			window.removeEventListener('storage', handleStorageChange)
 		}
 	}, [])

@@ -67,6 +67,12 @@ code {
 	font-size: 0.875rem;
 }
 
+.spell-interface-container {
+	width: 95%;
+	max-width: 1280px;
+	margin: auto;
+}
+
 /* Layout Components */
 .spell-list-container {
 	margin: auto;
@@ -170,6 +176,10 @@ dd.chakra-stat__number {
 	border-radius: 0.5rem;
 	padding: 1.5rem;
 	text-transform: uppercase;
+}
+
+.chakra-tabs__trigger[data-selected] {
+	background-color: var(--chakra-colors-gray-200);
 }
 
 .chakra-tabs__trigger svg {
@@ -764,6 +774,10 @@ span.chakra-badge {
 	color: var(--chakra-colors-black);
 	box-shadow: none;
 	border: none;
+}
+
+.filter-badge {
+	background-color: var(--chakra-colors-gray-400);
 }
 
 .chakra-card__header span.chakra-badge {

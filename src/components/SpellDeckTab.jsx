@@ -381,7 +381,7 @@ export default function SpellDeckTab() {
 											size="sm"
 											variant={
 												selectedSchools.includes(school)
-													? 'solid'
+													? 'subtle'
 													: 'outline'
 											}
 											onClick={() => handleSchoolFilter(school)}>
@@ -441,17 +441,29 @@ export default function SpellDeckTab() {
 									Active filters:
 								</Text>
 								{selectedClasses.map((cls) => (
-									<Badge key={cls} variant="solid" size="sm">
+									<Badge
+										key={cls}
+										className="filter-badge"
+										variant="solid"
+										size="sm">
 										{cls}
 									</Badge>
 								))}
 								{selectedLevels.map((level) => (
-									<Badge key={level} variant="solid" size="sm">
+									<Badge
+										key={level}
+										className="filter-badge"
+										variant="solid"
+										size="sm">
 										{level === 0 ? 'Cantrip' : `L${level}`}
 									</Badge>
 								))}
 								{selectedSchools.map((school) => (
-									<Badge key={school} variant="solid" size="sm">
+									<Badge
+										key={school}
+										className="filter-badge"
+										variant="solid"
+										size="sm">
 										{school}
 									</Badge>
 								))}

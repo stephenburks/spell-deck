@@ -1,5 +1,17 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Box, Heading, Text, VStack, Alert, SimpleGrid } from '@chakra-ui/react'
+import {
+	Box,
+	Heading,
+	Text,
+	VStack,
+	Alert,
+	SimpleGrid,
+	AccordionRoot,
+	AccordionItem,
+	AccordionItemTrigger,
+	AccordionItemBody,
+	AccordionItemContent
+} from '@chakra-ui/react'
 import SpellCard from './spellCard.jsx'
 import {
 	loadSpellbook,
@@ -70,8 +82,13 @@ export default function SpellbookTab() {
 		return groupSpellsByLevel(spellbookSpells)
 	}, [spellbookSpells])
 
-	// Get ordered level groups for consistent display
-	const orderedLevels = useMemo(() => {
+	// Get all levels (always show all levels, even if empty)
+	const allLevels = useMemo(() => {
+		return getLevelOrder()
+	}, [])
+
+	// Get levels that have spells (for default expanded state)
+	const levelsWithSpells = useMemo(() => {
 		const levelOrder = getLevelOrder()
 		return levelOrder.filter((level) => groupedSpells[level] && groupedSpells[level].length > 0)
 	}, [groupedSpells])
@@ -175,27 +192,50 @@ export default function SpellbookTab() {
 					</Box>
 				)}
 
-				{/* Spell Groups by Level */}
-				{orderedLevels.map((level) => (
-					<Box key={level}>
-						<Heading as="h3" size="md" mb={4} color="blue.600">
-							{level} ({groupedSpells[level].length})
-						</Heading>
-						<SimpleGrid
-							columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
-							className="spell-list-container"
-							spacing={3}>
-							{groupedSpells[level].map((spell) => (
-								<SpellCard
-									key={spell.index}
-									spell={spell}
-									context="spellbook"
-									onAction={handleSpellAction}
-								/>
-							))}
-						</SimpleGrid>
-					</Box>
-				))}
+				{/* Spell Groups by Level - Always show all levels */}
+				{
+					<AccordionRoot
+						collapsible="true"
+						defaultValue={levelsWithSpells.map((level) => allLevels.indexOf(level))}>
+						{allLevels.map((level) => {
+							const spellsForLevel = groupedSpells[level] || []
+							const hasSpells = spellsForLevel.length > 0
+
+							return (
+								<AccordionItem key={level}>
+									<AccordionItemTrigger>
+										<Box flex="1" textAlign="left">
+											<Heading as="h3" size="md" color="blue.600">
+												{level} ({spellsForLevel.length})
+											</Heading>
+										</Box>
+									</AccordionItemTrigger>
+									<AccordionItemContent>
+										<AccordionItemBody pb={4}>
+											{hasSpells ? (
+												<SimpleGrid
+													columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
+													className="spell-list-container"
+													spacing={3}>
+													{spellsForLevel.map((spell) => (
+														<SpellCard
+															key={spell.index}
+															spell={spell}
+															context="spellbook"
+															onAction={handleSpellAction}
+														/>
+													))}
+												</SimpleGrid>
+											) : (
+												''
+											)}
+										</AccordionItemBody>
+									</AccordionItemContent>
+								</AccordionItem>
+							)
+						})}
+					</AccordionRoot>
+				}
 			</VStack>
 		</Box>
 	)

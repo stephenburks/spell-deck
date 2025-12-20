@@ -74,7 +74,7 @@ export default function SpellInterface() {
 				variant="enclosed"
 				size="lg">
 				{/* Tab List - Four horizontal tabs */}
-				<Tabs.List>
+				<Tabs.List background="transparent">
 					<Tabs.Trigger value="0">
 						<svg
 							width="2rem"

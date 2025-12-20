@@ -1,7 +1,7 @@
 {
 	"name": "my-app",
 	"version": "0.1.0",
-	"homepage": "https://github.com/stephenburks/spell-deck",
+	"homepage": "https://stephenburks.github.io/spell-deck",
 	"private": true,
 	"dependencies": {
 		"@chakra-ui/react": "^3.28.1",

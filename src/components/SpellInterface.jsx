@@ -4,16 +4,18 @@ import DailySpellsTab from './tabs/DailySpellsTab.jsx'
 import SpellbookTab from './tabs/SpellbookTab.jsx'
 import SessionDeckTab from './tabs/SessionDeckTab.jsx'
 import SpellDeckTab from './tabs/SpellDeckTab.jsx'
+import ReadmeTab from './tabs/ReadmeTab.jsx'
 import { initializeLocalStorage } from '../utils/localStorage.js'
 
 /**
  * SpellInterface - Main container component with tabbed interface
  *
- * Provides four horizontal tabs:
+ * Provides five horizontal tabs:
  * - "Spells of the Day": Daily random spell selection
  * - "Spellbook": Personal spell library management
  * - "Session Deck": Active session spell management
  * - "Spell Deck": Complete searchable spell index
+ * - "README": Project information and documentation
  *
  * Features:
  * - Tab state persistence during user session
@@ -65,7 +67,7 @@ export default function SpellInterface() {
 				onValueChange={(details) => handleTabChange(parseInt(details.value, 10))}
 				variant="enclosed"
 				size="lg">
-				{/* Tab List - Four horizontal tabs */}
+				{/* Tab List - Five horizontal tabs */}
 				<Tabs.List background="transparent">
 					<Tabs.Trigger value="0">
 						<svg
@@ -111,6 +113,17 @@ export default function SpellInterface() {
 						</svg>
 						Spell Deck
 					</Tabs.Trigger>
+					<Tabs.Trigger value="4">
+						<svg
+							width="2rem"
+							height="2rem"
+							version="1.1"
+							viewBox="0 0 100 100"
+							xmlns="http://www.w3.org/2000/svg">
+							<path d="m12.5 8.332c-2.3125 0-4.168 1.8555-4.168 4.168v70.834c0 2.3125 1.8555 4.166 4.168 4.166h75c2.3125 0 4.166-1.8535 4.166-4.166v-54.166l-20.834-20.836zm0 8.334h54.166v12.5c0 2.3125 1.8555 4.166 4.168 4.166h12.5v50h-70.834zm58.334 4.166 8.334 8.334h-8.334z" />
+						</svg>
+						README
+					</Tabs.Trigger>
 				</Tabs.List>
 
 				{/* Tab Content Panels */}
@@ -128,6 +141,10 @@ export default function SpellInterface() {
 
 				<Tabs.Content value="3">
 					<SpellDeckTab />
+				</Tabs.Content>
+
+				<Tabs.Content value="4">
+					<ReadmeTab />
 				</Tabs.Content>
 			</Tabs.Root>
 		</Box>

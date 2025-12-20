@@ -1,60 +1,62 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { Box, SimpleGrid } from '@chakra-ui/react'
+import { Box, SimpleGrid, Button, Spinner } from '@chakra-ui/react'
 import SpellCard from './spellCard.jsx'
 
-// Custom hook for virtualization
-function useVirtualization(items, itemsPerPage = 50) {
+/**
+ * Custom hook for pagination-based virtualization
+ * @param {Array} items - Items to virtualize
+ * @param {number} itemsPerPage - Items per page
+ * @returns {Object} Virtualization state and controls
+ */
+const useVirtualization = (items, itemsPerPage = 50) => {
 	const [currentPage, setCurrentPage] = useState(0)
-	const [isLoadingMore, setIsLoadingMore] = useState(false)
+	const [isLoading, setIsLoading] = useState(false)
 
-	// Reset page when items change
+	// Reset when items change
 	useEffect(() => {
 		setCurrentPage(0)
 	}, [items])
 
-	// Calculate visible items
 	const visibleItems = useMemo(() => {
 		const endIndex = (currentPage + 1) * itemsPerPage
 		return items.slice(0, endIndex)
 	}, [items, currentPage, itemsPerPage])
 
-	// Load more function
-	const loadMore = useCallback(() => {
-		if (isLoadingMore) return
-
-		const totalPages = Math.ceil(items.length / itemsPerPage)
-		if (currentPage < totalPages - 1) {
-			setIsLoadingMore(true)
-			// Simulate async loading for smooth UX
-			setTimeout(() => {
-				setCurrentPage((prev) => prev + 1)
-				setIsLoadingMore(false)
-			}, 100)
-		}
-	}, [currentPage, items.length, itemsPerPage, isLoadingMore])
-
-	// Check if there are more items to load
 	const hasMore = useMemo(() => {
-		const totalPages = Math.ceil(items.length / itemsPerPage)
-		return currentPage < totalPages - 1
-	}, [currentPage, items.length, itemsPerPage])
+		return visibleItems.length < items.length
+	}, [visibleItems.length, items.length])
+
+	const loadMore = useCallback(() => {
+		if (isLoading || !hasMore) return
+
+		setIsLoading(true)
+		// Small delay for smooth UX
+		setTimeout(() => {
+			setCurrentPage((prev) => prev + 1)
+			setIsLoading(false)
+		}, 100)
+	}, [isLoading, hasMore])
 
 	return {
 		visibleItems,
 		loadMore,
 		hasMore,
-		isLoadingMore,
+		isLoading,
 		totalVisible: visibleItems.length,
 		totalItems: items.length
 	}
 }
 
-// Intersection Observer hook for infinite scroll
-function useIntersectionObserver(callback, options = {}) {
+/**
+ * Intersection Observer hook for infinite scroll
+ * @param {Function} callback - Function to call when intersecting
+ * @returns {Function} Ref setter for target element
+ */
+const useIntersectionObserver = (callback) => {
 	const [targetRef, setTargetRef] = useState(null)
 
 	useEffect(() => {
-		if (!targetRef) return
+		if (!targetRef || !callback) return
 
 		const observer = new IntersectionObserver(
 			([entry]) => {
@@ -64,51 +66,44 @@ function useIntersectionObserver(callback, options = {}) {
 			},
 			{
 				threshold: 0.1,
-				rootMargin: '100px',
-				...options
+				rootMargin: '200px'
 			}
 		)
 
 		observer.observe(targetRef)
-
-		return () => {
-			observer.disconnect()
-		}
-	}, [targetRef, callback, options])
+		return () => observer.disconnect()
+	}, [targetRef, callback])
 
 	return setTargetRef
 }
 
+/**
+ * Virtualized spell list with infinite scroll
+ * @param {Array} spells - Array of spell objects
+ * @param {Function} onAction - Action handler function
+ * @param {string} context - Context for spell cards
+ * @param {number} itemsPerPage - Items to load per page
+ */
 export default function VirtualizedSpellList({
-	spells,
+	spells = [],
 	onAction,
 	context = 'deck',
 	itemsPerPage = 50
 }) {
-	const { visibleItems, loadMore, hasMore, isLoadingMore, totalVisible, totalItems } =
+	const { visibleItems, loadMore, hasMore, isLoading, totalVisible, totalItems } =
 		useVirtualization(spells, itemsPerPage)
 
-	// Set up intersection observer for infinite scroll
-	const loadMoreRef = useIntersectionObserver(loadMore, {
-		threshold: 0.1,
-		rootMargin: '200px'
-	})
+	const loadMoreRef = useIntersectionObserver(loadMore)
 
-	// Handle spell actions
 	const handleSpellAction = useCallback(
-		(actionType, spell) => {
-			onAction?.(actionType, spell)
-		},
+		(actionType, spell) => onAction?.(actionType, spell),
 		[onAction]
 	)
 
-	if (!spells || spells.length === 0) {
-		return null
-	}
+	if (!spells.length) return null
 
 	return (
 		<Box>
-			{/* Spell Grid */}
 			<SimpleGrid
 				columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
 				spacing={3}
@@ -123,7 +118,6 @@ export default function VirtualizedSpellList({
 				))}
 			</SimpleGrid>
 
-			{/* Load More Trigger */}
 			{hasMore && (
 				<Box
 					ref={loadMoreRef}
@@ -132,44 +126,15 @@ export default function VirtualizedSpellList({
 					alignItems="center"
 					justifyContent="center"
 					mt={4}>
-					{isLoadingMore ? (
-						<Box
-							className="loading-spinner"
-							width="32px"
-							height="32px"
-							border="3px solid #f3f3f3"
-							borderTop="3px solid #3498db"
-							borderRadius="50%"
-							animation="spin 1s linear infinite"
-						/>
+					{isLoading ? (
+						<Spinner size="lg" color="blue.500" />
 					) : (
-						<Box
-							as="button"
-							onClick={loadMore}
-							px={4}
-							py={2}
-							bg="blue.500"
-							color="white"
-							borderRadius="md"
-							_hover={{ bg: 'blue.600' }}
-							cursor="pointer">
-							Load More Spells ({totalVisible} of {totalItems})
-						</Box>
+						<Button onClick={loadMore} colorScheme="blue" variant="outline">
+							Load More ({totalVisible} of {totalItems})
+						</Button>
 					)}
 				</Box>
 			)}
-
-			{/* Add CSS for spinner animation */}
-			<style jsx>{`
-				@keyframes spin {
-					0% {
-						transform: rotate(0deg);
-					}
-					100% {
-						transform: rotate(360deg);
-					}
-				}
-			`}</style>
 		</Box>
 	)
 }

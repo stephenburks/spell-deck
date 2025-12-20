@@ -14,7 +14,7 @@ import {
 	WrapItem
 } from '@chakra-ui/react'
 import Loading from './loading.jsx'
-import VirtualizedSpellList from './VirtualizedSpellList.jsx'
+import VirtualizedSpellList from './virtualizedSpellList.jsx'
 import { useAllSpells } from '../hooks/useAllSpells.js'
 import { addSpellToSpellbook, addSpellToSessionDeck } from '../utils/localStorage.js'
 import { validateSpellObject } from '../utils/validation.js'

@@ -1,13 +1,13 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Box, Heading, Text, VStack, Alert, Button, HStack, SimpleGrid } from '@chakra-ui/react'
-import SpellCard from './spellCard.jsx'
+import SpellCard from '../spellCard.jsx'
 import {
 	loadSessionDeck,
 	removeSpellFromSessionDeck,
 	saveSessionDeck
-} from '../utils/localStorage.js'
-import { groupSpellsByLevel } from '../utils/spellGrouping.js'
-import { validateSessionSpell, getValidSpells } from '../utils/validation.js'
+} from '../../utils/localStorage.js'
+import { groupSpellsByLevel } from '../../utils/spellGrouping.js'
+import { validateSessionSpell, getValidSpells } from '../../utils/validation.js'
 
 export default function SessionDeckTab() {
 	const [sessionSpells, setSessionSpells] = useState([])

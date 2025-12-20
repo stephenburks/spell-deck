@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Box, Tabs } from '@chakra-ui/react'
-import DailySpellsTab from './DailySpellsTab.jsx'
-import SpellbookTab from './SpellbookTab.jsx'
-import SessionDeckTab from './SessionDeckTab.jsx'
-import SpellDeckTab from './SpellDeckTab.jsx'
+import DailySpellsTab from './tabs/DailySpellsTab.jsx'
+import SpellbookTab from './tabs/SpellbookTab.jsx'
+import SessionDeckTab from './tabs/SessionDeckTab.jsx'
+import SpellDeckTab from './tabs/SpellDeckTab.jsx'
 import { initializeLocalStorage } from '../utils/localStorage.js'
 
 /**

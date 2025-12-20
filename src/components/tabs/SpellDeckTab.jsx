@@ -13,13 +13,13 @@ import {
 	Wrap,
 	WrapItem
 } from '@chakra-ui/react'
-import Loading from './loading.jsx'
-import VirtualizedSpellList from './virtualizedSpellList.jsx'
-import { useAllSpells } from '../hooks/useAllSpells.js'
-import { addSpellToSpellbook, addSpellToSessionDeck } from '../utils/localStorage.js'
-import { validateSpellObject } from '../utils/validation.js'
-import { Icon } from './icons'
-import { useSpellSearchIndex, useSpellSearch } from '../hooks/useSearchIndex.js'
+import Loading from '../ui/loading.jsx'
+import VirtualizedSpellList from '../virtualizedSpellList.jsx'
+import { useAllSpells } from '../../hooks/useAllSpells.js'
+import { addSpellToSpellbook, addSpellToSessionDeck } from '../../utils/localStorage.js'
+import { validateSpellObject } from '../../utils/validation.js'
+import Icon from '../IconRegistry.jsx'
+import { useSpellSearchIndex, useSpellSearch } from '../../hooks/useSearchIndex.js'
 
 // Custom hook for debouncing search input with immediate feedback
 function useDebounce(value, delay) {

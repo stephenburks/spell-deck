@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Badge, Card, Heading, Stat, Button, HStack } from '@chakra-ui/react'
 import { Tooltip } from './ui/tooltip.jsx'
 import { Description } from './card-features/description.jsx'
-import { Icon } from './icons'
+import Icon from './IconRegistry'
 
 // Helper function to render class icons
 const renderClassIcon = (className) => {

@@ -12,14 +12,14 @@ import {
 	AccordionItemBody,
 	AccordionItemContent
 } from '@chakra-ui/react'
-import SpellCard from './spellCard.jsx'
+import SpellCard from '../spellCard.jsx'
 import {
 	loadSpellbook,
 	removeSpellFromSpellbook,
 	addSpellToSessionDeck
-} from '../utils/localStorage.js'
-import { groupSpellsByLevel } from '../utils/spellGrouping.js'
-import { validateSpellObject, getValidSpells } from '../utils/validation.js'
+} from '../../utils/localStorage.js'
+import { groupSpellsByLevel } from '../../utils/spellGrouping.js'
+import { validateSpellObject, getValidSpells } from '../../utils/validation.js'
 
 export default function SpellbookTab() {
 	const [spellbookSpells, setSpellbookSpells] = useState([])

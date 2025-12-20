@@ -5,7 +5,7 @@ This project uses a unified icon system that loads SVG files through the `Icon` 
 ## Usage
 
 ```jsx
-import { Icon } from './icons';
+import Icon from './components/IconRegistry';
 
 // Spell icons
 <Icon name="abjuration" folder="spell" size={24} />
@@ -41,14 +41,14 @@ import { Icon } from './icons';
 ## Adding New Icons
 
 1. Add your SVG file to the appropriate folder:
-    - `src/components/icons/spell/` for spell-related icons
-    - `src/components/icons/classes/` for class icons
-    - `src/components/icons/ui/` for UI icons
+    - `src/assets/icons/spell/` for spell-related icons
+    - `src/assets/icons/classes/` for class icons
+    - `src/assets/icons/ui/` for UI icons
 
 2. Import the SVG in `src/components/IconRegistry.jsx`:
 
     ```jsx
-    import newIcon from './icons/spell/new-icon.svg'
+    import { ReactComponent as NewIcon } from '../assets/icons/spell/new-icon.svg'
     ```
 
 3. Add it to the appropriate registry object:
@@ -56,7 +56,7 @@ import { Icon } from './icons';
     const iconRegistry = {
     	spell: {
     		// ... existing icons
-    		'new-icon': newIcon
+    		'new-icon': NewIcon
     	}
     }
     ```

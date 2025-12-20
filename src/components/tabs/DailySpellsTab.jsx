@@ -1,10 +1,10 @@
 import { useCallback } from 'react'
 import { Box, Heading, Text, SimpleGrid, Alert, Button, HStack } from '@chakra-ui/react'
-import SpellCard from './spellCard.jsx'
-import Loading from './loading.jsx'
-import { useDailySpells } from '../hooks/useDailySpells.js'
-import { addSpellToSpellbook, addSpellToSessionDeck } from '../utils/localStorage.js'
-import { validateSpellObject } from '../utils/validation.js'
+import SpellCard from '../spellCard.jsx'
+import Loading from '../ui/loading.jsx'
+import { useDailySpells } from '../../hooks/useDailySpells.js'
+import { addSpellToSpellbook, addSpellToSessionDeck } from '../../utils/localStorage.js'
+import { validateSpellObject } from '../../utils/validation.js'
 
 /**
  * DailySpellsTab component

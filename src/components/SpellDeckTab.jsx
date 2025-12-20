@@ -20,21 +20,28 @@ import { addSpellToSpellbook, addSpellToSessionDeck } from '../utils/localStorag
 import { validateSpellObject } from '../utils/validation.js'
 import { useSpellSearchIndex, useSpellSearch } from '../hooks/useSearchIndex.js'
 
-// Custom hook for debouncing search input
+// Custom hook for debouncing search input with immediate feedback
 function useDebounce(value, delay) {
 	const [debouncedValue, setDebouncedValue] = useState(value)
+	const [isDebouncing, setIsDebouncing] = useState(false)
 
 	useEffect(() => {
+		// Set debouncing state immediately when value changes
+		if (value !== debouncedValue) {
+			setIsDebouncing(true)
+		}
+
 		const handler = setTimeout(() => {
 			setDebouncedValue(value)
+			setIsDebouncing(false)
 		}, delay)
 
 		return () => {
 			clearTimeout(handler)
 		}
-	}, [value, delay])
+	}, [value, delay, debouncedValue])
 
-	return debouncedValue
+	return { debouncedValue, isDebouncing }
 }
 
 export default function SpellDeckTab() {
@@ -49,7 +56,7 @@ export default function SpellDeckTab() {
 	const [actionError, setActionError] = useState(null)
 
 	// Debounce search term to prevent excessive filtering
-	const debouncedSearchTerm = useDebounce(searchTerm, 200) // Reduced from 300ms
+	const { debouncedValue: debouncedSearchTerm, isDebouncing } = useDebounce(searchTerm, 400) // Increased for better performance
 
 	// Create search index once when spells load
 	const searchIndex = useSpellSearchIndex(spells)
@@ -90,49 +97,62 @@ export default function SpellDeckTab() {
 		}
 	}, [spells])
 
-	// Use optimized search
+	// Use optimized search with early return for short terms
 	const searchResults = useSpellSearch(searchIndex, debouncedSearchTerm)
 
-	// Apply filters efficiently
+	// Memoize filter state to prevent unnecessary recalculations
+	const filterState = useMemo(
+		() => ({
+			hasClassFilter: selectedClasses.length > 0,
+			hasLevelFilter: selectedLevels.length > 0,
+			hasSchoolFilter: selectedSchools.length > 0,
+			hasSearchTerm: debouncedSearchTerm.trim().length >= 2
+		}),
+		[selectedClasses.length, selectedLevels.length, selectedSchools.length, debouncedSearchTerm]
+	)
+
+	// Apply filters efficiently with optimized logic
 	const filteredSpells = useMemo(() => {
 		if (!spells || spells.length === 0) return []
 
-		// Start with search results if there's a search term, otherwise use all spells
-		const baseSpells = debouncedSearchTerm.trim() ? searchResults : spells
+		// Start with search results if there's a valid search term, otherwise use all spells
+		const baseSpells = filterState.hasSearchTerm ? searchResults : spells
 
-		// Apply filters manually since we can't use hooks inside useMemo
-		let filtered = baseSpells
-
-		// Apply class filters
-		if (selectedClasses.length > 0) {
-			filtered = filtered.filter((spell) => {
-				if (!spell.classes || !Array.isArray(spell.classes)) return false
-				return spell.classes.some((cls) => selectedClasses.includes(cls.name))
-			})
+		// Early return if no filters are active
+		if (
+			!filterState.hasClassFilter &&
+			!filterState.hasLevelFilter &&
+			!filterState.hasSchoolFilter
+		) {
+			return baseSpells
 		}
 
-		// Apply level filters
-		if (selectedLevels.length > 0) {
-			filtered = filtered.filter((spell) => selectedLevels.includes(spell.level))
-		}
+		// Apply filters with optimized logic
+		return baseSpells.filter((spell) => {
+			// Class filter - check first as it's most common
+			if (filterState.hasClassFilter) {
+				if (!spell.classes?.some((cls) => selectedClasses.includes(cls.name))) {
+					return false
+				}
+			}
 
-		// Apply school filters
-		if (selectedSchools.length > 0) {
-			filtered = filtered.filter((spell) => {
-				if (!spell.school || !spell.school.name) return false
-				return selectedSchools.includes(spell.school.name)
-			})
-		}
+			// Level filter - simple number comparison
+			if (filterState.hasLevelFilter) {
+				if (!selectedLevels.includes(spell.level)) {
+					return false
+				}
+			}
 
-		return filtered
-	}, [
-		spells,
-		searchResults,
-		selectedClasses,
-		selectedLevels,
-		selectedSchools,
-		debouncedSearchTerm
-	])
+			// School filter - check last as it's least common
+			if (filterState.hasSchoolFilter) {
+				if (!spell.school?.name || !selectedSchools.includes(spell.school.name)) {
+					return false
+				}
+			}
+
+			return true
+		})
+	}, [spells, searchResults, selectedClasses, selectedLevels, selectedSchools, filterState])
 
 	// Handle filter changes (optimized with useCallback)
 	const handleClassFilter = useCallback((className) => {
@@ -300,13 +320,27 @@ export default function SpellDeckTab() {
 				</Box>
 
 				{/* Search Input */}
-				<Box>
+				<Box position="relative">
 					<Input
 						placeholder="Search spells by name, description, or level (e.g., 'cantrip', 'level 3')..."
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
 						size="lg"
 					/>
+					{isDebouncing && searchTerm.length >= 2 && (
+						<Box
+							position="absolute"
+							right="12px"
+							top="50%"
+							transform="translateY(-50%)"
+							width="16px"
+							height="16px"
+							border="2px solid #e2e8f0"
+							borderTop="2px solid #3182ce"
+							borderRadius="50%"
+							animation="spin 1s linear infinite"
+						/>
+					)}
 				</Box>
 
 				{/* Filters */}
@@ -495,6 +529,18 @@ export default function SpellDeckTab() {
 						itemsPerPage={50}
 					/>
 				)}
+
+				{/* Add CSS for spinner animation */}
+				<style jsx>{`
+					@keyframes spin {
+						0% {
+							transform: rotate(0deg);
+						}
+						100% {
+							transform: rotate(360deg);
+						}
+					}
+				`}</style>
 			</VStack>
 		</Box>
 	)

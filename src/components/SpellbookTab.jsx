@@ -192,50 +192,51 @@ export default function SpellbookTab() {
 					</Box>
 				)}
 
-				{/* Spell Groups by Level - Always show all levels */}
-				{
-					<AccordionRoot
-						collapsible="true"
-						defaultValue={levelsWithSpells.map((level) => allLevels.indexOf(level))}>
-						{allLevels.map((level) => {
-							const spellsForLevel = groupedSpells[level] || []
-							const hasSpells = spellsForLevel.length > 0
+				{/* Spell Groups by Level - Show all levels, expand only those with spells */}
+				<AccordionRoot collapsible="true" defaultValue={levelsWithSpells}>
+					{allLevels.map((level) => {
+						const spellsForLevel = groupedSpells[level] || []
+						const hasSpells = spellsForLevel.length > 0
 
-							return (
-								<AccordionItem key={level}>
-									<AccordionItemTrigger>
-										<Box flex="1" textAlign="left">
-											<Heading as="h3" size="md" color="blue.600">
-												{level} ({spellsForLevel.length})
-											</Heading>
-										</Box>
-									</AccordionItemTrigger>
-									<AccordionItemContent>
-										<AccordionItemBody pb={4}>
-											{hasSpells ? (
-												<SimpleGrid
-													columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
-													className="spell-list-container"
-													spacing={3}>
-													{spellsForLevel.map((spell) => (
-														<SpellCard
-															key={spell.index}
-															spell={spell}
-															context="spellbook"
-															onAction={handleSpellAction}
-														/>
-													))}
-												</SimpleGrid>
-											) : (
-												''
-											)}
-										</AccordionItemBody>
-									</AccordionItemContent>
-								</AccordionItem>
-							)
-						})}
-					</AccordionRoot>
-				}
+						return (
+							<AccordionItem key={level} value={level}>
+								<AccordionItemTrigger>
+									<Box flex="1" textAlign="left">
+										<Heading
+											as="h3"
+											size="md"
+											color={hasSpells ? 'blue.600' : 'gray.400'}>
+											{level} ({spellsForLevel.length})
+										</Heading>
+									</Box>
+								</AccordionItemTrigger>
+								<AccordionItemContent>
+									<AccordionItemBody pb={4}>
+										{hasSpells ? (
+											<SimpleGrid
+												columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
+												className="spell-list-container"
+												spacing={3}>
+												{spellsForLevel.map((spell) => (
+													<SpellCard
+														key={spell.index}
+														spell={spell}
+														context="spellbook"
+														onAction={handleSpellAction}
+													/>
+												))}
+											</SimpleGrid>
+										) : (
+											<Text color="gray.500" fontStyle="italic">
+												No spells in this level yet
+											</Text>
+										)}
+									</AccordionItemBody>
+								</AccordionItemContent>
+							</AccordionItem>
+						)
+					})}
+				</AccordionRoot>
 			</VStack>
 		</Box>
 	)

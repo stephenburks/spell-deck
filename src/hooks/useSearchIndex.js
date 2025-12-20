@@ -10,28 +10,39 @@ export function useSpellSearchIndex(spells) {
 		const fuseOptions = {
 			keys: [
 				{ name: 'name', weight: 0.4 }, // Spell name gets highest priority
-				{ name: 'school.name', weight: 0.2 }, // School is important for filtering
-				{ name: 'level', weight: 0.1 }, // Level searches
-				{ name: 'casting_time', weight: 0.1 }, // "1 action", "1 bonus action", etc.
-				{ name: 'desc', weight: 0.2 }, // Description text (lower priority but searchable)
-				// Add computed field for level/cantrip searching
+				{
+					name: 'classes',
+					weight: 0.25,
+					getFn: (spell) => {
+						// Extract class names for searching
+						if (!spell.classes || !Array.isArray(spell.classes)) return ''
+						return spell.classes.map((cls) => cls.name).join(' ')
+					}
+				}, // Class names for filtering
 				{
 					name: 'searchableLevel',
-					weight: 0.2,
+					weight: 0.15,
 					getFn: (spell) => {
 						if (spell.level === 0) {
 							return 'cantrip 0 level0' // Multiple search terms for level 0
 						}
 						return `level${spell.level} ${spell.level}` // "level1 1", "level2 2", etc.
 					}
-				}
+				}, // Level/cantrip searching
+				{ name: 'level', weight: 0.1 }, // Raw level numbers for direct searches
+				{ name: 'school.name', weight: 0.1 }, // School names
+				{ name: 'desc', weight: 0.05 } // Description text (lowest priority)
 			],
-			threshold: 0.3, // 0 = exact match, 1 = match anything. 0.3 is good balance
+			threshold: 0.25, // Lower threshold for more precise matches (0 = exact, 1 = anything)
 			includeScore: true, // Include relevance scores for sorting
 			minMatchCharLength: 2, // Minimum characters before searching
-			ignoreLocation: true, // Don't care where in the text the match occurs
-			findAllMatches: true, // Find all matching patterns, not just the first
-			useExtendedSearch: false // Keep it simple for now
+			ignoreLocation: false, // Location matters for relevance
+			findAllMatches: false, // Only find first match for better performance
+			useExtendedSearch: false, // Keep it simple for performance
+			shouldSort: true, // Let Fuse handle sorting
+			distance: 50, // Shorter distance for more precise matches
+			maxPatternLength: 32, // Limit pattern length for performance
+			isCaseSensitive: false // Case insensitive search
 		}
 
 		// Create the Fuse search index ONCE
@@ -50,21 +61,29 @@ export function useSpellSearchIndex(spells) {
 					return []
 				}
 
-				const results = fuse.search(term.trim())
-				return results.sort((a, b) => a.score - b.score).map((result) => result.item)
+				const results = fuse.search(term.trim(), { limit: 100 }) // Limit results for performance
+
+				// Filter out results with very poor scores (> 0.6 means very loose match)
+				const filteredResults = results.filter((result) => result.score <= 0.6)
+
+				return filteredResults
+					.sort((a, b) => a.score - b.score) // Sort by relevance (lower score = better match)
+					.map((result) => result.item)
 			}
 		}
 	}, [spells])
 }
 
-// Simplified search hook that uses the cached Fuse instance
+// Simplified search hook that uses the cached Fuse instance with better performance
 export function useSpellSearch(searchIndex, searchTerm) {
 	return useMemo(() => {
-		if (!searchIndex || !searchTerm?.trim()) {
+		// Early return for empty/short search terms
+		if (!searchIndex || !searchTerm?.trim() || searchTerm.trim().length < 2) {
 			return []
 		}
 
-		return searchIndex.search(searchTerm)
+		// Use the cached search function from the index
+		return searchIndex.search(searchTerm.trim())
 	}, [searchIndex, searchTerm])
 }
 

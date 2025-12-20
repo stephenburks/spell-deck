@@ -98,7 +98,7 @@ code {
 
 .chakra-input {
 	margin: 0 0 2rem 0;
-	color: var(--chakra-colors-white);
+	color: var(--chakra-colors-gray-800);
 	font-weight: bold;
 	max-width: calc(100% - 2rem);
 }
@@ -849,7 +849,7 @@ span.chakra-badge {
 	justify-content: center;
 	align-items: center;
 	width: 100%;
-	height: calc(100vh - (var(--dice-size) * 0.845));
+	height: calc(40vh - (var(--dice-size) * 0.845));
 }
 
 .loading-text {
@@ -859,7 +859,7 @@ span.chakra-badge {
 	font-family: 'Montserrat', sans-serif;
 	font-weight: 800;
 	text-align: center;
-	color: var(--chakra-colors-gray-50);
+	color: var(--chakra-colors-gray-800);
 }
 
 .dice-d20 {

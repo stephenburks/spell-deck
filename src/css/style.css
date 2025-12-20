@@ -1,3 +1,13 @@
+/* Keyframe animations */
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
 :root {
 	/* Layout Variables */
 	--dice-size: 5rem;
@@ -49,8 +59,6 @@ body {
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
-
-@import url('./icons.css');
 
 /* App Layout */
 .app-container {
@@ -321,122 +329,49 @@ dd.chakra-stat__number {
 	padding: 0.5rem;
 }
 
-/* .class-icon-container:hover {
-	background-color: rgba(255, 255, 255, 0.2);
-} */
-
-.class-icon {
-	width: 1rem;
-	height: 1rem;
-	display: inline-block;
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center;
-}
-
-/* Specific class icon styles */
-.class-icon--barbarian {
-	background-image: var(--barbarian-icon);
-	background-color: var(--color-barbarian);
-}
-
+/* Class-specific container background colors */
 .class-icon-container--barbarian {
 	background-color: var(--color-barbarian);
-}
-
-.class-icon--bard {
-	background-image: var(--bard-icon);
-	background-color: var(--color-bard);
 }
 
 .class-icon-container--bard {
 	background-color: var(--color-bard);
 }
 
-.class-icon--cleric {
-	background-image: var(--cleric-icon);
-	background-color: var(--color-cleric);
-}
-
 .class-icon-container--cleric {
 	background-color: var(--color-cleric);
-}
-
-.class-icon--druid {
-	background-image: var(--druid-icon);
-	background-color: var(--color-druid);
 }
 
 .class-icon-container--druid {
 	background-color: var(--color-druid);
 }
 
-.class-icon--fighter {
-	background-image: var(--fighter-icon);
-	background-color: var(--color-fighter);
-}
-
 .class-icon-container--fighter {
 	background-color: var(--color-fighter);
-}
-
-.class-icon--monk {
-	background-image: var(--monk-icon);
-	background-color: var(--color-monk);
 }
 
 .class-icon-container--monk {
 	background-color: var(--color-monk);
 }
 
-.class-icon--paladin {
-	background-image: var(--paladin-icon);
-	background-color: var(--color-paladin);
-}
-
 .class-icon-container--paladin {
 	background-color: var(--color-paladin);
-}
-
-.class-icon--ranger {
-	background-image: var(--ranger-icon);
-	background-color: var(--color-ranger);
 }
 
 .class-icon-container--ranger {
 	background-color: var(--color-ranger);
 }
 
-.class-icon--rogue {
-	background-image: var(--rogue-icon);
-	background-color: var(--color-rogue);
-}
-
 .class-icon-container--rogue {
 	background-color: var(--color-rogue);
-}
-
-.class-icon--sorcerer {
-	background-image: var(--sorcerer-icon);
-	background-color: var(--color-sorcerer);
 }
 
 .class-icon-container--sorcerer {
 	background-color: var(--color-sorcerer);
 }
 
-.class-icon--warlock {
-	background-image: var(--warlock-icon);
-	background-color: var(-color--warlock);
-}
-
 .class-icon-container--warlock {
 	background-color: var(--color-warlock);
-}
-
-.class-icon--wizard {
-	background-image: var(--wizard-icon);
-	background-color: var(--color-wizard);
 }
 
 .class-icon-container--wizard {

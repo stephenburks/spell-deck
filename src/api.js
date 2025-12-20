@@ -175,9 +175,6 @@ export const getAllSpellIndexes = async () => {
 
 	// Get unique spell indexes
 	const uniqueIndexes = [...new Set(classSpells.flat())]
-	console.log(
-		`Found ${uniqueIndexes.length} unique spells across ${spellCastingClasses.length} classes`
-	)
 
 	return uniqueIndexes
 }

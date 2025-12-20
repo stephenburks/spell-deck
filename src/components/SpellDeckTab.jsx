@@ -18,6 +18,7 @@ import VirtualizedSpellList from './virtualizedSpellList.jsx'
 import { useAllSpells } from '../hooks/useAllSpells.js'
 import { addSpellToSpellbook, addSpellToSessionDeck } from '../utils/localStorage.js'
 import { validateSpellObject } from '../utils/validation.js'
+import { Icon } from './icons'
 import { useSpellSearchIndex, useSpellSearch } from '../hooks/useSearchIndex.js'
 
 // Custom hook for debouncing search input with immediate feedback
@@ -389,16 +390,11 @@ export default function SpellDeckTab() {
 													: 'subtle'
 											}
 											onClick={() => handleClassFilter(className)}>
-											<Box
-												as="span"
-												display="inline-block"
-												width="1.5rem"
-												height="1.5rem"
-												backgroundImage={`var(--${className.toLowerCase()}-icon)`}
-												backgroundSize="contain"
-												backgroundRepeat="no-repeat"
-												backgroundPosition="center"
-												mr={1}
+											<Icon
+												name={className.toLowerCase()}
+												folder="classes"
+												size={24}
+												style={{ marginRight: '0.25rem' }}
 											/>
 											{className}
 										</Button>
@@ -444,16 +440,11 @@ export default function SpellDeckTab() {
 													: 'outline'
 											}
 											onClick={() => handleSchoolFilter(school)}>
-											<Box
-												as="span"
-												display="inline-block"
-												width="1.5rem"
-												height="1.5rem"
-												backgroundImage={`var(--${school.toLowerCase()}-icon)`}
-												backgroundSize="contain"
-												backgroundRepeat="no-repeat"
-												backgroundPosition="center"
-												mr={1}
+											<Icon
+												name={school.toLowerCase()}
+												folder="spell"
+												size={24}
+												style={{ marginRight: '0.25rem' }}
 											/>
 											{school}
 										</Button>
@@ -549,18 +540,6 @@ export default function SpellDeckTab() {
 						itemsPerPage={50}
 					/>
 				)}
-
-				{/* Add CSS for spinner animation */}
-				<style jsx>{`
-					@keyframes spin {
-						0% {
-							transform: rotate(0deg);
-						}
-						100% {
-							transform: rotate(360deg);
-						}
-					}
-				`}</style>
 			</VStack>
 		</Box>
 	)

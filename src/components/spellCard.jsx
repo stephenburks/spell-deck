@@ -2,13 +2,13 @@ import { useMemo } from 'react'
 import { Badge, Card, Heading, Stat, Button, HStack } from '@chakra-ui/react'
 import { Tooltip } from './ui/tooltip.jsx'
 import { Description } from './card-features/description.jsx'
-import { renderIcon } from './utilityComponents.jsx'
+import { Icon } from './icons'
 
 // Helper function to render class icons
 const renderClassIcon = (className) => {
 	const classKey = className.toLowerCase()
 
-	return <div className={`class-icon class-icon--${classKey}`} aria-label={className} />
+	return <Icon name={classKey} folder="classes" size={20} aria-label={className} />
 }
 
 const createBadgeCopy = (spell) => {
@@ -135,7 +135,7 @@ export default function SpellCard({
 					{spell.concentration === true && (
 						<Tooltip content="Concentration Required" interactive>
 							<div className="concentration-indicator">
-								{renderIcon('ConcentrationIcon')}
+								<Icon name="concentration" folder="ui" />
 							</div>
 						</Tooltip>
 					)}
@@ -164,25 +164,25 @@ export default function SpellCard({
 						<div className="stats-grid">
 							<Tooltip showArrow content="Casting Time">
 								<Stat.Root>
-									{renderIcon('CastingTimeIcon')}
+									<Icon name="casting-time" folder="ui" />
 									<Stat.ValueText>{spell.casting_time}</Stat.ValueText>
 								</Stat.Root>
 							</Tooltip>
 							<Tooltip showArrow content="Range">
 								<Stat.Root>
-									{renderIcon('RangeIcon')}
+									<Icon name="range" folder="ui" />
 									<Stat.ValueText>{spell.range}</Stat.ValueText>
 								</Stat.Root>
 							</Tooltip>
 							<Tooltip showArrow content="Components">
 								<Stat.Root>
-									{renderIcon('ComponentIcon')}
+									<Icon name="components" folder="ui" />
 									<Stat.ValueText>{spell.components.join(', ')}</Stat.ValueText>
 								</Stat.Root>
 							</Tooltip>
 							<Tooltip showArrow content="Duration">
 								<Stat.Root>
-									{renderIcon('DurationIcon')}
+									<Icon name="duration" folder="ui" />
 									<Stat.ValueText>{spell.duration}</Stat.ValueText>
 								</Stat.Root>
 							</Tooltip>

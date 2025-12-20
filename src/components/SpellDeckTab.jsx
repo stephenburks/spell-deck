@@ -11,15 +11,14 @@ import {
 	Button,
 	Flex,
 	Wrap,
-	WrapItem,
-	SimpleGrid
+	WrapItem
 } from '@chakra-ui/react'
-import SpellCard from './spellCard.jsx'
 import Loading from './loading.jsx'
+import VirtualizedSpellList from './VirtualizedSpellList.jsx'
 import { useAllSpells } from '../hooks/useAllSpells.js'
 import { addSpellToSpellbook, addSpellToSessionDeck } from '../utils/localStorage.js'
 import { validateSpellObject } from '../utils/validation.js'
-import { useSpellSearch } from '../hooks/useSearchIndex.js'
+import { useSpellSearchIndex, useSpellSearch } from '../hooks/useSearchIndex.js'
 
 // Custom hook for debouncing search input
 function useDebounce(value, delay) {
@@ -50,9 +49,12 @@ export default function SpellDeckTab() {
 	const [actionError, setActionError] = useState(null)
 
 	// Debounce search term to prevent excessive filtering
-	const debouncedSearchTerm = useDebounce(searchTerm, 300)
+	const debouncedSearchTerm = useDebounce(searchTerm, 200) // Reduced from 300ms
 
-	// Extract unique values for filter dropdowns
+	// Create search index once when spells load
+	const searchIndex = useSpellSearchIndex(spells)
+
+	// Extract unique values for filter dropdowns (memoized for performance)
 	const filterOptions = useMemo(() => {
 		if (!spells || spells.length === 0) {
 			return { classes: [], levels: [], schools: [] }
@@ -88,15 +90,18 @@ export default function SpellDeckTab() {
 		}
 	}, [spells])
 
-	// Use Fuse.js for fast search (only when there's a search term)
-	const searchResults = useSpellSearch(spells, debouncedSearchTerm)
+	// Use optimized search
+	const searchResults = useSpellSearch(searchIndex, debouncedSearchTerm)
 
-	// Apply filters and search
+	// Apply filters efficiently
 	const filteredSpells = useMemo(() => {
 		if (!spells || spells.length === 0) return []
 
 		// Start with search results if there's a search term, otherwise use all spells
-		let filtered = debouncedSearchTerm.trim() ? searchResults : spells
+		const baseSpells = debouncedSearchTerm.trim() ? searchResults : spells
+
+		// Apply filters manually since we can't use hooks inside useMemo
+		let filtered = baseSpells
 
 		// Apply class filters
 		if (selectedClasses.length > 0) {
@@ -119,16 +124,6 @@ export default function SpellDeckTab() {
 			})
 		}
 
-		// Limit results for performance (show first 100 when no search term)
-		if (
-			!debouncedSearchTerm.trim() &&
-			selectedClasses.length === 0 &&
-			selectedLevels.length === 0 &&
-			selectedSchools.length === 0
-		) {
-			return filtered.slice(0, 100)
-		}
-
 		return filtered
 	}, [
 		spells,
@@ -139,7 +134,7 @@ export default function SpellDeckTab() {
 		debouncedSearchTerm
 	])
 
-	// Handle filter changes
+	// Handle filter changes (optimized with useCallback)
 	const handleClassFilter = useCallback((className) => {
 		setSelectedClasses((prev) => {
 			if (prev.includes(className)) {
@@ -245,6 +240,16 @@ export default function SpellDeckTab() {
 		}
 	}, [actionError])
 
+	// Check if any filters are active
+	const hasActiveFilters = useMemo(() => {
+		return (
+			selectedClasses.length > 0 ||
+			selectedLevels.length > 0 ||
+			selectedSchools.length > 0 ||
+			searchTerm.trim()
+		)
+	}, [selectedClasses, selectedLevels, selectedSchools, searchTerm])
+
 	// Loading state
 	if (isLoading) {
 		return (
@@ -297,7 +302,7 @@ export default function SpellDeckTab() {
 				{/* Search Input */}
 				<Box>
 					<Input
-						placeholder="Search spells by name or description..."
+						placeholder="Search spells by name, description, or level (e.g., 'cantrip', 'level 3')..."
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
 						size="lg"
@@ -404,10 +409,7 @@ export default function SpellDeckTab() {
 						</Box>
 
 						{/* Clear Filters Button */}
-						{(selectedClasses.length > 0 ||
-							selectedLevels.length > 0 ||
-							selectedSchools.length > 0 ||
-							searchTerm.trim()) && (
+						{hasActiveFilters && (
 							<Box>
 								<Button variant="ghost" onClick={clearAllFilters}>
 									Clear All Filters
@@ -422,16 +424,11 @@ export default function SpellDeckTab() {
 					<Flex justify="space-between" align="center">
 						<Text fontSize="sm" color="gray.600">
 							Showing {filteredSpells.length} of {spellCount} spells
-							{!debouncedSearchTerm.trim() &&
-								selectedClasses.length === 0 &&
-								selectedLevels.length === 0 &&
-								selectedSchools.length === 0 &&
-								filteredSpells.length === 100 && (
-									<Text as="span" fontSize="xs" color="gray.500" ml={2}>
-										(limited to first 100 for performance - use search or
-										filters to narrow results)
-									</Text>
-								)}
+							{debouncedSearchTerm.trim() && (
+								<Text as="span" fontSize="xs" color="blue.500" ml={2}>
+									(search results)
+								</Text>
+							)}
 						</Text>
 						{(selectedClasses.length > 0 ||
 							selectedLevels.length > 0 ||
@@ -482,31 +479,21 @@ export default function SpellDeckTab() {
 							No spells found
 						</Text>
 						<Text color="gray.400">
-							{searchTerm.trim() ||
-							selectedClasses.length > 0 ||
-							selectedLevels.length > 0 ||
-							selectedSchools.length > 0
+							{hasActiveFilters
 								? 'Try adjusting your search terms or filters.'
 								: 'No spells available in the database.'}
 						</Text>
 					</Box>
 				)}
 
-				{/* Spell Results */}
+				{/* Virtualized Spell Results */}
 				{filteredSpells.length > 0 && (
-					<SimpleGrid
-						columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
-						className="spell-list-container"
-						spacing={3}>
-						{filteredSpells.map((spell) => (
-							<SpellCard
-								key={spell.index}
-								spell={spell}
-								context="deck"
-								onAction={handleSpellAction}
-							/>
-						))}
-					</SimpleGrid>
+					<VirtualizedSpellList
+						spells={filteredSpells}
+						onAction={handleSpellAction}
+						context="deck"
+						itemsPerPage={50}
+					/>
 				)}
 			</VStack>
 		</Box>

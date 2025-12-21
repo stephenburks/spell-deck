@@ -1,5 +1,18 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Box, Heading, Text, VStack, Alert, Button, HStack, SimpleGrid } from '@chakra-ui/react'
+import {
+	Box,
+	Heading,
+	Text,
+	VStack,
+	Alert,
+	Button,
+	HStack,
+	SimpleGrid,
+	AccordionRoot,
+	AccordionItem,
+	AccordionItemTrigger,
+	AccordionItemContent
+} from '@chakra-ui/react'
 import SpellCard from '../spellCard.jsx'
 import {
 	loadSessionDeck,
@@ -270,34 +283,49 @@ export default function SpellDeckTab() {
 					</Box>
 				)}
 
-				{/* Spell Groups by Level */}
-				{orderedLevels.map((level) => (
-					<Box key={level}>
-						<Heading as="h3" size="md" mb={4} color="blue.600">
-							{level} ({groupedSpells[level].length})
-							{level === 'Cantrips' && (
-								<Text as="span" fontSize="sm" color="green.600" ml={2}>
-									(Unlimited Use)
-								</Text>
-							)}
-						</Heading>
-						<SimpleGrid
-							columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
-							className="spell-list-container"
-							spacing={3}>
-							{groupedSpells[level].map((spell) => (
-								<SpellCard
-									key={spell.sessionId}
-									spell={spell}
-									context="session"
-									onAction={handleSpellAction}
-									sessionId={spell.sessionId}
-									isCantrip={spell.level === 0}
-								/>
-							))}
-						</SimpleGrid>
-					</Box>
-				))}
+				{/* Spell Groups by Level - Accordions */}
+				{orderedLevels.length > 0 && (
+					<AccordionRoot defaultValue={orderedLevels} multiple>
+						{orderedLevels.map((level) => (
+							<AccordionItem key={level} value={level}>
+								<AccordionItemTrigger>
+									<HStack justify="space-between" width="100%">
+										<Text fontWeight="bold" color="blue.600">
+											{level} ({groupedSpells[level].length})
+											{level === 'Cantrips' && (
+												<Text
+													as="span"
+													fontSize="sm"
+													color="green.600"
+													ml={2}>
+													(Unlimited Use)
+												</Text>
+											)}
+										</Text>
+									</HStack>
+								</AccordionItemTrigger>
+								<AccordionItemContent>
+									<SimpleGrid
+										columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
+										className="spell-list-container"
+										spacing={3}
+										pt={2}>
+										{groupedSpells[level].map((spell) => (
+											<SpellCard
+												key={spell.sessionId}
+												spell={spell}
+												context="session"
+												onAction={handleSpellAction}
+												sessionId={spell.sessionId}
+												isCantrip={spell.level === 0}
+											/>
+										))}
+									</SimpleGrid>
+								</AccordionItemContent>
+							</AccordionItem>
+						))}
+					</AccordionRoot>
+				)}
 			</VStack>
 		</Box>
 	)

@@ -182,22 +182,6 @@ dd.chakra-stat__number {
 	padding-bottom: 0;
 }
 
-/* .chakra-scroll-area__scrollbar[data-orientation='horizontal'] {
-	height: 8px;
-	background: var(--chakra-colors-gray-100);
-	border-radius: 4px;
-}
-
-.chakra-scroll-area__thumb[data-orientation='horizontal'] {
-	background: var(--chakra-colors-gray-400);
-	border-radius: 4px;
-	transition: background-color 0.2s ease;
-}
-
-.chakra-scroll-area__thumb[data-orientation='horizontal']:hover {
-	background: var(--chakra-colors-gray-500);
-} */
-
 /* Ensure tabs don't wrap and maintain proper spacing */
 .chakra-tabs__list {
 	overflow: visible;
@@ -683,7 +667,7 @@ span.chakra-badge {
 	justify-content: center;
 	align-items: center;
 	width: 100%;
-	height: calc(40vh - (var(--dice-size) * 0.845));
+	height: calc(60vh - (var(--dice-size) * 0.845));
 }
 
 .loading-text {
@@ -938,6 +922,8 @@ span.chakra-badge {
 	border: 1px solid var(--chakra-colors-gray-200);
 	border-radius: 0.5rem;
 	margin-bottom: 0.5rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
 }
 
 .chakra-accordion__item:last-child {

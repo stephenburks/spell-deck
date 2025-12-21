@@ -85,7 +85,7 @@ export default function SpellInterface() {
 						display="flex"
 						flexWrap="nowrap"
 						minWidth="max-content"
-						gap={2}>
+						gap={1}>
 						<Tabs.Trigger value="0" flexShrink={0}>
 							<Tooltip.Root>
 								<Tooltip.Trigger asChild>
@@ -151,7 +151,7 @@ export default function SpellInterface() {
 								<Tooltip.Trigger asChild>
 									<Box display="flex" alignItems="center" gap={2}>
 										<Icon name="readme" folder="tabs" />
-										README
+										READ.ME
 									</Box>
 								</Tooltip.Trigger>
 								<Tooltip.Positioner>

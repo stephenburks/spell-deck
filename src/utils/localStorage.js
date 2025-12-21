@@ -70,14 +70,14 @@ export const saveSpellbook = (spells) =>
 	safeSaveToStorage(STORAGE_KEYS.SPELLBOOK, createDataStructure(spells))
 
 /**
- * Load session deck data
- * @returns {Object} Session deck data
+ * Load spell deck data
+ * @returns {Object} Spell deck data
  */
 export const loadSessionDeck = () =>
 	safeLoadFromStorage(STORAGE_KEYS.SESSION_DECK, createDataStructure([]))
 
 /**
- * Save session deck data
+ * Save spell deck data
  * @param {Array} spells - Spells array
  * @returns {boolean} Success status
  */
@@ -209,7 +209,7 @@ export const removeSpellFromSpellbook = (spellIndex) =>
 	removeSpellFromCollection(loadSpellbook, saveSpellbook, (spell) => spell.index !== spellIndex)
 
 /**
- * Add spell to session deck
+ * Add spell to spell deck
  * @param {Object} spell - Spell object
  * @returns {Object} Operation result
  */
@@ -223,7 +223,7 @@ export const addSpellToSessionDeck = (spell) =>
 	)
 
 /**
- * Remove spell from session deck
+ * Remove spell from spell deck
  * @param {string} sessionId - Session ID
  * @returns {Object} Operation result
  */

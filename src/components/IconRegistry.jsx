@@ -41,6 +41,13 @@ import { ReactComponent as Components } from '../assets/icons/ui/components.svg'
 import { ReactComponent as Duration } from '../assets/icons/ui/duration.svg'
 import { ReactComponent as Range } from '../assets/icons/ui/range.svg'
 
+// Import tab SVGs as React components
+import { ReactComponent as SpellsOfTheDay } from '../assets/icons/tabs/spells-of-the-day.svg'
+import { ReactComponent as Spellbook } from '../assets/icons/tabs/spellbook.svg'
+import { ReactComponent as SpellDeck } from '../assets/icons/tabs/spell-deck.svg'
+import { ReactComponent as SpellLibrary } from '../assets/icons/tabs/spell-library.svg'
+import { ReactComponent as Readme } from '../assets/icons/tabs/readme.svg'
+
 // Icon registry
 const iconRegistry = {
 	spell: {
@@ -84,6 +91,13 @@ const iconRegistry = {
 		duration: Duration,
 		range: Range,
 		concentration: Concentration // Also available in UI for spell components
+	},
+	tabs: {
+		'spells-of-the-day': SpellsOfTheDay,
+		spellbook: Spellbook,
+		'session-deck': SpellDeck,
+		'spell-deck': SpellLibrary,
+		readme: Readme
 	}
 }
 

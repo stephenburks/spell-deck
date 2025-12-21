@@ -138,7 +138,7 @@ export default function SpellbookTab() {
 		return result.success
 	}
 
-	// Add spell from spellbook to session deck
+	// Add spell from spellbook to spell deck
 	const addToSession = (spell) => {
 		if (!validateSpellObject(spell)) {
 			setError('Invalid spell data. Cannot add to session.')
@@ -148,7 +148,7 @@ export default function SpellbookTab() {
 		const result = addSpellToSessionDeck(spell)
 		if (result.success) {
 			setError(null)
-			// Trigger localStorage event to update session deck tab
+			// Trigger localStorage event to update spell deck tab
 			window.dispatchEvent(
 				new StorageEvent('storage', {
 					key: 'session-deck',
@@ -226,7 +226,7 @@ export default function SpellbookTab() {
 							Your spellbook is empty
 						</Text>
 						<Text color="gray.400">
-							Add spells from the "Spells of the Day" or "Spell Deck" tabs to build
+							Add spells from the "Spells of the Day" or "Spell Library" tabs to build
 							your personal collection.
 						</Text>
 					</Box>

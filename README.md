@@ -1,4 +1,4 @@
-# D&D 5e Spell Deck
+# D&D 5e Spell Library
 
 A comprehensive React application for managing Dungeons & Dragons 5th Edition spells. Built for
 players and dungeon masters who want a powerful, intuitive spell management system that works
@@ -16,7 +16,7 @@ finding inspiration or learning about spells you might have overlooked.
 Save and organize your favorite spells for quick reference. Build your personal collection and never
 lose track of that perfect spell again.
 
-### ⚔️ Session Deck
+### ⚔️ Spell Deck
 
 Manage spells during active gameplay with real-time spell slot tracking. Add spells to your session,
 "burn" leveled spells when used, and keep cantrips available for unlimited use.
@@ -51,7 +51,7 @@ Search and filter through all D&D 5e spells with advanced filtering options:
 
     ```bash
     git clone <repository-url>
-    cd d-d-5e-spell-deck
+    cd d-d-5e-spell-library
     ```
 
 2. Install dependencies:
@@ -119,8 +119,8 @@ life and make the interface both functional and visually appealing.
 
 1. **Start Exploring**: Begin with "Spells of the Day" to discover new spells
 2. **Build Your Collection**: Use "Spellbook" to save spells you want to remember
-3. **Manage Sessions**: Use "Session Deck" during gameplay to track spell usage
-4. **Deep Dive**: Explore the complete "Spell Deck" with advanced search and filtering
+3. **Manage Sessions**: Use "Spell Deck" during gameplay to track spell usage
+4. **Deep Dive**: Explore the complete "Spell Library" with advanced search and filtering
 5. **Learn More**: Check the "README" tab for detailed information about the project
 
 ## 🔧 Development & Contributing

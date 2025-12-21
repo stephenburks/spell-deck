@@ -10,7 +10,7 @@ import { validateSpellObject } from '../../utils/validation.js'
  * DailySpellsTab component
  * Displays 12 randomly selected spells that refresh daily at midnight
  * Uses optimized loading - only fetches the 12 needed spells instead of entire database
- * Provides actions to add spells to spellbook or session deck
+ * Provides actions to add spells to spellbook or spell deck
  */
 export default function DailySpellsTab() {
 	// Use optimized daily spells hook
@@ -49,12 +49,12 @@ export default function DailySpellsTab() {
 	}, [])
 
 	/**
-	 * Handle adding a spell to the session deck
+	 * Handle adding a spell to the spell deck
 	 */
 	const handleAddToSession = useCallback((spell) => {
 		const result = addSpellToSessionDeck(spell)
 		if (result.success) {
-			console.log(`Added "${spell.name}" to session deck`)
+			console.log(`Added "${spell.name}" to spell deck`)
 			// Trigger localStorage event to update other tabs
 			window.dispatchEvent(
 				new StorageEvent('storage', {

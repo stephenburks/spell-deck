@@ -1,327 +1,162 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { Box, Heading, Text, VStack, Alert, Button, HStack, SimpleGrid } from '@chakra-ui/react'
+import SpellCard from '../spellCard.jsx'
 import {
-	Box,
-	Heading,
-	Text,
-	VStack,
-	HStack,
-	Input,
-	Alert,
-	Badge,
-	Button,
-	Flex,
-	Wrap,
-	WrapItem
-} from '@chakra-ui/react'
-import Loading from '../ui/loading.jsx'
-import VirtualizedSpellList from '../virtualizedSpellList.jsx'
-import { useAllSpells } from '../../hooks/useAllSpells.js'
-import { addSpellToSpellbook, addSpellToSessionDeck } from '../../utils/localStorage.js'
-import { validateSpellObject } from '../../utils/validation.js'
-import Icon from '../IconRegistry.jsx'
-import { useSpellSearchIndex, useSpellSearch } from '../../hooks/useSearchIndex.js'
-
-// Custom hook for debouncing search input with immediate feedback
-function useDebounce(value, delay) {
-	const [debouncedValue, setDebouncedValue] = useState(value)
-	const [isDebouncing, setIsDebouncing] = useState(false)
-
-	useEffect(() => {
-		// Set debouncing state immediately when value changes
-		if (value !== debouncedValue) {
-			setIsDebouncing(true)
-		}
-
-		const handler = setTimeout(() => {
-			setDebouncedValue(value)
-			setIsDebouncing(false)
-		}, delay)
-
-		return () => {
-			clearTimeout(handler)
-		}
-	}, [value, delay, debouncedValue])
-
-	return { debouncedValue, isDebouncing }
-}
+	loadSessionDeck,
+	removeSpellFromSessionDeck,
+	saveSessionDeck
+} from '../../utils/localStorage.js'
+import { groupSpellsByLevel } from '../../utils/spellGrouping.js'
+import { validateSessionSpell, getValidSpells } from '../../utils/validation.js'
 
 export default function SpellDeckTab() {
-	// Fetch all spells using the existing hook
-	const { spells, isLoading, hasError, error, spellCount } = useAllSpells()
+	const [sessionSpells, setSessionSpells] = useState([])
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState(null)
 
-	// Search and filter state
-	const [searchTerm, setSearchTerm] = useState('')
-	const [selectedClasses, setSelectedClasses] = useState([])
-	const [selectedLevels, setSelectedLevels] = useState([])
-	const [selectedSchools, setSelectedSchools] = useState([])
-	const [actionError, setActionError] = useState(null)
+	// Load spell deck data
+	const loadSessionDeckData = () => {
+		try {
+			const sessionDeckData = loadSessionDeck()
+			const validSpells = getValidSpells(sessionDeckData.spells || [])
+			// Filter to only include spells with sessionId (session spells)
+			const validSessionSpells = validSpells.filter(
+				(spell) => spell.sessionId && validateSessionSpell(spell)
+			)
+			setSessionSpells(validSessionSpells)
+		} catch (err) {
+			console.error('Failed to load spell deck:', err)
+			setError('Failed to load your spell deck. Starting with an empty session.')
+			setSessionSpells([])
+		}
+	}
 
-	// Debounce search term to prevent excessive filtering
-	const { debouncedValue: debouncedSearchTerm, isDebouncing } = useDebounce(searchTerm, 400) // Increased for better performance
+	// Load spell deck data on component mount
+	useEffect(() => {
+		loadSessionDeckData()
+		setLoading(false)
+	}, [])
 
-	// Create search index once when spells load
-	const searchIndex = useSpellSearchIndex(spells)
-
-	// Extract unique values for filter dropdowns (memoized for performance)
-	const filterOptions = useMemo(() => {
-		if (!spells || spells.length === 0) {
-			return { classes: [], levels: [], schools: [] }
+	// Listen for localStorage changes from other browser tabs
+	useEffect(() => {
+		const handleStorageChange = (event) => {
+			if (event.key === 'session-deck') {
+				loadSessionDeckData()
+			}
 		}
 
-		const classesSet = new Set()
-		const levelsSet = new Set()
-		const schoolsSet = new Set()
+		window.addEventListener('storage', handleStorageChange)
 
-		spells.forEach((spell) => {
-			// Extract classes
-			if (spell.classes && Array.isArray(spell.classes)) {
-				spell.classes.forEach((cls) => {
-					if (cls.name) classesSet.add(cls.name)
-				})
-			}
-
-			// Extract levels
-			if (typeof spell.level === 'number') {
-				levelsSet.add(spell.level)
-			}
-
-			// Extract schools
-			if (spell.school && spell.school.name) {
-				schoolsSet.add(spell.school.name)
-			}
-		})
-
-		return {
-			classes: Array.from(classesSet).sort(),
-			levels: Array.from(levelsSet).sort((a, b) => a - b),
-			schools: Array.from(schoolsSet).sort()
+		return () => {
+			window.removeEventListener('storage', handleStorageChange)
 		}
-	}, [spells])
+	}, [])
 
-	// Use optimized search with early return for short terms
-	const searchResults = useSpellSearch(searchIndex, debouncedSearchTerm)
+	// Group spells by level for display
+	const groupedSpells = useMemo(() => {
+		return groupSpellsByLevel(sessionSpells)
+	}, [sessionSpells])
 
-	// Memoize filter state to prevent unnecessary recalculations
-	const filterState = useMemo(
-		() => ({
-			hasClassFilter: selectedClasses.length > 0,
-			hasLevelFilter: selectedLevels.length > 0,
-			hasSchoolFilter: selectedSchools.length > 0,
-			hasSearchTerm: debouncedSearchTerm.trim().length >= 2
-		}),
-		[selectedClasses.length, selectedLevels.length, selectedSchools.length, debouncedSearchTerm]
-	)
+	// Get ordered level groups for consistent display
+	const orderedLevels = useMemo(() => {
+		const levels = [
+			'Cantrips',
+			'Level 1',
+			'Level 2',
+			'Level 3',
+			'Level 4',
+			'Level 5',
+			'Level 6',
+			'Level 7',
+			'Level 8',
+			'Level 9'
+		]
+		return levels.filter((level) => groupedSpells[level] && groupedSpells[level].length > 0)
+	}, [groupedSpells])
 
-	// Apply filters efficiently with optimized logic
-	const filteredSpells = useMemo(() => {
-		if (!spells || spells.length === 0) return []
+	// Count cantrips and leveled spells for display
+	const spellCounts = useMemo(() => {
+		const cantrips = sessionSpells.filter((spell) => spell.level === 0).length
+		const leveledSpells = sessionSpells.filter((spell) => spell.level > 0).length
+		return { cantrips, leveledSpells, total: sessionSpells.length }
+	}, [sessionSpells])
 
-		// Start with search results if there's a valid search term, otherwise use all spells
-		const baseSpells = filterState.hasSearchTerm ? searchResults : spells
-
-		// Early return if no filters are active
-		if (
-			!filterState.hasClassFilter &&
-			!filterState.hasLevelFilter &&
-			!filterState.hasSchoolFilter
-		) {
-			return baseSpells
+	// Burn spell (remove leveled spell from session)
+	const burnSpell = (sessionId) => {
+		// Find the spell to burn
+		const spellToBurn = sessionSpells.find((spell) => spell.sessionId === sessionId)
+		if (!spellToBurn) {
+			setError('Spell not found in session.')
+			return false
 		}
 
-		// Apply filters with optimized logic
-		return baseSpells.filter((spell) => {
-			// Class filter - check first as it's most common
-			if (filterState.hasClassFilter) {
-				if (!spell.classes?.some((cls) => selectedClasses.includes(cls.name))) {
-					return false
-				}
+		// Check if it's a cantrip (cantrips cannot be burned)
+		if (spellToBurn.level === 0) {
+			setError('Cantrips cannot be burned - they have unlimited use.')
+			return false
+		}
+
+		const result = removeSpellFromSessionDeck(sessionId)
+		if (result.success) {
+			// Update local state immediately (optimistic update)
+			setSessionSpells(
+				getValidSpells(result.spells || []).filter(
+					(spell) => spell.sessionId && validateSessionSpell(spell)
+				)
+			)
+			setError(null)
+		} else {
+			setError(result.message)
+		}
+		return result.success
+	}
+
+	// Clear entire session
+	const clearSession = () => {
+		try {
+			// Save empty session to localStorage
+			const success = saveSessionDeck([])
+			if (!success) {
+				setError('Failed to clear session.')
+				return false
 			}
 
-			// Level filter - simple number comparison
-			if (filterState.hasLevelFilter) {
-				if (!selectedLevels.includes(spell.level)) {
-					return false
-				}
-			}
-
-			// School filter - check last as it's least common
-			if (filterState.hasSchoolFilter) {
-				if (!spell.school?.name || !selectedSchools.includes(spell.school.name)) {
-					return false
-				}
-			}
-
+			// Update local state
+			setSessionSpells([])
+			setError(null)
 			return true
-		})
-	}, [spells, searchResults, selectedClasses, selectedLevels, selectedSchools, filterState])
-
-	// Handle filter changes (optimized with useCallback)
-	const handleClassFilter = useCallback((className) => {
-		setSelectedClasses((prev) => {
-			if (prev.includes(className)) {
-				return prev.filter((c) => c !== className)
-			} else {
-				return [...prev, className]
-			}
-		})
-	}, [])
-
-	const handleLevelFilter = useCallback((level) => {
-		setSelectedLevels((prev) => {
-			if (prev.includes(level)) {
-				return prev.filter((l) => l !== level)
-			} else {
-				return [...prev, level]
-			}
-		})
-	}, [])
-
-	const handleSchoolFilter = useCallback((school) => {
-		setSelectedSchools((prev) => {
-			if (prev.includes(school)) {
-				return prev.filter((s) => s !== school)
-			} else {
-				return [...prev, school]
-			}
-		})
-	}, [])
-
-	// Clear all filters
-	const clearAllFilters = useCallback(() => {
-		setSelectedClasses([])
-		setSelectedLevels([])
-		setSelectedSchools([])
-		setSearchTerm('')
-	}, [])
-
-	// Add spell to spellbook
-	const addToSpellbook = useCallback((spell) => {
-		if (!validateSpellObject(spell)) {
-			setActionError('Invalid spell data. Cannot add to spellbook.')
+		} catch (err) {
+			console.error('Failed to clear session:', err)
+			setError('Failed to clear session.')
 			return false
 		}
-
-		const result = addSpellToSpellbook(spell)
-		if (result.success) {
-			setActionError(null)
-			// Trigger localStorage event to update spellbook tab
-			window.dispatchEvent(
-				new StorageEvent('storage', {
-					key: 'user-spellbook',
-					newValue: JSON.stringify({
-						spells: result.spells,
-						lastModified: new Date().toISOString()
-					})
-				})
-			)
-		} else {
-			setActionError(result.message)
-		}
-		return result.success
-	}, [])
-
-	// Add spell to session deck
-	const addToSession = useCallback((spell) => {
-		console.log('SpellDeckTab: Adding spell to session:', spell.name)
-
-		if (!validateSpellObject(spell)) {
-			console.error('SpellDeckTab: Invalid spell data:', spell)
-			setActionError('Invalid spell data. Cannot add to session.')
-			return false
-		}
-
-		console.log('SpellDeckTab: Spell validation passed, calling addSpellToSessionDeck')
-		const result = addSpellToSessionDeck(spell)
-		console.log('SpellDeckTab: addSpellToSessionDeck result:', result)
-
-		if (result.success) {
-			console.log('SpellDeckTab: Successfully added spell to session')
-			setActionError(null)
-			// Trigger localStorage event to update session deck tab
-			window.dispatchEvent(
-				new StorageEvent('storage', {
-					key: 'session-deck',
-					newValue: JSON.stringify({
-						spells: result.spells,
-						lastModified: new Date().toISOString()
-					})
-				})
-			)
-		} else {
-			console.error('SpellDeckTab: Failed to add spell to session:', result.message)
-			setActionError(result.message)
-		}
-		return result.success
-	}, [])
+	}
 
 	// Handle spell card actions
-	const handleSpellAction = useCallback(
-		(actionType, spell) => {
-			switch (actionType) {
-				case 'addToSpellbook':
-					addToSpellbook(spell)
-					break
-				case 'addToSession':
-					addToSession(spell)
-					break
-				default:
-					console.warn('Unknown action type:', actionType)
-			}
-		},
-		[addToSpellbook, addToSession]
-	)
+	const handleSpellAction = (actionType, spell, sessionId) => {
+		switch (actionType) {
+			case 'burnSpell':
+				burnSpell(sessionId)
+				break
+			default:
+				console.warn('Unknown action type:', actionType)
+		}
+	}
 
 	// Clear error after a delay
 	useEffect(() => {
-		if (actionError) {
+		if (error) {
 			const timer = setTimeout(() => {
-				setActionError(null)
+				setError(null)
 			}, 5000)
 			return () => clearTimeout(timer)
 		}
-	}, [actionError])
+	}, [error])
 
-	// Check if any filters are active
-	const hasActiveFilters = useMemo(() => {
-		return (
-			selectedClasses.length > 0 ||
-			selectedLevels.length > 0 ||
-			selectedSchools.length > 0 ||
-			searchTerm.trim()
-		)
-	}, [selectedClasses, selectedLevels, selectedSchools, searchTerm])
-
-	// Loading state
-	if (isLoading) {
+	if (loading) {
 		return (
 			<Box p={4}>
-				<VStack spacing={4} align="stretch">
-					<Heading as="h2" size="lg">
-						Spell Deck
-					</Heading>
-					<Loading />
-					<Text color="gray.600">Loading complete spell database...</Text>
-					<Text fontSize="sm" color="gray.500">
-						This may take a few moments as we fetch all{' '}
-						{spellCount > 0 ? spellCount : '319'} spells
-					</Text>
-				</VStack>
-			</Box>
-		)
-	}
-
-	// Error state
-	if (hasError) {
-		return (
-			<Box p={4}>
-				<VStack spacing={4} align="stretch">
-					<Heading as="h2" size="lg">
-						Spell Deck
-					</Heading>
-					<Alert status="error">
-						Failed to load spells: {error?.message || 'Unknown error'}
-					</Alert>
-				</VStack>
+				<Text>Loading your spell deck...</Text>
 			</Box>
 		)
 	}
@@ -331,215 +166,95 @@ export default function SpellDeckTab() {
 			<VStack spacing={6} align="stretch">
 				{/* Header */}
 				<Box>
-					<Heading as="h2" size="lg" mb={2}>
-						Spell Deck
-					</Heading>
-					<Text color="gray.600">
-						Search and browse all available spells. Add spells to your spellbook or
-						session deck.
-					</Text>
-				</Box>
-
-				{/* Search Input */}
-				<Box position="relative">
-					<Input
-						placeholder="Search spells by name, description, or level (e.g., 'cantrip', 'level 3')..."
-						value={searchTerm}
-						onChange={(e) => setSearchTerm(e.target.value)}
-						size="lg"
-					/>
-					{isDebouncing && searchTerm.length >= 2 && (
-						<Box
-							position="absolute"
-							right="12px"
-							top="50%"
-							transform="translateY(-50%)"
-							width="16px"
-							height="16px"
-							border="2px solid #e2e8f0"
-							borderTop="2px solid #3182ce"
-							borderRadius="50%"
-							animation="spin 1s linear infinite"
-						/>
-					)}
-				</Box>
-
-				{/* Filters */}
-				<Box>
-					<Heading as="h3" size="md" mb={3}>
-						Filters
-					</Heading>
-
-					<VStack spacing={4} align="stretch">
-						{/* Class Filters */}
+					<HStack justify="center" align="flex-start" mb={2}>
 						<Box>
-							<Text fontWeight="semibold" mb={2}>
-								Classes
+							<Heading as="h2" size="lg" mb={2}>
+								Spell Deck
+							</Heading>
+							<Text color="gray.600">
+								Manage spells for your current game session. Burn leveled spells
+								when used, cantrips have unlimited use.
 							</Text>
-							<Wrap spacing={2}>
-								{filterOptions.classes.map((className) => (
-									<WrapItem key={className}>
-										<Button
-											size="sm"
-											fontWeight="bold"
-											color="white"
-											backgroundColor={`var(--color-${className.toLowerCase()})`}
-											variant={
-												selectedClasses.includes(className)
-													? 'solid'
-													: 'subtle'
-											}
-											onClick={() => handleClassFilter(className)}>
-											<Icon
-												name={className.toLowerCase()}
-												folder="classes"
-												size={24}
-												style={{ marginRight: '0.25rem' }}
-											/>
-											{className}
-										</Button>
-									</WrapItem>
-								))}
-							</Wrap>
-						</Box>
-
-						{/* Level Filters */}
-						<Box>
-							<Text fontWeight="semibold" mb={2}>
-								Levels
-							</Text>
-							<Wrap spacing={2}>
-								{filterOptions.levels.map((level) => (
-									<WrapItem key={level}>
-										<Button
-											size="sm"
-											variant={
-												selectedLevels.includes(level) ? 'solid' : 'outline'
-											}
-											onClick={() => handleLevelFilter(level)}>
-											{level === 0 ? 'Cantrip' : `Level ${level}`}
-										</Button>
-									</WrapItem>
-								))}
-							</Wrap>
-						</Box>
-
-						{/* School Filters */}
-						<Box>
-							<Text fontWeight="semibold" mb={2}>
-								Schools
-							</Text>
-							<Wrap spacing={2}>
-								{filterOptions.schools.map((school) => (
-									<WrapItem key={school}>
-										<Button
-											size="sm"
-											variant={
-												selectedSchools.includes(school)
-													? 'subtle'
-													: 'outline'
-											}
-											onClick={() => handleSchoolFilter(school)}>
-											<Icon
-												name={school.toLowerCase()}
-												folder="spell"
-												size={24}
-												style={{ marginRight: '0.25rem' }}
-											/>
-											{school}
-										</Button>
-									</WrapItem>
-								))}
-							</Wrap>
-						</Box>
-
-						{/* Clear Filters Button */}
-						{hasActiveFilters && (
-							<Box>
-								<Button variant="ghost" onClick={clearAllFilters}>
-									Clear All Filters
-								</Button>
-							</Box>
-						)}
-					</VStack>
-				</Box>
-
-				{/* Results Counter */}
-				<Box>
-					<Flex justify="space-between" align="center">
-						<Text fontSize="sm" color="gray.600">
-							Showing {filteredSpells.length} of {spellCount} spells
-							{debouncedSearchTerm.trim() && (
-								<Text as="span" fontSize="xs" color="blue.500" ml={2}>
-									(search results)
+							{sessionSpells.length > 0 && (
+								<Text fontSize="sm" color="gray.500" mt={1}>
+									{spellCounts.total} spell{spellCounts.total !== 1 ? 's' : ''} in
+									session
+									{spellCounts.cantrips > 0 && (
+										<>
+											{' '}
+											• {spellCounts.cantrips} cantrip
+											{spellCounts.cantrips !== 1 ? 's' : ''} (unlimited)
+										</>
+									)}
+									{spellCounts.leveledSpells > 0 && (
+										<>
+											{' '}
+											• {spellCounts.leveledSpells} leveled spell
+											{spellCounts.leveledSpells !== 1 ? 's' : ''}
+										</>
+									)}
 								</Text>
 							)}
-						</Text>
-						{(selectedClasses.length > 0 ||
-							selectedLevels.length > 0 ||
-							selectedSchools.length > 0) && (
-							<HStack spacing={2}>
-								<Text fontSize="sm" color="gray.500">
-									Active filters:
-								</Text>
-								{selectedClasses.map((cls) => (
-									<Badge
-										key={cls}
-										className="filter-badge"
-										variant="solid"
-										size="sm">
-										{cls}
-									</Badge>
-								))}
-								{selectedLevels.map((level) => (
-									<Badge
-										key={level}
-										className="filter-badge"
-										variant="solid"
-										size="sm">
-										{level === 0 ? 'Cantrip' : `L${level}`}
-									</Badge>
-								))}
-								{selectedSchools.map((school) => (
-									<Badge
-										key={school}
-										className="filter-badge"
-										variant="solid"
-										size="sm">
-										{school}
-									</Badge>
-								))}
-							</HStack>
+						</Box>
+						{/* Clear Session Button */}
+						{sessionSpells.length > 0 && (
+							<Button
+								variant="outline"
+								colorScheme="red"
+								size="sm"
+								onClick={clearSession}
+								position="absolute"
+								right="1.5rem">
+								Clear Session
+							</Button>
 						)}
-					</Flex>
+					</HStack>
 				</Box>
 
-				{/* Action Error Alert */}
-				{actionError && <Alert status="error">{actionError}</Alert>}
+				{/* Error Alert */}
+				{error && <Alert status="error">{error}</Alert>}
 
 				{/* Empty State */}
-				{filteredSpells.length === 0 && !isLoading && (
+				{sessionSpells.length === 0 && (
 					<Box textAlign="center" py={8}>
 						<Text fontSize="lg" color="gray.500" mb={4}>
-							No spells found
+							Your spell deck is empty
 						</Text>
 						<Text color="gray.400">
-							{hasActiveFilters
-								? 'Try adjusting your search terms or filters.'
-								: 'No spells available in the database.'}
+							Add spells from your "Spellbook", "Spells of the Day", or "Spell
+							Library" to start your session.
 						</Text>
 					</Box>
 				)}
 
-				{/* Virtualized Spell Results */}
-				{filteredSpells.length > 0 && (
-					<VirtualizedSpellList
-						spells={filteredSpells}
-						onAction={handleSpellAction}
-						context="deck"
-						itemsPerPage={50}
-					/>
-				)}
+				{/* Spell Groups by Level */}
+				{orderedLevels.map((level) => (
+					<Box key={level}>
+						<Heading as="h3" size="md" mb={4} color="blue.600">
+							{level} ({groupedSpells[level].length})
+							{level === 'Cantrips' && (
+								<Text as="span" fontSize="sm" color="green.600" ml={2}>
+									(Unlimited Use)
+								</Text>
+							)}
+						</Heading>
+						<SimpleGrid
+							columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
+							className="spell-list-container"
+							spacing={3}>
+							{groupedSpells[level].map((spell) => (
+								<SpellCard
+									key={spell.sessionId}
+									spell={spell}
+									context="session"
+									onAction={handleSpellAction}
+									sessionId={spell.sessionId}
+									isCantrip={spell.level === 0}
+								/>
+							))}
+						</SimpleGrid>
+					</Box>
+				))}
 			</VStack>
 		</Box>
 	)

@@ -1,4 +1,4 @@
-# D&D 5e Spell Deck - Ideas & Roadmap
+# D&D 5e Spell Library - Ideas & Roadmap
 
 A living document for tracking features, enhancements, and ideas for the spell management
 application.
@@ -14,7 +14,7 @@ application.
 - [x] **Tab-based navigation** - Multiple interfaces for different use cases
 - [x] **Spells of the Day** - Daily randomized spell selections by class
 - [x] **Personal Spellbook** - Save and organize favorite spells
-- [x] **Session Deck** - Active gameplay spell management with "burn" functionality
+- [x] **Spell Deck** - Active gameplay spell management with "burn" functionality
 - [x] **Complete Spell Database** - Search and filter through all D&D 5e spells
 - [x] **Advanced Search & Filtering** - Class, level, school, and text-based filtering
 - [x] **Chakra UI v3 Migration** - Updated to modern component library
@@ -46,7 +46,7 @@ application.
 
 - [ ] **Custom Spell Creation** - Allow users to create and save custom spells
 - [ ] **Spell Notes & Annotations** - Personal notes on spells in spellbook
-- [ ] **Campaign Management** - Multiple session decks for different campaigns
+- [ ] **Campaign Management** - Multiple spell decks for different campaigns
 - [ ] **Spell Slot Tracking** - Visual spell slot management for different caster levels
 - [ ] **Spell Preparation Interface** - Wizard-style spell preparation workflow
 

@@ -11,7 +11,12 @@ import {
 	Button,
 	Flex,
 	Wrap,
-	WrapItem
+	WrapItem,
+	AccordionRoot,
+	AccordionItem,
+	AccordionItemTrigger,
+	AccordionItemContent,
+	AccordionItemIndicator
 } from '@chakra-ui/react'
 import Loading from '../ui/loading.jsx'
 import VirtualizedSpellList from '../virtualizedSpellList.jsx'
@@ -20,6 +25,7 @@ import { addSpellToSpellbook, addSpellToSessionDeck } from '../../utils/localSto
 import { validateSpellObject } from '../../utils/validation.js'
 import Icon from '../IconRegistry.jsx'
 import { useSpellSearchIndex, useSpellSearch } from '../../hooks/useSearchIndex.js'
+import { toaster } from '../ui/toaster'
 
 // Custom hook for debouncing search input with immediate feedback
 function useDebounce(value, delay) {
@@ -197,12 +203,24 @@ export default function SpellLibraryTab() {
 	const addToSpellbook = useCallback((spell) => {
 		if (!validateSpellObject(spell)) {
 			setActionError('Invalid spell data. Cannot add to spellbook.')
+			toaster.create({
+				title: 'Error',
+				description: 'Invalid spell data. Cannot add to spellbook.',
+				status: 'error',
+				duration: 3000
+			})
 			return false
 		}
 
 		const result = addSpellToSpellbook(spell)
 		if (result.success) {
 			setActionError(null)
+			toaster.create({
+				title: 'Added to Spellbook',
+				description: `"${spell.name}" has been added to your spellbook`,
+				status: 'success',
+				duration: 3000
+			})
 			// Trigger localStorage event to update spellbook tab
 			window.dispatchEvent(
 				new StorageEvent('storage', {
@@ -215,6 +233,12 @@ export default function SpellLibraryTab() {
 			)
 		} else {
 			setActionError(result.message)
+			toaster.create({
+				title: 'Error',
+				description: result.message,
+				status: 'error',
+				duration: 3000
+			})
 		}
 		return result.success
 	}, [])
@@ -226,6 +250,12 @@ export default function SpellLibraryTab() {
 		if (!validateSpellObject(spell)) {
 			console.error('SpellLibraryTab: Invalid spell data:', spell)
 			setActionError('Invalid spell data. Cannot add to session.')
+			toaster.create({
+				title: 'Error',
+				description: 'Invalid spell data. Cannot add to spell deck.',
+				status: 'error',
+				duration: 3000
+			})
 			return false
 		}
 
@@ -236,6 +266,12 @@ export default function SpellLibraryTab() {
 		if (result.success) {
 			console.log('SpellLibraryTab: Successfully added spell to session')
 			setActionError(null)
+			toaster.create({
+				title: 'Added to Spell Deck',
+				description: `"${spell.name}" has been added to your spell deck`,
+				status: 'success',
+				duration: 3000
+			})
 			// Trigger localStorage event to update spell deck tab
 			window.dispatchEvent(
 				new StorageEvent('storage', {
@@ -249,6 +285,12 @@ export default function SpellLibraryTab() {
 		} else {
 			console.error('SpellLibraryTab: Failed to add spell to session:', result.message)
 			setActionError(result.message)
+			toaster.create({
+				title: 'Error',
+				description: result.message,
+				status: 'error',
+				duration: 3000
+			})
 		}
 		return result.success
 	}, [])
@@ -293,7 +335,7 @@ export default function SpellLibraryTab() {
 	// Loading state
 	if (isLoading) {
 		return (
-			<Box p={4}>
+			<Box p={4} pt={2}>
 				<VStack spacing={4} align="stretch">
 					<Heading as="h2" size="lg">
 						Spell Library
@@ -312,7 +354,7 @@ export default function SpellLibraryTab() {
 	// Error state
 	if (hasError) {
 		return (
-			<Box p={4}>
+			<Box p={4} pt={2}>
 				<VStack spacing={4} align="stretch">
 					<Heading as="h2" size="lg">
 						Spell Library
@@ -326,7 +368,7 @@ export default function SpellLibraryTab() {
 	}
 
 	return (
-		<Box p={4}>
+		<Box p={4} pt={2}>
 			<VStack spacing={6} align="stretch">
 				{/* Header */}
 				<Box>
@@ -369,98 +411,130 @@ export default function SpellLibraryTab() {
 						Filters
 					</Heading>
 
-					<VStack spacing={4} align="stretch">
-						{/* Class Filters */}
-						<Box>
-							<Text fontWeight="semibold" mb={2}>
-								Classes
-							</Text>
-							<Wrap spacing={2}>
-								{filterOptions.classes.map((className) => (
-									<WrapItem key={className}>
-										<Button
-											size="sm"
-											fontWeight="bold"
-											color="white"
-											backgroundColor={`var(--color-${className.toLowerCase()})`}
-											variant={
-												selectedClasses.includes(className)
-													? 'solid'
-													: 'subtle'
-											}
-											onClick={() => handleClassFilter(className)}>
-											<Icon
-												name={className.toLowerCase()}
-												folder="classes"
-												size={24}
-												style={{ marginRight: '0.25rem' }}
-											/>
-											{className}
-										</Button>
-									</WrapItem>
-								))}
-							</Wrap>
-						</Box>
+					<AccordionRoot defaultValue={['classes']} multiple>
+						{/* Class Filters - Expanded by default */}
+						<AccordionItem value="classes" pl={4} py={2}>
+							<AccordionItemTrigger>
+								<Text fontWeight="semibold">
+									Classes
+									{selectedClasses.length > 0 && (
+										<Badge ml={2} size="sm" variant="solid">
+											{selectedClasses.length}
+										</Badge>
+									)}
+								</Text>
+								<AccordionItemIndicator />
+							</AccordionItemTrigger>
+							<AccordionItemContent>
+								<Wrap spacing={2} pt={2}>
+									{filterOptions.classes.map((className) => (
+										<WrapItem key={className}>
+											<Button
+												size="sm"
+												fontWeight="bold"
+												className={`class-filter-button class-filter-button--${className.toLowerCase()}`}
+												data-selected={selectedClasses.includes(className)}
+												variant={
+													selectedClasses.includes(className)
+														? 'solid'
+														: 'outline'
+												}
+												onClick={() => handleClassFilter(className)}>
+												<Icon
+													name={className.toLowerCase()}
+													folder="classes"
+													size={24}
+													style={{ marginRight: '0.25rem' }}
+												/>
+												{className}
+											</Button>
+										</WrapItem>
+									))}
+								</Wrap>
+							</AccordionItemContent>
+						</AccordionItem>
 
-						{/* Level Filters */}
-						<Box>
-							<Text fontWeight="semibold" mb={2}>
-								Levels
-							</Text>
-							<Wrap spacing={2}>
-								{filterOptions.levels.map((level) => (
-									<WrapItem key={level}>
-										<Button
-											size="sm"
-											variant={
-												selectedLevels.includes(level) ? 'solid' : 'outline'
-											}
-											onClick={() => handleLevelFilter(level)}>
-											{level === 0 ? 'Cantrip' : `Level ${level}`}
-										</Button>
-									</WrapItem>
-								))}
-							</Wrap>
-						</Box>
+						{/* Level Filters - Collapsed by default */}
+						<AccordionItem value="levels" pl={4} py={2}>
+							<AccordionItemTrigger>
+								<Text fontWeight="semibold">
+									Levels
+									{selectedLevels.length > 0 && (
+										<Badge ml={2} size="sm" variant="solid">
+											{selectedLevels.length}
+										</Badge>
+									)}
+								</Text>
+								<AccordionItemIndicator />
+							</AccordionItemTrigger>
+							<AccordionItemContent>
+								<Wrap spacing={2} pt={2}>
+									{filterOptions.levels.map((level) => (
+										<WrapItem key={level}>
+											<Button
+												size="sm"
+												variant={
+													selectedLevels.includes(level)
+														? 'solid'
+														: 'outline'
+												}
+												onClick={() => handleLevelFilter(level)}>
+												{level === 0 ? 'Cantrip' : `Level ${level}`}
+											</Button>
+										</WrapItem>
+									))}
+								</Wrap>
+							</AccordionItemContent>
+						</AccordionItem>
 
-						{/* School Filters */}
-						<Box>
-							<Text fontWeight="semibold" mb={2}>
-								Schools
-							</Text>
-							<Wrap spacing={2}>
-								{filterOptions.schools.map((school) => (
-									<WrapItem key={school}>
-										<Button
-											size="sm"
-											variant={
-												selectedSchools.includes(school)
-													? 'subtle'
-													: 'outline'
-											}
-											onClick={() => handleSchoolFilter(school)}>
-											<Icon
-												name={school.toLowerCase()}
-												folder="spell"
-												size={24}
-												style={{ marginRight: '0.25rem' }}
-											/>
-											{school}
-										</Button>
-									</WrapItem>
-								))}
-							</Wrap>
-						</Box>
+						{/* School Filters - Collapsed by default */}
+						<AccordionItem value="schools" pl={4} py={2}>
+							<AccordionItemTrigger>
+								<Text fontWeight="semibold">
+									Schools
+									{selectedSchools.length > 0 && (
+										<Badge ml={2} size="sm" variant="solid">
+											{selectedSchools.length}
+										</Badge>
+									)}
+								</Text>
+								<AccordionItemIndicator />
+							</AccordionItemTrigger>
+							<AccordionItemContent>
+								<Wrap spacing={2} pt={2}>
+									{filterOptions.schools.map((school) => (
+										<WrapItem key={school}>
+											<Button
+												size="sm"
+												variant={
+													selectedSchools.includes(school)
+														? 'subtle'
+														: 'outline'
+												}
+												onClick={() => handleSchoolFilter(school)}>
+												<Icon
+													name={school.toLowerCase()}
+													folder="spell"
+													size={24}
+													style={{ marginRight: '0.25rem' }}
+												/>
+												{school}
+											</Button>
+										</WrapItem>
+									))}
+								</Wrap>
+							</AccordionItemContent>
+						</AccordionItem>
+					</AccordionRoot>
 
-						{/* Clear Filters Button */}
-						{hasActiveFilters && (
-							<Box>
-								<Button variant="ghost" onClick={clearAllFilters}>
-									Clear All Filters
-								</Button>
-							</Box>
-						)}
-					</VStack>
+					{/* Clear Filters Button */}
+					{hasActiveFilters && (
+						<Box mt={4}>
+							<Button variant="ghost" onClick={clearAllFilters}>
+								Clear All Filters
+							</Button>
+						</Box>
+					)}
 				</Box>
 
 				{/* Results Counter */}

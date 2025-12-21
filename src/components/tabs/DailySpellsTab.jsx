@@ -5,6 +5,7 @@ import Loading from '../ui/loading.jsx'
 import { useDailySpells } from '../../hooks/useDailySpells.js'
 import { addSpellToSpellbook, addSpellToSessionDeck } from '../../utils/localStorage.js'
 import { validateSpellObject } from '../../utils/validation.js'
+import { toaster } from '../ui/toaster'
 
 /**
  * DailySpellsTab component
@@ -33,6 +34,12 @@ export default function DailySpellsTab() {
 		const result = addSpellToSpellbook(spell)
 		if (result.success) {
 			console.log(`Added "${spell.name}" to spellbook`)
+			toaster.create({
+				title: 'Added to Spellbook',
+				description: `"${spell.name}" has been added to your spellbook`,
+				status: 'success',
+				duration: 3000
+			})
 			// Trigger localStorage event to update other tabs
 			window.dispatchEvent(
 				new StorageEvent('storage', {
@@ -45,6 +52,12 @@ export default function DailySpellsTab() {
 			)
 		} else {
 			console.log(`Failed to add to spellbook: ${result.message}`)
+			toaster.create({
+				title: 'Error',
+				description: result.message,
+				status: 'error',
+				duration: 3000
+			})
 		}
 	}, [])
 
@@ -55,6 +68,12 @@ export default function DailySpellsTab() {
 		const result = addSpellToSessionDeck(spell)
 		if (result.success) {
 			console.log(`Added "${spell.name}" to spell deck`)
+			toaster.create({
+				title: 'Added to Spell Deck',
+				description: `"${spell.name}" has been added to your spell deck`,
+				status: 'success',
+				duration: 3000
+			})
 			// Trigger localStorage event to update other tabs
 			window.dispatchEvent(
 				new StorageEvent('storage', {
@@ -67,6 +86,12 @@ export default function DailySpellsTab() {
 			)
 		} else {
 			console.log(`Failed to add to session: ${result.message}`)
+			toaster.create({
+				title: 'Error',
+				description: result.message,
+				status: 'error',
+				duration: 3000
+			})
 		}
 	}, [])
 

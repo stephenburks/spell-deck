@@ -1,13 +1,3 @@
-/* Keyframe animations */
-@keyframes spin {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
-}
-
 :root {
 	/* Layout Variables */
 	--dice-size: 5rem;
@@ -58,6 +48,16 @@ body {
 
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Keyframe animations */
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }
 
 /* App Layout */
@@ -177,6 +177,32 @@ dd.chakra-stat__number {
 	margin-left: 1.75rem;
 }
 
+/* Tab scrolling enhancements */
+.chakra-scroll-area__viewport {
+	padding-bottom: 0;
+}
+
+/* .chakra-scroll-area__scrollbar[data-orientation='horizontal'] {
+	height: 8px;
+	background: var(--chakra-colors-gray-100);
+	border-radius: 4px;
+}
+
+.chakra-scroll-area__thumb[data-orientation='horizontal'] {
+	background: var(--chakra-colors-gray-400);
+	border-radius: 4px;
+	transition: background-color 0.2s ease;
+}
+
+.chakra-scroll-area__thumb[data-orientation='horizontal']:hover {
+	background: var(--chakra-colors-gray-500);
+} */
+
+/* Ensure tabs don't wrap and maintain proper spacing */
+.chakra-tabs__list {
+	overflow: visible;
+}
+
 .chakra-tabs__trigger {
 	font-size: 1.25rem;
 	margin: 0.5rem;
@@ -184,6 +210,8 @@ dd.chakra-stat__number {
 	border-radius: 0.5rem;
 	padding: 1.5rem;
 	text-transform: uppercase;
+	white-space: nowrap; /* Prevent text wrapping */
+	min-width: max-content; /* Ensure tabs don't shrink */
 }
 
 .chakra-tabs__trigger[data-selected] {
@@ -329,53 +357,181 @@ dd.chakra-stat__number {
 	padding: 0.5rem;
 }
 
-/* Class-specific container background colors */
-.class-icon-container--barbarian {
+/* Class-specific container hover colors */
+.class-icon-container--barbarian:hover {
 	background-color: var(--color-barbarian);
 }
 
-.class-icon-container--bard {
+.class-icon-container--bard:hover {
 	background-color: var(--color-bard);
 }
 
-.class-icon-container--cleric {
+.class-icon-container--cleric:hover {
 	background-color: var(--color-cleric);
 }
 
-.class-icon-container--druid {
+.class-icon-container--druid:hover {
 	background-color: var(--color-druid);
 }
 
-.class-icon-container--fighter {
+.class-icon-container--fighter:hover {
 	background-color: var(--color-fighter);
 }
 
-.class-icon-container--monk {
+.class-icon-container--monk:hover {
 	background-color: var(--color-monk);
 }
 
-.class-icon-container--paladin {
+.class-icon-container--paladin:hover {
 	background-color: var(--color-paladin);
 }
 
-.class-icon-container--ranger {
+.class-icon-container--ranger:hover {
 	background-color: var(--color-ranger);
 }
 
-.class-icon-container--rogue {
+.class-icon-container--rogue:hover {
 	background-color: var(--color-rogue);
 }
 
-.class-icon-container--sorcerer {
+.class-icon-container--sorcerer:hover {
 	background-color: var(--color-sorcerer);
 }
 
-.class-icon-container--warlock {
+.class-icon-container--warlock:hover {
 	background-color: var(--color-warlock);
 }
 
-.class-icon-container--wizard {
+.class-icon-container--wizard:hover {
 	background-color: var(--color-wizard);
+}
+
+/* Class filter buttons - standard styling with class-specific hover */
+.class-filter-button {
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease;
+}
+
+.class-filter-button--barbarian:hover {
+	background-color: var(--color-barbarian) !important;
+	color: white !important;
+}
+
+.class-filter-button--bard:hover {
+	background-color: var(--color-bard) !important;
+	color: white !important;
+}
+
+.class-filter-button--cleric:hover {
+	background-color: var(--color-cleric) !important;
+	color: white !important;
+}
+
+.class-filter-button--druid:hover {
+	background-color: var(--color-druid) !important;
+	color: white !important;
+}
+
+.class-filter-button--fighter:hover {
+	background-color: var(--color-fighter) !important;
+	color: white !important;
+}
+
+.class-filter-button--monk:hover {
+	background-color: var(--color-monk) !important;
+	color: white !important;
+}
+
+.class-filter-button--paladin:hover {
+	background-color: var(--color-paladin) !important;
+	color: white !important;
+}
+
+.class-filter-button--ranger:hover {
+	background-color: var(--color-ranger) !important;
+	color: white !important;
+}
+
+.class-filter-button--rogue:hover {
+	background-color: var(--color-rogue) !important;
+	color: white !important;
+}
+
+.class-filter-button--sorcerer:hover {
+	background-color: var(--color-sorcerer) !important;
+	color: white !important;
+}
+
+.class-filter-button--warlock:hover {
+	background-color: var(--color-warlock) !important;
+	color: white !important;
+}
+
+.class-filter-button--wizard:hover {
+	background-color: var(--color-wizard) !important;
+	color: white !important;
+}
+
+/* Selected state for class filter buttons */
+.class-filter-button--barbarian[data-selected='true'] {
+	background-color: var(--color-barbarian) !important;
+	color: white !important;
+}
+
+.class-filter-button--bard[data-selected='true'] {
+	background-color: var(--color-bard) !important;
+	color: white !important;
+}
+
+.class-filter-button--cleric[data-selected='true'] {
+	background-color: var(--color-cleric) !important;
+	color: white !important;
+}
+
+.class-filter-button--druid[data-selected='true'] {
+	background-color: var(--color-druid) !important;
+	color: white !important;
+}
+
+.class-filter-button--fighter[data-selected='true'] {
+	background-color: var(--color-fighter) !important;
+	color: white !important;
+}
+
+.class-filter-button--monk[data-selected='true'] {
+	background-color: var(--color-monk) !important;
+	color: white !important;
+}
+
+.class-filter-button--paladin[data-selected='true'] {
+	background-color: var(--color-paladin) !important;
+	color: white !important;
+}
+
+.class-filter-button--ranger[data-selected='true'] {
+	background-color: var(--color-ranger) !important;
+	color: white !important;
+}
+
+.class-filter-button--rogue[data-selected='true'] {
+	background-color: var(--color-rogue) !important;
+	color: white !important;
+}
+
+.class-filter-button--sorcerer[data-selected='true'] {
+	background-color: var(--color-sorcerer) !important;
+	color: white !important;
+}
+
+.class-filter-button--warlock[data-selected='true'] {
+	background-color: var(--color-warlock) !important;
+	color: white !important;
+}
+
+.class-filter-button--wizard[data-selected='true'] {
+	background-color: var(--color-wizard) !important;
+	color: white !important;
 }
 
 .spell-card__level .chakra-stat__valueText {
@@ -403,264 +559,6 @@ dd.chakra-stat__number {
 	background-position: center;
 	background-size: 10rem;
 }
-
-/* Class Icon Backgrounds */
-/* .spell-card__container-barbarian .spell-card {
-	background-image: var(--barbarian-icon);
-}
-
-.spell-card__container-bard .spell-card {
-	background-image: var(--bard-icon);
-}
-
-.spell-card__container-cleric .spell-card {
-	background-image: var(--cleric-icon);
-}
-
-.spell-card__container-druid .spell-card {
-	background-image: var(--druid-icon);
-}
-
-.spell-card__container-fighter .spell-card {
-	background-image: var(--fighter-icon);
-}
-
-.spell-card__container-monk .spell-card {
-	background-image: var(--monk-icon);
-}
-
-.spell-card__container-paladin .spell-card {
-	background-image: var(--paladin-icon);
-}
-
-.spell-card__container-ranger .spell-card {
-	background-image: var(--ranger-icon);
-}
-
-.spell-card__container-rogue .spell-card {
-	background-image: var(--rogue-icon);
-}
-
-.spell-card__container-sorcerer .spell-card {
-	background-image: var(--sorcerer-icon);
-}
-
-.spell-card__container-warlock .spell-card {
-	background-image: var(--warlock-icon);
-}
-
-.spell-card__container-wizard .spell-card {
-	background-image: var(--wizard-icon);
-}
-
-.spell-card__content-bard .spell-card,
-.spell-card__content-bard .spell-card__level,
-.spell-card__content-bard .stats-grid .chakra-stat__root,
-.spell-card__content-bard .spell-info__header-container.higher-level {
-	border-color: var(--color-bard);
-}
-
-.spell-card__content-bard .section-divider,
-.spell-card__content-bard .chakra-card__footer,
-.spell-card__content-bard .concentration-indicator,
-.spell-card__content-bard .chakra-card__header .chakra-badge,
-.spell-card__content-bard .spell-info__header {
-	background-color: var(--color-bard);
-}
-
-.spell-card__tab-bard[aria-selected='true'] {
-	background-color: transparent;
-	color: var(--color-bard);
-	border-color: var(--color-bard);
-}
-
-.spell-card__tab-bard {
-	background-color: var(--color-bard);
-	border-color: transparent;
-	color: var(--chakra-colors-white);
-}
-
-.spell-card__content-cleric .spell-card,
-.spell-card__content-cleric .spell-card__level,
-.spell-card__content-cleric .stats-grid .chakra-stat__root,
-.spell-card__content-cleric .spell-info__header-container.higher-level {
-	border-color: var(--color-cleric);
-}
-
-.spell-card__content-cleric .section-divider,
-.spell-card__content-cleric .chakra-card__footer,
-.spell-card__content-cleric .concentration-indicator,
-.spell-card__content-cleric .chakra-card__header .chakra-badge,
-.spell-card__content-cleric .spell-info__header {
-	background-color: var(--color-cleric);
-}
-
-.spell-card__tab-cleric[aria-selected='true'] {
-	background-color: transparent;
-	color: var(--chakra-colors-white);
-}
-
-.spell-card__tab-cleric {
-	background-color: var(--color-cleric);
-	border-color: var(--color-cleric);
-	color: var(--chakra-colors-white);
-}
-
-.spell-card__content-druid .spell-card,
-.spell-card__content-druid .spell-card__level,
-.spell-card__content-druid .stats-grid .chakra-stat__root,
-.spell-card__content-druid .spell-info__header-container.higher-level {
-	border-color: var(--color-druid);
-}
-
-.spell-card__content-druid .section-divider,
-.spell-card__content-druid .chakra-card__footer,
-.spell-card__content-druid .concentration-indicator,
-.spell-card__content-druid .chakra-card__header .chakra-badge,
-.spell-card__content-druid .spell-info__header {
-	background-color: var(--color-druid);
-}
-
-.spell-card__tab-druid[aria-selected='true'] {
-	background-color: transparent;
-	color: var(--color-druid);
-}
-
-.spell-card__tab-druid {
-	background-color: var(--color-druid);
-	border-color: var(--color-druid);
-	color: var(--chakra-colors-white);
-}
-
-.spell-card__content-paladin .spell-card,
-.spell-card__content-paladin .spell-card__level,
-.spell-card__content-paladin .stats-grid .chakra-stat__root,
-.spell-card__content-paladin .spell-info__header-container.higher-level {
-	border-color: var(--color-paladin);
-}
-
-.spell-card__content-paladin .section-divider,
-.spell-card__content-paladin .chakra-card__footer,
-.spell-card__content-paladin .concentration-indicator,
-.spell-card__content-paladin .chakra-card__header .chakra-badge,
-.spell-card__content-paladin .spell-info__header {
-	background-color: var(--color-paladin);
-}
-
-.spell-card__tab-paladin[aria-selected='true'] {
-	background-color: transparent;
-	color: var(--color-paladin);
-}
-
-.spell-card__tab-paladin {
-	background-color: var(--color-paladin);
-	border-color: var(--color-paladin);
-	color: var(--chakra-colors-white);
-}
-
-.spell-card__content-ranger .spell-card,
-.spell-card__content-ranger .spell-card__level,
-.spell-card__content-ranger .stats-grid .chakra-stat__root,
-.spell-card__content-ranger .spell-info__header-container.higher-level {
-	border-color: var(--color-ranger);
-}
-
-.spell-card__content-ranger .section-divider,
-.spell-card__content-ranger .chakra-card__footer,
-.spell-card__content-ranger .concentration-indicator,
-.spell-card__content-ranger .chakra-card__header .chakra-badge,
-.spell-card__content-ranger .spell-info__header {
-	background-color: var(--color-ranger);
-}
-
-.spell-card__tab-ranger[aria-selected='true'] {
-	background-color: transparent;
-	color: var(--color-ranger);
-}
-
-.spell-card__tab-ranger {
-	background-color: var(--color-ranger);
-	border-color: var(--color-ranger);
-	color: var(--chakra-colors-white);
-}
-
-.spell-card__content-sorcerer .spell-card,
-.spell-card__content-sorcerer .spell-card__level,
-.spell-card__content-sorcerer .stats-grid .chakra-stat__root,
-.spell-card__content-sorcerer .spell-info__header-container.higher-level {
-	border-color: var(--color-sorcerer);
-}
-
-.spell-card__content-sorcerer .section-divider,
-.spell-card__content-sorcerer .chakra-card__footer,
-.spell-card__content-sorcerer .concentration-indicator,
-.spell-card__content-sorcerer .chakra-card__header .chakra-badge,
-.spell-card__content-sorcerer .spell-info__header {
-	background-color: var(--color-sorcerer);
-}
-
-.spell-card__tab-sorcerer[aria-selected='true'] {
-	background-color: transparent;
-	color: var(--color-sorcerer);
-}
-
-.spell-card__tab-sorcerer {
-	background-color: var(--color-sorcerer);
-	border-color: var(--color-sorcerer);
-	color: var(--chakra-colors-white);
-}
-
-.spell-card__content-warlock .spell-card,
-.spell-card__content-warlock .spell-card__level,
-.spell-card__content-warlock .stats-grid .chakra-stat__root,
-.spell-card__content-warlock .spell-info__header-container.higher-level {
-	border-color: var(--color-warlock);
-}
-
-.spell-card__content-warlock .section-divider,
-.spell-card__content-warlock .chakra-card__footer,
-.spell-card__content-warlock .concentration-indicator,
-.spell-card__content-warlock .chakra-card__header .chakra-badge,
-.spell-card__content-warlock .spell-info__header {
-	background-color: var(--color-warlock);
-}
-
-.spell-card__tab-warlock[aria-selected='true'] {
-	background-color: transparent;
-	color: var(--color-warlock);
-}
-
-.spell-card__tab-warlock {
-	background-color: var(--color-warlock);
-	border-color: var(--color-warlock);
-	color: var(--chakra-colors-white);
-}
-
-.spell-card__content-wizard .spell-card,
-.spell-card__content-wizard .spell-card__level,
-.spell-card__content-wizard .stats-grid .chakra-stat__root,
-.spell-card__content-wizard .spell-info__header-container.higher-level {
-	border-color: var(--color-wizard);
-}
-
-.spell-card__content-wizard .section-divider,
-.spell-card__content-wizard .chakra-card__footer,
-.spell-card__content-wizard .concentration-indicator,
-.spell-card__content-wizard .chakra-card__header .chakra-badge,
-.spell-card__content-wizard .spell-info__header {
-	background-color: var(--color-wizard);
-}
-
-.spell-card__tab-wizard[aria-selected='true'] {
-	background-color: transparent;
-	color: var(--color-wizard);
-}
-
-.spell-card__tab-wizard {
-	background-color: var(--color-wizard);
-	border-color: var(--color-wizard);
-	color: var(--chakra-colors-white);
-} */
 
 .spell-info__header {
 	width: fit-content;
@@ -1026,7 +924,6 @@ span.chakra-badge {
 
 @media (max-width: 480px) {
 	.chakra-card__footer {
-		flex-direction: column;
 		align-items: stretch;
 		gap: 0.25rem;
 	}
@@ -1035,4 +932,38 @@ span.chakra-badge {
 		margin-left: 0;
 		justify-content: center;
 	}
+}
+/* Filter accordion styling */
+.chakra-accordion__item {
+	border: 1px solid var(--chakra-colors-gray-200);
+	border-radius: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.chakra-accordion__item:last-child {
+	margin-bottom: 0;
+}
+
+.chakra-accordion__trigger {
+	padding: 1rem;
+	background: var(--chakra-colors-gray-50);
+	border-radius: 0.5rem;
+	transition: background-color 0.2s ease;
+}
+
+.chakra-accordion__trigger:hover {
+	background: var(--chakra-colors-gray-100);
+}
+
+.chakra-accordion__trigger[data-state='open'] {
+	background: var(--chakra-colors-blue-50);
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.chakra-accordion__content {
+	padding: 1rem;
+	background: var(--chakra-colors-white);
+	border-bottom-left-radius: 0.5rem;
+	border-bottom-right-radius: 0.5rem;
 }

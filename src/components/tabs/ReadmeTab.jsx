@@ -59,19 +59,23 @@ export default function ReadmeTab() {
 				</ListItem>
 			</ListRoot>
 
-			<Heading as="h2" size="md" mb={3}>
-				💡 Tips
-			</Heading>
-			<ListRoot ml={12}>
-				<ListItem mb={2}>
-					All your saved spells and preferences stay in your browser
-				</ListItem>
-				<ListItem mb={2}>Works offline after the first load</ListItem>
-				<ListItem mb={2}>
-					Use the search to find spells by effect (like "healing" or "fire")
-				</ListItem>
-				<ListItem mb={6}>Bookmark spells from any tab to build your collection</ListItem>
-			</ListRoot>
+			<Box my={8}>
+				<Heading as="h2" size="md" mb={3}>
+					💡 Tips
+				</Heading>
+				<ListRoot ml={12}>
+					<ListItem mb={2}>
+						All your saved spells and preferences stay in your browser
+					</ListItem>
+					<ListItem mb={2}>Works offline after the first load</ListItem>
+					<ListItem mb={2}>
+						Use the search to find spells by effect (like "healing" or "fire")
+					</ListItem>
+					<ListItem mb={6}>
+						Bookmark spells from any tab to build your collection
+					</ListItem>
+				</ListRoot>
+			</Box>
 
 			<Box
 				p={4}

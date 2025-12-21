@@ -8,6 +8,7 @@ import {
 } from '../../utils/localStorage.js'
 import { groupSpellsByLevel } from '../../utils/spellGrouping.js'
 import { validateSessionSpell, getValidSpells } from '../../utils/validation.js'
+import { toaster } from '../ui/toaster'
 
 export default function SpellDeckTab() {
 	const [sessionSpells, setSessionSpells] = useState([])
@@ -87,12 +88,24 @@ export default function SpellDeckTab() {
 		const spellToBurn = sessionSpells.find((spell) => spell.sessionId === sessionId)
 		if (!spellToBurn) {
 			setError('Spell not found in session.')
+			toaster.create({
+				title: 'Error',
+				description: 'Spell not found in session.',
+				status: 'error',
+				duration: 3000
+			})
 			return false
 		}
 
 		// Check if it's a cantrip (cantrips cannot be burned)
 		if (spellToBurn.level === 0) {
 			setError('Cantrips cannot be burned - they have unlimited use.')
+			toaster.create({
+				title: 'Cannot Burn Cantrip',
+				description: 'Cantrips have unlimited use and cannot be burned.',
+				status: 'warning',
+				duration: 3000
+			})
 			return false
 		}
 
@@ -105,8 +118,20 @@ export default function SpellDeckTab() {
 				)
 			)
 			setError(null)
+			toaster.create({
+				title: 'Spell Burned',
+				description: `"${spellToBurn.name}" has been burned and removed from your spell deck`,
+				status: 'info',
+				duration: 3000
+			})
 		} else {
 			setError(result.message)
+			toaster.create({
+				title: 'Error',
+				description: result.message,
+				status: 'error',
+				duration: 3000
+			})
 		}
 		return result.success
 	}
@@ -118,16 +143,34 @@ export default function SpellDeckTab() {
 			const success = saveSessionDeck([])
 			if (!success) {
 				setError('Failed to clear session.')
+				toaster.create({
+					title: 'Error',
+					description: 'Failed to clear session.',
+					status: 'error',
+					duration: 3000
+				})
 				return false
 			}
 
 			// Update local state
 			setSessionSpells([])
 			setError(null)
+			toaster.create({
+				title: 'Session Cleared',
+				description: 'All spells have been removed from your spell deck',
+				status: 'info',
+				duration: 3000
+			})
 			return true
 		} catch (err) {
 			console.error('Failed to clear session:', err)
 			setError('Failed to clear session.')
+			toaster.create({
+				title: 'Error',
+				description: 'Failed to clear session.',
+				status: 'error',
+				duration: 3000
+			})
 			return false
 		}
 	}
@@ -155,14 +198,14 @@ export default function SpellDeckTab() {
 
 	if (loading) {
 		return (
-			<Box p={4}>
+			<Box p={4} pt={2}>
 				<Text>Loading your spell deck...</Text>
 			</Box>
 		)
 	}
 
 	return (
-		<Box p={4}>
+		<Box p={4} pt={2}>
 			<VStack spacing={6} align="stretch">
 				{/* Header */}
 				<Box>

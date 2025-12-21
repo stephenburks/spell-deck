@@ -20,6 +20,7 @@ import {
 } from '../../utils/localStorage.js'
 import { groupSpellsByLevel } from '../../utils/spellGrouping.js'
 import { validateSpellObject, getValidSpells } from '../../utils/validation.js'
+import { toaster } from '../ui/toaster'
 
 export default function SpellbookTab() {
 	const [spellbookSpells, setSpellbookSpells] = useState([])
@@ -131,8 +132,20 @@ export default function SpellbookTab() {
 			// Update local state immediately (optimistic update)
 			setSpellbookSpells(getValidSpells(result.spells || []))
 			setError(null)
+			toaster.create({
+				title: 'Removed from Spellbook',
+				description: `"${spell.name}" has been removed from your spellbook`,
+				status: 'info',
+				duration: 3000
+			})
 		} else {
 			setError(result.message)
+			toaster.create({
+				title: 'Error',
+				description: result.message,
+				status: 'error',
+				duration: 3000
+			})
 		}
 
 		return result.success
@@ -142,12 +155,24 @@ export default function SpellbookTab() {
 	const addToSession = (spell) => {
 		if (!validateSpellObject(spell)) {
 			setError('Invalid spell data. Cannot add to session.')
+			toaster.create({
+				title: 'Error',
+				description: 'Invalid spell data. Cannot add to spell deck.',
+				status: 'error',
+				duration: 3000
+			})
 			return false
 		}
 
 		const result = addSpellToSessionDeck(spell)
 		if (result.success) {
 			setError(null)
+			toaster.create({
+				title: 'Added to Spell Deck',
+				description: `"${spell.name}" has been added to your spell deck`,
+				status: 'success',
+				duration: 3000
+			})
 			// Trigger localStorage event to update spell deck tab
 			window.dispatchEvent(
 				new StorageEvent('storage', {
@@ -160,6 +185,12 @@ export default function SpellbookTab() {
 			)
 		} else {
 			setError(result.message)
+			toaster.create({
+				title: 'Error',
+				description: result.message,
+				status: 'error',
+				duration: 3000
+			})
 		}
 		return result.success
 	}
@@ -190,14 +221,14 @@ export default function SpellbookTab() {
 
 	if (loading) {
 		return (
-			<Box p={4}>
+			<Box p={4} pt={2}>
 				<Text>Loading your spellbook...</Text>
 			</Box>
 		)
 	}
 
 	return (
-		<Box p={4}>
+		<Box p={4} pt={2}>
 			<VStack spacing={6} align="stretch">
 				{/* Header */}
 				<Box>

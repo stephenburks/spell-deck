@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/spell-deck/static/css/main.48dba7fc.css",
-    "main.js": "/spell-deck/static/js/main.c26ddd4d.js",
+    "main.js": "/spell-deck/static/js/main.31ee80f4.js",
     "static/media/ritual.svg": "/spell-deck/static/media/ritual.2fde1b2d01fd20ca5997271e8a61d38e.svg",
     "static/media/rogue.svg": "/spell-deck/static/media/rogue.c540c5fe6c584d47e70cd7673dc8a3af.svg",
     "static/media/cleric.svg": "/spell-deck/static/media/cleric.9be9e983d95ac6f4a2199578d6542480.svg",
@@ -44,10 +44,10 @@
     "static/media/vocal.svg": "/spell-deck/static/media/vocal.48d54312cdb9cd70a0092fc52f9cfdbe.svg",
     "static/media/octagon.svg": "/spell-deck/static/media/octagon.2b05826b0f5cdacdd45f8a38799fcccc.svg",
     "main.48dba7fc.css.map": "/spell-deck/static/css/main.48dba7fc.css.map",
-    "main.c26ddd4d.js.map": "/spell-deck/static/js/main.c26ddd4d.js.map"
+    "main.31ee80f4.js.map": "/spell-deck/static/js/main.31ee80f4.js.map"
   },
   "entrypoints": [
     "static/css/main.48dba7fc.css",
-    "static/js/main.c26ddd4d.js"
+    "static/js/main.31ee80f4.js"
   ]
 }

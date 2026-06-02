@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ChakraProvider } from '@chakra-ui/react'
 import { ColorModeProvider } from './components/ui/color-mode'
+import ErrorBoundary from './components/ErrorBoundary'
 import { system } from './components/ui/theme'
 import SpellInterface from './components/SpellInterface'
 import { Toaster } from './components/ui/toaster'
@@ -22,10 +23,31 @@ export default function App() {
 		<ChakraProvider value={system}>
 			<ColorModeProvider>
 				<QueryClientProvider client={queryClient}>
-					<div className="app-container">
-						<SpellInterface />
+					<a
+						href="#main-content"
+						style={{
+							position: 'absolute',
+							left: '-9999px',
+							zIndex: 999,
+							padding: '1em',
+							background: 'var(--chakra-colors-bg-surface)',
+							color: 'var(--chakra-colors-text-primary)'
+						}}
+						onFocus={(e) => {
+							;(e.target as HTMLAnchorElement).style.left = '1em'
+						}}
+						onBlur={(e) => {
+							;(e.target as HTMLAnchorElement).style.left = '-9999px'
+						}}
+					>
+						Skip to main content
+					</a>
+					<main id="main-content" className="app-container">
+						<ErrorBoundary>
+							<SpellInterface />
+						</ErrorBoundary>
 						<Toaster />
-					</div>
+					</main>
 				</QueryClientProvider>
 			</ColorModeProvider>
 		</ChakraProvider>

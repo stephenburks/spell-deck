@@ -128,7 +128,10 @@ const Icon = ({
 			className={className}
 			width={size}
 			height={size}
-			style={{ color }}
+			fill={color}
+			role={props['aria-label'] ? 'img' : undefined}
+			aria-hidden={props['aria-label'] ? undefined : true}
+			focusable={false}
 			{...props}
 		/>
 	)

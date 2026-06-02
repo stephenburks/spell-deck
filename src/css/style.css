@@ -397,126 +397,33 @@ dd.chakra-stat__number {
 		color 0.2s ease;
 }
 
-.class-filter-button--barbarian:hover {
-	background-color: var(--color-barbarian) !important;
-	color: white !important;
+.class-filter-button:hover {
+	background-color: var(--class-bg) !important;
+	color: var(--class-text) !important;
 }
 
-.class-filter-button--bard:hover {
-	background-color: var(--color-bard) !important;
-	color: white !important;
+.class-filter-button[data-selected='true'] {
+	background-color: var(--class-bg) !important;
+	color: var(--class-text) !important;
+	border-color: var(--class-bg) !important;
 }
 
-.class-filter-button--cleric:hover {
-	background-color: var(--color-cleric) !important;
-	color: white !important;
-}
+/* Light class colors — use dark text for WCAG AA contrast */
+.class-filter-button--barbarian { --class-bg: var(--color-barbarian); --class-text: #1a202c; }
+.class-filter-button--bard { --class-bg: var(--color-bard); --class-text: #1a202c; }
+.class-filter-button--cleric { --class-bg: var(--color-cleric); --class-text: #1a202c; }
+.class-filter-button--druid { --class-bg: var(--color-druid); --class-text: #1a202c; }
+.class-filter-button--monk { --class-bg: var(--color-monk); --class-text: #1a202c; }
+.class-filter-button--paladin { --class-bg: var(--color-paladin); --class-text: #1a202c; }
 
-.class-filter-button--druid:hover {
-	background-color: var(--color-druid) !important;
-	color: white !important;
-}
-
-.class-filter-button--fighter:hover {
-	background-color: var(--color-fighter) !important;
-	color: white !important;
-}
-
-.class-filter-button--monk:hover {
-	background-color: var(--color-monk) !important;
-	color: white !important;
-}
-
-.class-filter-button--paladin:hover {
-	background-color: var(--color-paladin) !important;
-	color: white !important;
-}
-
-.class-filter-button--ranger:hover {
-	background-color: var(--color-ranger) !important;
-	color: white !important;
-}
-
-.class-filter-button--rogue:hover {
-	background-color: var(--color-rogue) !important;
-	color: white !important;
-}
-
-.class-filter-button--sorcerer:hover {
-	background-color: var(--color-sorcerer) !important;
-	color: white !important;
-}
-
-.class-filter-button--warlock:hover {
-	background-color: var(--color-warlock) !important;
-	color: white !important;
-}
-
-.class-filter-button--wizard:hover {
-	background-color: var(--color-wizard) !important;
-	color: white !important;
-}
-
-/* Selected state for class filter buttons */
-.class-filter-button--barbarian[data-selected='true'] {
-	background-color: var(--color-barbarian) !important;
-	color: white !important;
-}
-
-.class-filter-button--bard[data-selected='true'] {
-	background-color: var(--color-bard) !important;
-	color: white !important;
-}
-
-.class-filter-button--cleric[data-selected='true'] {
-	background-color: var(--color-cleric) !important;
-	color: white !important;
-}
-
-.class-filter-button--druid[data-selected='true'] {
-	background-color: var(--color-druid) !important;
-	color: white !important;
-}
-
-.class-filter-button--fighter[data-selected='true'] {
-	background-color: var(--color-fighter) !important;
-	color: white !important;
-}
-
-.class-filter-button--monk[data-selected='true'] {
-	background-color: var(--color-monk) !important;
-	color: white !important;
-}
-
-.class-filter-button--paladin[data-selected='true'] {
-	background-color: var(--color-paladin) !important;
-	color: white !important;
-}
-
-.class-filter-button--ranger[data-selected='true'] {
-	background-color: var(--color-ranger) !important;
-	color: white !important;
-}
-
-.class-filter-button--rogue[data-selected='true'] {
-	background-color: var(--color-rogue) !important;
-	color: white !important;
-}
-
-.class-filter-button--sorcerer[data-selected='true'] {
-	background-color: var(--color-sorcerer) !important;
-	color: white !important;
-}
-
-.class-filter-button--warlock[data-selected='true'] {
-	background-color: var(--color-warlock) !important;
-	color: white !important;
-}
-
-.class-filter-button--wizard[data-selected='true'] {
-	background-color: var(--color-wizard) !important;
-	color: white !important;
-}
+/* Dark class colors — keep white text */
+.class-filter-button--wizard { --class-bg: var(--color-wizard); --class-text: white; }
+.class-filter-button--sorcerer { --class-bg: var(--color-sorcerer); --class-text: white; }
+.class-filter-button--warlock { --class-bg: var(--color-warlock); --class-text: white; }
+.class-filter-button--rogue { --class-bg: var(--color-rogue); --class-text: white; }
+.class-filter-button--fighter { --class-bg: var(--color-fighter); --class-text: white; }
+.class-filter-button--ranger { --class-bg: var(--color-ranger); --class-text: white; }
+.class-filter-button--artificer { --class-bg: var(--color-artificer, #339999); --class-text: white; }
 
 .spell-card__level .chakra-stat__valueText {
 	margin: 0;

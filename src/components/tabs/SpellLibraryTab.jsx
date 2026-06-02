@@ -38,6 +38,15 @@ export default function SpellLibraryTab() {
 	const [selectedLevels, setSelectedLevels] = useState([])
 	const [selectedSchools, setSelectedSchools] = useState([])
 	const [actionError, setActionError] = useState(null)
+	const [viewMode, setViewMode] = useState(() => {
+		return localStorage.getItem('spell-deck-view-mode') || 'card'
+	})
+
+	const toggleViewMode = () => {
+		const next = viewMode === 'card' ? 'compact' : 'card'
+		setViewMode(next)
+		localStorage.setItem('spell-deck-view-mode', next)
+	}
 
 	// Debounce search term to prevent excessive filtering
 	const { debouncedValue: debouncedSearchTerm, isDebouncing } = useDebounce(searchTerm, 400) // Increased for better performance
@@ -562,32 +571,45 @@ export default function SpellLibraryTab() {
 					</Flex>
 				</Box>
 
-				{/* Action Error Alert */}
-				{actionError && <Alert status="error">{actionError}</Alert>}
+			{/* Results Header */}
+			{!isLoading && filteredSpells.length > 0 && (
+				<HStack justifyContent="space-between" alignItems="center">
+					<Text fontSize="sm" color="text.secondary">
+						{filteredSpells.length} of {spellCount} spells
+					</Text>
+					<Button size="xs" variant="ghost" onClick={toggleViewMode}>
+						{viewMode === 'card' ? 'Compact view' : 'Card view'}
+					</Button>
+				</HStack>
+			)}
 
-				{/* Empty State */}
-				{filteredSpells.length === 0 && !isLoading && (
-					<Box textAlign="center" py={8}>
-						<Text fontSize="lg" color="gray.500" mb={4}>
-							No spells found
-						</Text>
-						<Text color="gray.400">
-							{hasActiveFilters
-								? 'Try adjusting your search terms or filters.'
-								: 'No spells available in the database.'}
-						</Text>
-					</Box>
-				)}
+			{/* Action Error Alert */}
+			{actionError && <Alert status="error">{actionError}</Alert>}
 
-				{/* Virtualized Spell Results */}
-				{filteredSpells.length > 0 && (
-					<VirtualizedSpellList
-						spells={filteredSpells}
-						onAction={handleSpellAction}
-						context="deck"
-						itemsPerPage={50}
-					/>
-				)}
+			{/* Empty State */}
+			{filteredSpells.length === 0 && !isLoading && (
+				<Box textAlign="center" py={8}>
+					<Text fontSize="lg" color="gray.500" mb={4}>
+						No spells found
+					</Text>
+					<Text color="gray.400">
+						{hasActiveFilters
+							? 'Try adjusting your search terms or filters.'
+							: 'No spells available in the database.'}
+					</Text>
+				</Box>
+			)}
+
+			{/* Virtualized Spell Results */}
+			{filteredSpells.length > 0 && (
+				<VirtualizedSpellList
+					spells={filteredSpells}
+					onAction={handleSpellAction}
+					context="deck"
+					itemsPerPage={50}
+					viewMode={viewMode}
+				/>
+			)}
 			</VStack>
 		</Box>
 	)

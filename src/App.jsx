@@ -33,12 +33,12 @@ export default function App() {
 							background: 'var(--chakra-colors-bg-surface)',
 							color: 'var(--chakra-colors-text-primary)'
 						}}
-						onFocus={(e) => {
-							;(e.target as HTMLAnchorElement).style.left = '1em'
-						}}
-						onBlur={(e) => {
-							;(e.target as HTMLAnchorElement).style.left = '-9999px'
-						}}
+					onFocus={(e) => {
+						e.target.style.left = '1em'
+					}}
+					onBlur={(e) => {
+						e.target.style.left = '-9999px'
+					}}
 					>
 						Skip to main content
 					</a>

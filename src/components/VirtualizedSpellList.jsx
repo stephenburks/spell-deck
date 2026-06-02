@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { Box, SimpleGrid, Button, Spinner } from '@chakra-ui/react'
+import { Box, SimpleGrid, Button, Spinner, VStack } from '@chakra-ui/react'
 import SpellCard from './SpellCard.jsx'
+import CompactSpellRow from './CompactSpellRow.jsx'
 
 /**
  * Custom hook for pagination-based virtualization
@@ -88,7 +89,8 @@ export default function VirtualizedSpellList({
 	spells = [],
 	onAction,
 	context = 'deck',
-	itemsPerPage = 50
+	itemsPerPage = 50,
+	viewMode = 'card'
 }) {
 	const { visibleItems, loadMore, hasMore, isLoading, totalVisible, totalItems } =
 		useVirtualization(spells, itemsPerPage)
@@ -102,21 +104,36 @@ export default function VirtualizedSpellList({
 
 	if (!spells.length) return null
 
+	const isCompact = viewMode === 'compact'
+
 	return (
 		<Box>
-			<SimpleGrid
-				columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
-				spacing={3}
-				className="spell-list-container">
-				{visibleItems.map((spell, index) => (
-					<SpellCard
-						key={`${spell.index}-${index}`}
-						spell={spell}
-						context={context}
-						onAction={handleSpellAction}
-					/>
-				))}
-			</SimpleGrid>
+			{isCompact ? (
+				<VStack gap={1} className="spell-list-container">
+					{visibleItems.map((spell, index) => (
+						<CompactSpellRow
+							key={`${spell.index}-${index}`}
+							spell={spell}
+							context={context}
+							onAction={handleSpellAction}
+						/>
+					))}
+				</VStack>
+			) : (
+				<SimpleGrid
+					columns={{ base: 1, md: 1, lg: 2, xl: 3 }}
+					spacing={3}
+					className="spell-list-container">
+					{visibleItems.map((spell, index) => (
+						<SpellCard
+							key={`${spell.index}-${index}`}
+							spell={spell}
+							context={context}
+							onAction={handleSpellAction}
+						/>
+					))}
+				</SimpleGrid>
+			)}
 
 			{hasMore && (
 				<Box

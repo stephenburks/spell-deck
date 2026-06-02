@@ -22,6 +22,7 @@ import {
 import { groupSpellsByLevel } from '../../utils/spellGrouping.js'
 import { validateSessionSpell, getValidSpells } from '../../utils/validation.js'
 import { toaster } from '../ui/toaster'
+import SpellSlotTracker from '../SpellSlotTracker'
 
 export default function SpellDeckTab() {
 	const [sessionSpells, setSessionSpells] = useState([])
@@ -326,6 +327,7 @@ export default function SpellDeckTab() {
 						))}
 					</AccordionRoot>
 				)}
+				<SpellSlotTracker />
 			</VStack>
 		</Box>
 	)

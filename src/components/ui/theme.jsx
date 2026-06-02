@@ -23,11 +23,17 @@ const config = defineConfig({
 				'bg.subtle': {
 					value: { _light: 'gray.50', _dark: 'gray.800' }
 				},
+				'bg.emphasized': {
+					value: { _light: 'gray.100', _dark: 'gray.700' }
+				},
 				'text.primary': {
 					value: { _light: 'gray.900', _dark: 'gray.50' }
 				},
 				'text.secondary': {
 					value: { _light: 'gray.600', _dark: 'gray.400' }
+				},
+				'text.muted': {
+					value: { _light: 'gray.500', _dark: 'gray.400' }
 				},
 				'border.default': {
 					value: { _light: 'gray.200', _dark: 'gray.700' }

@@ -1,8 +1,12 @@
 .spell-card {
-	aspect-ratio: 3 / 4;
-	border-radius: 0.5rem;
+	aspect-ratio: 5 / 7;
+	border-radius: 0.6rem;
+	border: 0.5rem solid var(--chakra-colors-border-default);
 	overflow: hidden;
 	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
 }
 
 .chakra-card__header,
@@ -16,8 +20,8 @@
 	align-items: center;
 	justify-content: center;
 	flex-shrink: 0;
-	margin-top: 1rem;
-	padding: 0 1rem;
+	margin: 0 auto;
+	padding: 0.25rem !important;
 	position: relative;
 	background-color: transparent;
 	border-bottom: none;
@@ -28,18 +32,21 @@
 	min-height: 0;
 	display: flex;
 	flex-direction: column;
+	padding: 0 !important;
+	margin: 0;
 }
 
 .chakra-card__footer {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
-	justify-content: center;
-	gap: 0.375rem;
+	justify-content: space-between;
+	gap: 0.5rem;
 	padding: 0.5rem;
-	background-color: var(--chakra-colors-gray-50);
-	border-radius: 0 0 0.5rem 0.5rem;
+	background-color: var(--chakra-colors-bg-subtle);
+	border-radius: 0 0 0.6rem 0.6rem;
 	flex-shrink: 0;
-	min-height: 0;
+	min-height: 2.5rem;
 	margin: 0;
 }
 
@@ -51,9 +58,14 @@
 }
 
 .stats-grid .chakra-stat__root {
-	border-right: 1px solid var(--chakra-colors-gray-200);
-	border-bottom: 1px solid var(--chakra-colors-gray-200);
-	padding: 1rem;
+	border-right: 1px solid var(--chakra-colors-border-default);
+	border-bottom: 0.375rem solid var(--chakra-colors-border-default);
+	padding: 0.5rem;
+}
+
+.stats-grid .chakra-stat__root:nth-of-type(1),
+.stats-grid .chakra-stat__root:nth-of-type(2) {
+	padding-top: 0.125rem;
 }
 
 .stats-grid .chakra-stat__root:nth-child(even) {
@@ -66,32 +78,39 @@
 }
 
 dd.chakra-stat__number {
-	font-size: 0.625rem;
-	color: var(--chakra-colors-gray-500);
+	font-size: 1.025rem;
+	color: var(--chakra-colors-text-secondary);
 }
 
 .spell-card__container {
 	min-width: 280px;
 	max-width: 420px;
 	width: 100%;
+	margin: auto;
+	border-radius: 1rem;
 }
 
 .spell-card-inner {
-	background-color: var(--chakra-colors-white);
-	border-radius: 0.5rem;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	background-color: var(--chakra-colors-bg-surface);
+	border-radius: 1rem;
 }
 
 .spell-card__container .spell-card {
-	background-size: contain;
-	background-position: bottom center;
+	background-size: 10rem;
+	background-position: center;
 	background-repeat: no-repeat;
 }
 
 .spell-info__header {
-	text-align: left;
+	width: fit-content;
+	padding: 0 0.5rem 0.25rem;
+	border-bottom-right-radius: 0.5rem;
+	text-transform: uppercase;
 	font-weight: bold;
+	font-size: 0.8rem;
 	margin-bottom: 0.5rem;
+	background-color: var(--chakra-colors-border-default);
+	color: var(--chakra-colors-text-primary);
 }
 
 .spell-info__header-container {
@@ -102,20 +121,20 @@ dd.chakra-stat__number {
 }
 
 .spell-info__header-container.higher-level {
-	border-top: 1px solid var(--chakra-colors-gray-200);
+	border-top: 0.375rem solid var(--chakra-colors-border-default);
 	padding-top: 0.5rem;
 	margin-top: 0.5rem;
 }
 
 .section-divider {
-	height: 2px;
-	background-color: var(--chakra-colors-gray-200);
+	height: 0.375rem;
+	background-color: var(--chakra-colors-border-default);
 	margin: 0.5rem 0;
 }
 
 .scrollable-content {
 	overflow-y: auto;
-	padding: 0 0.75rem 0.75rem 0.75rem;
+	padding: 0.5rem 1rem 0.75rem 0.75rem;
 	flex: 1 1 0;
 	min-height: 0;
 	height: 100%;
@@ -127,8 +146,10 @@ dd.chakra-stat__number {
 	align-items: center;
 	justify-content: center;
 	z-index: 1;
-	top: -0.25rem;
-	right: -0.25rem;
+	right: 0;
+	padding: 0.5rem 0.5rem 0.75rem 0.75rem;
+	background-color: var(--chakra-colors-border-default);
+	border-bottom-left-radius: 50%;
 }
 
 .spell-card__level .chakra-stat__valueText {
@@ -141,29 +162,33 @@ dd.chakra-stat__number {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 2.5rem;
-	height: 2.5rem;
+	padding: 0.75rem 1rem;
+	border: 0.5rem solid var(--chakra-colors-border-default);
 	border-radius: 50%;
-	border: 2px solid var(--chakra-colors-gray-200);
-	background-color: var(--chakra-colors-white);
+	background-color: var(--chakra-colors-bg-surface);
 }
 
 .spell-card__description {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: auto;
+	grid-template-rows: auto 1fr;
 	flex: 1;
 	min-height: 0;
+	padding: 0;
+	text-align: left;
+	overflow: hidden;
 }
 
 .spell-card__description.has-higher-level {
-	grid-template-rows: 1fr auto;
+	grid-template-rows: auto 2fr auto 1fr;
 	flex: 1;
 }
 
 .spell-card__classes {
 	display: flex;
 	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
 	gap: 0.25rem;
 }
 
@@ -171,60 +196,66 @@ dd.chakra-stat__number {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0.125rem 0.375rem;
-	border-radius: 0.375rem;
+	padding: 0.25rem;
+	border-radius: 0.25rem;
+	background-color: rgba(255, 255, 255, 0.1);
 	transition: background-color 0.2s ease;
-	cursor: default;
+	cursor: pointer;
 }
 
 .spell-card__classes .class-icon-container {
-	padding: 0.25rem 0.5rem;
+	padding: 0.5rem;
 }
 
-.class-icon-container--barbarian:hover { background-color: var(--color-barbarian-background); }
-.class-icon-container--bard:hover { background-color: var(--color-bard-background); }
-.class-icon-container--cleric:hover { background-color: var(--color-cleric-background); }
-.class-icon-container--druid:hover { background-color: var(--color-druid-background); }
-.class-icon-container--fighter:hover { background-color: var(--color-fighter-background); }
-.class-icon-container--monk:hover { background-color: var(--color-monk-background); }
-.class-icon-container--paladin:hover { background-color: var(--color-paladin-background); }
-.class-icon-container--ranger:hover { background-color: var(--color-ranger-background); }
-.class-icon-container--rogue:hover { background-color: var(--color-rogue-background); }
-.class-icon-container--sorcerer:hover { background-color: var(--color-sorcerer-background); }
-.class-icon-container--warlock:hover { background-color: var(--color-warlock-background); }
-.class-icon-container--wizard:hover { background-color: var(--color-wizard-background); }
+.class-icon-container--barbarian:hover { background-color: var(--color-barbarian); }
+.class-icon-container--bard:hover { background-color: var(--color-bard); }
+.class-icon-container--cleric:hover { background-color: var(--color-cleric); }
+.class-icon-container--druid:hover { background-color: var(--color-druid); }
+.class-icon-container--fighter:hover { background-color: var(--color-fighter); }
+.class-icon-container--monk:hover { background-color: var(--color-monk); }
+.class-icon-container--paladin:hover { background-color: var(--color-paladin); }
+.class-icon-container--ranger:hover { background-color: var(--color-ranger); }
+.class-icon-container--rogue:hover { background-color: var(--color-rogue); }
+.class-icon-container--sorcerer:hover { background-color: var(--color-sorcerer); }
+.class-icon-container--warlock:hover { background-color: var(--color-warlock); }
+.class-icon-container--wizard:hover { background-color: var(--color-wizard); }
 
 .chakra-card__header span.chakra-badge {
-	background-color: var(--chakra-colors-gray-100);
+	background-color: var(--chakra-colors-bg-emphasized);
 	padding: 0.25em 0.5em;
 }
 
 .chakra-card__footer span.chakra-badge {
-	background-color: var(--chakra-colors-white);
+	margin: 0.25rem 0.375rem;
+	padding: 0 0.375rem;
+	color: var(--chakra-colors-text-primary);
+	background-color: var(--chakra-colors-bg-surface);
 	text-transform: uppercase;
 	font-weight: bold;
 	font-size: 0.75rem;
-	border: 1px solid var(--chakra-colors-gray-200);
+	border: none !important;
+	border-radius: 0.25rem;
 }
 
 .concentration-indicator,
 .ritual-indicator {
 	position: absolute;
-	top: 0.25rem;
-	left: 0.25rem;
+	top: 0;
+	left: 0;
 	display: flex;
 	align-items: center;
 	gap: 0.25rem;
-	background-color: var(--chakra-colors-gray-100);
-	padding: 0.125rem 0.375rem;
-	border-radius: 0 0 0.375rem 0;
+	padding: 0.25rem 0.5rem 0.5rem 0.25rem;
+	border-bottom-right-radius: 50%;
+	background-color: var(--chakra-colors-border-default);
 	z-index: 1;
 }
 
 .concentration-indicator svg,
 .ritual-indicator svg {
-	width: 0.75rem;
-	height: 0.75rem;
+	width: 1rem;
+	height: 1rem;
+	background-color: var(--chakra-colors-border-default);
 }
 
 .concentration-indicator .chakra-text {
@@ -260,15 +291,16 @@ dd.chakra-stat__number {
 }
 
 .spell-card__cantrip-indicator {
-	position: absolute;
-	bottom: 3.5rem;
-	left: 50%;
-	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	margin-left: auto;
 	z-index: 2;
 }
 
 .spell-card__actions {
 	display: flex;
+	align-items: center;
+	margin-left: auto;
 	gap: 0.5rem;
 }
 

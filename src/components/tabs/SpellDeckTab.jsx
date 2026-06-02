@@ -11,7 +11,9 @@ import {
 	AccordionRoot,
 	AccordionItem,
 	AccordionItemTrigger,
-	AccordionItemContent
+	AccordionItemContent,
+	Separator,
+	Badge
 } from '@chakra-ui/react'
 import SpellCard from '../SpellCard.jsx'
 import {
@@ -25,11 +27,23 @@ import { validateSessionSpell, getValidSpells } from '../../utils/validation.js'
 import { toaster } from '../ui/toaster'
 import SpellSlotTracker from '../SpellSlotTracker'
 import { STORAGE_KEY as SLOT_TRACKER_KEY } from '../../utils/spellSlots'
+import {
+	loadBurnHistory,
+	addBurnedSpell,
+	clearBurnHistory,
+	getRelativeTime
+} from '../../utils/burnHistory.ts'
 
 export default function SpellDeckTab() {
 	const [sessionSpells, setSessionSpells] = useState([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
+	const [burnHistory, setBurnHistory] = useState(loadBurnHistory)
+
+	useEffect(() => {
+		const interval = setInterval(() => setBurnHistory([...loadBurnHistory()]), 30000)
+		return () => clearInterval(interval)
+	}, [])
 
 	// Load spell deck data
 	const loadSessionDeckData = () => {
@@ -166,6 +180,9 @@ export default function SpellDeckTab() {
 				status: 'info',
 				duration: 3000
 			})
+
+			addBurnedSpell(spellToBurn.name, spellToBurn.level)
+			setBurnHistory(loadBurnHistory())
 		} else {
 			setError(result.message)
 			toaster.create({
@@ -197,6 +214,8 @@ export default function SpellDeckTab() {
 
 			// Update local state
 			setSessionSpells([])
+			setBurnHistory([])
+			clearBurnHistory()
 			setError(null)
 			toaster.create({
 				title: 'Session Cleared',
@@ -357,6 +376,69 @@ export default function SpellDeckTab() {
 					</AccordionRoot>
 				)}
 				<SpellSlotTracker />
+
+				<Box
+					p={4}
+					borderWidth="1px"
+					borderColor="border.default"
+					borderRadius="md"
+					bg="bg.surface">
+					<HStack justifyContent="space-between" alignItems="center" mb={2}>
+						<Heading as="h3" size="md">
+							Burn History
+						</Heading>
+						{burnHistory.length > 0 && (
+							<Button
+								size="xs"
+								variant="ghost"
+								colorPalette="red"
+								onClick={() => {
+									clearBurnHistory()
+									setBurnHistory([])
+								}}>
+								Clear history
+							</Button>
+						)}
+					</HStack>
+					{burnHistory.length === 0 ? (
+						<Text fontSize="sm" color="text.secondary">
+							No spells burned this session
+						</Text>
+					) : (
+						<AccordionRoot defaultValue={['burn-history']} collapsible>
+							<AccordionItem value="burn-history">
+								<AccordionItemTrigger>
+									<Text fontSize="sm">
+										{burnHistory.length} spell{burnHistory.length !== 1 ? 's' : ''} burned
+									</Text>
+								</AccordionItemTrigger>
+								<AccordionItemContent>
+									<VStack gap={1} align="stretch" pt={2}>
+										{burnHistory.map((entry, i) => (
+											<Box key={`${entry.timestamp}-${i}`}>
+												{i > 0 && <Separator my={1} />}
+												<HStack
+													justifyContent="space-between"
+													alignItems="center"
+													py={1}>
+													<HStack gap={2}>
+														<Text fontWeight="medium">{entry.name}</Text>
+														<Badge colorPalette="blue" variant="subtle">
+															Lv {entry.level}
+														</Badge>
+													</HStack>
+													<Text fontSize="xs" color="text.secondary">
+														{getRelativeTime(entry.timestamp)}
+													</Text>
+												</HStack>
+											</Box>
+										))}
+									</VStack>
+								</AccordionItemContent>
+							</AccordionItem>
+						</AccordionRoot>
+					)}
+				</Box>
 			</VStack>
 		</Box>
 	)

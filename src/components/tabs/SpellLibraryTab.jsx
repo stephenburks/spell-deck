@@ -222,10 +222,8 @@ export default function SpellLibraryTab() {
 
 	// Add spell to spell deck
 	const addToSession = useCallback((spell) => {
-		console.log('SpellLibraryTab: Adding spell to session:', spell.name)
 
 		if (!validateSpellObject(spell)) {
-			console.error('SpellLibraryTab: Invalid spell data:', spell)
 			setActionError('Invalid spell data. Cannot add to session.')
 			toaster.create({
 				title: 'Error',
@@ -236,12 +234,9 @@ export default function SpellLibraryTab() {
 			return false
 		}
 
-		console.log('SpellLibraryTab: Spell validation passed, calling addSpellToSessionDeck')
 		const result = addSpellToSessionDeck(spell)
-		console.log('SpellLibraryTab: addSpellToSessionDeck result:', result)
 
 		if (result.success) {
-			console.log('SpellLibraryTab: Successfully added spell to session')
 			setActionError(null)
 			toaster.create({
 				title: 'Added to Spell Deck',
@@ -260,7 +255,6 @@ export default function SpellLibraryTab() {
 				})
 			)
 		} else {
-			console.error('SpellLibraryTab: Failed to add spell to session:', result.message)
 			setActionError(result.message)
 			toaster.create({
 				title: 'Error',

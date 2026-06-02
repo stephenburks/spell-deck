@@ -33,7 +33,6 @@ export default function DailySpellsTab() {
 	const handleAddToSpellbook = useCallback((spell) => {
 		const result = addSpellToSpellbook(spell)
 		if (result.success) {
-			console.log(`Added "${spell.name}" to spellbook`)
 			toaster.create({
 				title: 'Added to Spellbook',
 				description: `"${spell.name}" has been added to your spellbook`,
@@ -51,7 +50,6 @@ export default function DailySpellsTab() {
 				})
 			)
 		} else {
-			console.log(`Failed to add to spellbook: ${result.message}`)
 			toaster.create({
 				title: 'Error',
 				description: result.message,
@@ -67,7 +65,6 @@ export default function DailySpellsTab() {
 	const handleAddToSession = useCallback((spell) => {
 		const result = addSpellToSessionDeck(spell)
 		if (result.success) {
-			console.log(`Added "${spell.name}" to spell deck`)
 			toaster.create({
 				title: 'Added to Spell Deck',
 				description: `"${spell.name}" has been added to your spell deck`,
@@ -85,7 +82,6 @@ export default function DailySpellsTab() {
 				})
 			)
 		} else {
-			console.log(`Failed to add to session: ${result.message}`)
 			toaster.create({
 				title: 'Error',
 				description: result.message,

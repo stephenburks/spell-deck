@@ -38,7 +38,6 @@ export default function SpellInterface() {
 		const initResults = initializeLocalStorage()
 
 		// Log initialization results for debugging
-		console.log('SpellInterface localStorage initialization:', initResults)
 
 		// Check if any initialization failed
 		const failedInits = Object.entries(initResults)
@@ -46,7 +45,6 @@ export default function SpellInterface() {
 			.map(([store]) => store)
 
 		if (failedInits.length > 0) {
-			console.warn('Failed to initialize localStorage for:', failedInits.join(', '))
 		}
 	}, [])
 
@@ -58,7 +56,6 @@ export default function SpellInterface() {
 		try {
 			sessionStorage.setItem('spell-interface-active-tab', index.toString())
 		} catch (error) {
-			console.warn('Failed to save tab state to sessionStorage:', error)
 		}
 	}
 

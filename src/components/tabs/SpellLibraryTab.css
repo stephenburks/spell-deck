@@ -1,0 +1,108 @@
+.class-filter-button {
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.class-filter-button:hover {
+	background-color: var(--class-bg) !important;
+	color: var(--class-text) !important;
+}
+
+.class-filter-button[data-selected='true'] {
+	background-color: var(--class-bg) !important;
+	color: var(--class-text) !important;
+	border-color: var(--class-bg) !important;
+}
+
+.class-filter-button--barbarian { --class-bg: var(--color-barbarian); --class-text: #1a202c; }
+.class-filter-button--bard { --class-bg: var(--color-bard); --class-text: #1a202c; }
+.class-filter-button--cleric { --class-bg: var(--color-cleric); --class-text: #1a202c; }
+.class-filter-button--druid { --class-bg: var(--color-druid); --class-text: #1a202c; }
+.class-filter-button--monk { --class-bg: var(--color-monk); --class-text: #1a202c; }
+.class-filter-button--paladin { --class-bg: var(--color-paladin); --class-text: #1a202c; }
+.class-filter-button--wizard { --class-bg: var(--color-wizard); --class-text: white; }
+.class-filter-button--sorcerer { --class-bg: var(--color-sorcerer); --class-text: white; }
+.class-filter-button--warlock { --class-bg: var(--color-warlock); --class-text: white; }
+.class-filter-button--rogue { --class-bg: var(--color-rogue); --class-text: white; }
+.class-filter-button--fighter { --class-bg: var(--color-fighter); --class-text: white; }
+.class-filter-button--ranger { --class-bg: var(--color-ranger); --class-text: white; }
+.class-filter-button--artificer { --class-bg: var(--color-artificer, #339999); --class-text: white; }
+
+.filter-badge {
+	background-color: var(--chakra-colors-blue-100);
+}
+
+.chakra-input {
+	margin-bottom: 0.5rem;
+	font-weight: bold;
+	width: 100%;
+}
+
+.chakra-accordion__item {
+	border: 1px solid var(--chakra-colors-gray-200);
+	border-radius: 0.5rem;
+	margin-bottom: 0.5rem;
+	overflow: hidden;
+}
+
+.chakra-accordion__item:last-child {
+	margin-bottom: 0;
+}
+
+.chakra-accordion__trigger {
+	padding: 0.75rem 1rem;
+	font-weight: 600;
+}
+
+.chakra-accordion__trigger:hover {
+	background-color: var(--chakra-colors-gray-50);
+}
+
+.chakra-accordion__trigger[data-state='open'] {
+	background-color: var(--chakra-colors-blue-50);
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.chakra-accordion__content {
+	padding: 0.75rem;
+	background-color: var(--chakra-colors-gray-50);
+	border-bottom-left-radius: 0.5rem;
+	border-bottom-right-radius: 0.5rem;
+}
+
+span.chakra-badge {
+	z-index: 1;
+	border: 1px solid var(--chakra-colors-gray-200);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.chakra-heading {
+	margin-bottom: 0.5rem;
+	text-transform: none;
+}
+
+.chakra-text {
+	margin-bottom: 0;
+}
+
+.chakra-list__root {
+	margin-left: 1rem;
+}
+
+.chakra-scroll-area__viewport {
+	padding-bottom: 0;
+}
+
+.chakra-table__root {
+	margin-bottom: 0;
+}
+
+.chakra-tooltip__trigger {
+	display: flex;
+}
+
+.chakra-stat__valueText {
+	margin: 0;
+	font-size: 1.2rem;
+	line-height: 1;
+}

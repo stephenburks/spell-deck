@@ -27,6 +27,7 @@ import Icon from '../IconRegistry.jsx'
 import { useSpellSearchIndex, useSpellSearch } from '../../hooks/useSearchIndex.js'
 import { useDebounce } from '../../hooks/useDebounce.js'
 import { toaster } from '../ui/toaster'
+import './SpellLibraryTab.css'
 
 export default function SpellLibraryTab() {
 	// Fetch all spells using the existing hook

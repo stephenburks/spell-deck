@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Box, SimpleGrid, Button, Spinner, VStack } from '@chakra-ui/react'
 import SpellCard from './SpellCard.jsx'
 import CompactSpellRow from './CompactSpellRow.jsx'
+import './VirtualizedSpellList.css'
 
 /**
  * Custom hook for pagination-based virtualization

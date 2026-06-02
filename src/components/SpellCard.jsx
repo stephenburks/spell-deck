@@ -3,6 +3,7 @@ import { Badge, Card, Heading, Stat, Button, HStack } from '@chakra-ui/react'
 import { Tooltip } from './ui/tooltip.jsx'
 import { Description } from './card-features/description.jsx'
 import Icon from './IconRegistry'
+import './SpellCard.css'
 
 // Helper function to render class icons
 const renderClassIcon = (className) => {

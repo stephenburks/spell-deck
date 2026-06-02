@@ -1,3 +1,5 @@
+import './loading.css'
+
 const dieFaces = Array.from({ length: 20 }, (_, index) => <div key={index} className="dice-face"></div>)
 const loadText = 'LOADING'
 const loadArray = [...loadText]

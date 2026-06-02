@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react'
 import {
 	getActiveCampaign,
 	setActiveCampaign,
@@ -31,32 +31,32 @@ export function CampaignProvider({ children }: { children: React.ReactNode }) {
 		return () => window.removeEventListener('storage', handleStorage)
 	}, [])
 
-	const switchCampaign = (id: string) => {
+	const switchCampaign = useCallback((id: string) => {
 		setActiveCampaign(id)
 		setActive(id)
 		window.dispatchEvent(
 			new CustomEvent('spell-deck:campaign-changed', { detail: { campaignId: id } })
 		)
-	}
+	}, [])
 
-	const addCampaign = (name: string) => {
+	const addCampaign = useCallback((name: string) => {
 		const campaign = createCampaign(name)
 		setCampaigns(getCampaigns())
 		return campaign
-	}
+	}, [])
 
-	const removeCampaign = (id: string) => {
+	const removeCampaign = useCallback((id: string) => {
 		deleteCampaign(id)
 		setCampaigns(getCampaigns())
 		setActive(getActiveCampaign())
-	}
+	}, [])
 
-	return (
-		<CampaignContext.Provider
-			value={{ activeCampaign, campaigns, switchCampaign, addCampaign, removeCampaign }}>
-			{children}
-		</CampaignContext.Provider>
+	const contextValue = useMemo(
+		() => ({ activeCampaign, campaigns, switchCampaign, addCampaign, removeCampaign }),
+		[activeCampaign, campaigns, switchCampaign, addCampaign, removeCampaign]
 	)
+
+	return <CampaignContext.Provider value={contextValue}>{children}</CampaignContext.Provider>
 }
 
 export function useCampaign() {

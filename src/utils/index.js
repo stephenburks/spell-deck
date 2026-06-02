@@ -37,5 +37,5 @@ export {
 	removeSessionId
 } from './spellGrouping.js'
 
-// API utilities
-export { getAllSpellIndexes, getSpellsByIndexes } from '../api.js'
+// Additional spells
+export { mergeAdditionalSpells } from './additionalSpells.js'

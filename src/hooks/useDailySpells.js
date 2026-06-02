@@ -1,61 +1,57 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { getAllSpellIndexes, getSpellsByIndexes } from '../api'
+import { useAllSpells } from './useAllSpells'
 import { loadDailySpells, saveDailySpells } from '../utils/localStorage'
 import { validateSpellObject } from '../utils/validation'
 
 /**
- * Hook for managing daily spells with optimized loading
- * Only fetches the 12 spells needed for the day instead of the entire database
+ * Simple PRNG seeded by a string — produces deterministic results for the same date
+ */
+const seededRandom = (seed) => {
+	let h = 0
+	for (let i = 0; i < seed.length; i++) {
+		h = (Math.imul(31, h) + seed.charCodeAt(i)) | 0
+	}
+	return () => {
+		h = (h ^ (h >>> 13)) | 0
+		h = (h ^ (h << 17)) | 0
+		h = (h ^ (h >>> 5)) | 0
+		return (h >>> 0) / 4294967296
+	}
+}
+
+/**
+ * Fisher-Yates shuffle with a seeded PRNG — deterministic for the same seed
+ */
+const seededShuffle = (array, seed) => {
+	const result = [...array]
+	const random = seededRandom(seed)
+	for (let i = result.length - 1; i > 0; i--) {
+		const j = Math.floor(random() * (i + 1))
+		;[result[i], result[j]] = [result[j], result[i]]
+	}
+	return result
+}
+
+/**
+ * Hook for managing daily spells
+ * Picks 12 random spells from the cached spell data, seeded by date for consistency
  */
 export function useDailySpells() {
 	const [dailySpells, setDailySpells] = useState([])
 	const [lastGenerated, setLastGenerated] = useState(null)
 	const [isGenerating, setIsGenerating] = useState(false)
 
-	// Get current date in YYYY-MM-DD format
+	const { spells: allSpells, isLoaded } = useAllSpells()
+
 	const getCurrentDate = () => {
-		const now = new Date()
-		return now.toISOString().split('T')[0]
+		return new Date().toISOString().split('T')[0]
 	}
 
-	// Check if daily spells need to be refreshed
 	const needsRefresh = useCallback(() => {
 		if (!lastGenerated) return true
-		const currentDate = getCurrentDate()
-		return lastGenerated !== currentDate
+		return lastGenerated !== getCurrentDate()
 	}, [lastGenerated])
 
-	// Fetch all spell indexes (lightweight operation)
-	const spellIndexesQuery = useQuery({
-		queryKey: ['spellIndexes'],
-		queryFn: getAllSpellIndexes,
-		staleTime: 24 * 60 * 60 * 1000, // 24 hours
-		gcTime: 24 * 60 * 60 * 1000,
-		retry: 2,
-		retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
-	})
-
-	// Generate 12 random spell indexes
-	const generateRandomSpellIndexes = useCallback((allIndexes, count = 12) => {
-		if (!allIndexes || allIndexes.length === 0) {
-			return []
-		}
-
-		const availableIndexes = [...allIndexes]
-		const selectedIndexes = []
-		const numToSelect = Math.min(count, availableIndexes.length)
-
-		for (let i = 0; i < numToSelect; i++) {
-			const randomIndex = Math.floor(Math.random() * availableIndexes.length)
-			const selectedIndex = availableIndexes.splice(randomIndex, 1)[0]
-			selectedIndexes.push(selectedIndex)
-		}
-
-		return selectedIndexes
-	}, [])
-
-	// Load daily spells from localStorage
 	const loadStoredDailySpells = useCallback(() => {
 		const storedData = loadDailySpells()
 
@@ -70,85 +66,60 @@ export function useDailySpells() {
 		return false
 	}, [])
 
-	// Generate new daily spells
-	const generateDailySpells = useCallback(async () => {
-		if (!spellIndexesQuery.data || isGenerating) {
+	const generateDailySpells = useCallback(() => {
+		if (!allSpells || allSpells.length === 0 || isGenerating) {
 			return
 		}
 
 		setIsGenerating(true)
 
 		try {
-			// Generate 12 random spell indexes
-			const randomIndexes = generateRandomSpellIndexes(spellIndexesQuery.data, 12)
+			const currentDate = getCurrentDate()
+			const shuffled = seededShuffle(allSpells, currentDate)
+			const selected = shuffled.slice(0, 12)
 
-			if (randomIndexes.length === 0) {
-				throw new Error('No spell indexes available')
-			}
-
-			// Fetch only the 12 selected spells
-			const fetchedSpells = await getSpellsByIndexes(randomIndexes)
-
-			// Validate spells
-			const validSpells = fetchedSpells.filter(validateSpellObject)
+			const validSpells = selected.filter(validateSpellObject)
 
 			if (validSpells.length === 0) {
-				throw new Error('No valid spells fetched')
+				throw new Error('No valid spells found')
 			}
 
-			// Save to localStorage
-			const currentDate = getCurrentDate()
 			const success = saveDailySpells(validSpells, currentDate)
 
 			if (success) {
 				setDailySpells(validSpells)
 				setLastGenerated(currentDate)
-				console.log(`Generated ${validSpells.length} daily spells for ${currentDate}`)
 			} else {
 				throw new Error('Failed to save daily spells to localStorage')
 			}
 		} catch (error) {
 			console.error('Error generating daily spells:', error)
-			// Fallback: try to load any existing spells
 			loadStoredDailySpells()
 		} finally {
 			setIsGenerating(false)
 		}
-	}, [spellIndexesQuery.data, isGenerating, generateRandomSpellIndexes, loadStoredDailySpells])
+	}, [allSpells, isGenerating, loadStoredDailySpells])
 
-	// Load stored spells on mount
 	useEffect(() => {
 		loadStoredDailySpells()
 	}, [loadStoredDailySpells])
 
-	// Generate new spells when indexes are available and refresh is needed
 	useEffect(() => {
-		if (spellIndexesQuery.data && needsRefresh() && !isGenerating) {
+		if (isLoaded && needsRefresh() && !isGenerating) {
 			generateDailySpells()
 		}
-	}, [spellIndexesQuery.data, needsRefresh, generateDailySpells, isGenerating])
+	}, [isLoaded, needsRefresh, generateDailySpells, isGenerating])
 
 	return {
-		// Daily spells data
 		dailySpells,
 		lastGenerated,
-
-		// Loading states
-		isLoading: spellIndexesQuery.isLoading || isGenerating,
+		isLoading: !isLoaded || isGenerating,
 		isGenerating,
-
-		// Error states
-		error: spellIndexesQuery.error,
-		hasError: !!spellIndexesQuery.error,
-
-		// Utility functions
+		error: null,
+		hasError: false,
 		needsRefresh: needsRefresh(),
 		refreshDailySpells: generateDailySpells,
-
-		// Query info
-		spellIndexCount: spellIndexesQuery.data?.length || 0,
-
-		// Helper methods
+		spellIndexCount: allSpells?.length || 0,
 		getCurrentDate
 	}
 }

@@ -19,7 +19,7 @@ import {
 	AccordionItemIndicator
 } from '@chakra-ui/react'
 import Loading from '../ui/loading.jsx'
-import VirtualizedSpellList from '../virtualizedSpellList.jsx'
+import VirtualizedSpellList from '../VirtualizedSpellList.jsx'
 import { useAllSpells } from '../../hooks/useAllSpells.js'
 import { addSpellToSpellbook, addSpellToSessionDeck } from '../../utils/localStorage.js'
 import { validateSpellObject } from '../../utils/validation.js'
@@ -385,6 +385,7 @@ export default function SpellLibraryTab() {
 				<Box position="relative">
 					<Input
 						placeholder="Search spells by name, description, or level (e.g., 'cantrip', 'level 3')..."
+						aria-label="Search spells"
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
 						size="lg"
@@ -434,6 +435,7 @@ export default function SpellLibraryTab() {
 												fontWeight="bold"
 												className={`class-filter-button class-filter-button--${className.toLowerCase()}`}
 												data-selected={selectedClasses.includes(className)}
+												aria-pressed={selectedClasses.includes(className)}
 												variant={
 													selectedClasses.includes(className)
 														? 'solid'
@@ -473,6 +475,7 @@ export default function SpellLibraryTab() {
 										<WrapItem key={level}>
 											<Button
 												size="sm"
+												aria-pressed={selectedLevels.includes(level)}
 												variant={
 													selectedLevels.includes(level)
 														? 'solid'
@@ -506,6 +509,7 @@ export default function SpellLibraryTab() {
 										<WrapItem key={school}>
 											<Button
 												size="sm"
+												aria-pressed={selectedSchools.includes(school)}
 												variant={
 													selectedSchools.includes(school)
 														? 'subtle'

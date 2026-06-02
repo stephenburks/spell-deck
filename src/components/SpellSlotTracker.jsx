@@ -46,6 +46,12 @@ export default function SpellSlotTracker() {
 		saveSlotState(state)
 	}, [state])
 
+	useEffect(() => {
+		const handler = () => setState(loadSlotState())
+		window.addEventListener('spell-deck:slot-changed', handler)
+		return () => window.removeEventListener('spell-deck:slot-changed', handler)
+	}, [])
+
 	const toggleSlot = (spellLevel, slotIndex) => {
 		setState((prev) => {
 			const key = spellLevel

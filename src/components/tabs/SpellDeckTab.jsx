@@ -24,6 +24,7 @@ import { groupSpellsByLevel } from '../../utils/spellGrouping.js'
 import { validateSessionSpell, getValidSpells } from '../../utils/validation.js'
 import { toaster } from '../ui/toaster'
 import SpellSlotTracker from '../SpellSlotTracker'
+import { STORAGE_KEY as SLOT_TRACKER_KEY } from '../../utils/spellSlots'
 
 export default function SpellDeckTab() {
 	const [sessionSpells, setSessionSpells] = useState([])
@@ -134,13 +135,27 @@ export default function SpellDeckTab() {
 		const campaignId = getActiveCampaign()
 		const result = removeSpellFromSessionDeck(sessionId, campaignId !== 'default' ? campaignId : undefined)
 		if (result.success) {
-			// Update local state immediately (optimistic update)
 			setSessionSpells(
 				getValidSpells(result.spells || []).filter(
 					(spell) => spell.sessionId && validateSessionSpell(spell)
 				)
 			)
 			setError(null)
+
+			// Auto-decrement spell slot for the burned spell's level
+			try {
+				const slotState = JSON.parse(localStorage.getItem(SLOT_TRACKER_KEY) || '{}')
+				if (slotState.usedSlots) {
+					const level = spellToBurn.level
+					const used = slotState.usedSlots[level] || 0
+					if (used > 0) {
+						slotState.usedSlots[level] = used - 1
+						localStorage.setItem(SLOT_TRACKER_KEY, JSON.stringify(slotState))
+						window.dispatchEvent(new Event('spell-deck:slot-changed'))
+					}
+				}
+			} catch {}
+
 			toaster.create({
 				title: 'Spell Burned',
 				description: `"${spellToBurn.name}" has been burned and removed from your spell deck`,

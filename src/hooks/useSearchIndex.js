@@ -35,7 +35,7 @@ export function useSpellSearchIndex(spells) {
 			],
 			threshold: 0.25, // Lower threshold for more precise matches (0 = exact, 1 = anything)
 			includeScore: true, // Include relevance scores for sorting
-			minMatchCharLength: 2, // Minimum characters before searching
+			minMatchCharLength: 1, // Minimum characters before searching
 			ignoreLocation: false, // Location matters for relevance
 			findAllMatches: false, // Only find first match for better performance
 			useExtendedSearch: false, // Keep it simple for performance

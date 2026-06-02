@@ -38,6 +38,9 @@ export default function SpellLibraryTab() {
 	const [selectedClasses, setSelectedClasses] = useState([])
 	const [selectedLevels, setSelectedLevels] = useState([])
 	const [selectedSchools, setSelectedSchools] = useState([])
+	const [showRitualOnly, setShowRitualOnly] = useState(false)
+	const [showReactionOnly, setShowReactionOnly] = useState(false)
+	const [showBonusActionOnly, setShowBonusActionOnly] = useState(false)
 	const [actionError, setActionError] = useState(null)
 	const [viewMode, setViewMode] = useState(() => {
 		return localStorage.getItem('spell-deck-view-mode') || 'card'
@@ -127,9 +130,12 @@ export default function SpellLibraryTab() {
 			hasClassFilter: selectedClasses.length > 0,
 			hasLevelFilter: selectedLevels.length > 0,
 			hasSchoolFilter: selectedSchools.length > 0,
-			hasSearchTerm: debouncedSearchTerm.trim().length >= 2
+			hasSearchTerm: debouncedSearchTerm.trim().length >= 1,
+			showRitualOnly,
+			showReactionOnly,
+			showBonusActionOnly
 		}),
-		[selectedClasses.length, selectedLevels.length, selectedSchools.length, debouncedSearchTerm]
+		[selectedClasses.length, selectedLevels.length, selectedSchools.length, debouncedSearchTerm, showRitualOnly, showReactionOnly, showBonusActionOnly]
 	)
 	// Apply filters efficiently with optimized logic
 	const filteredSpells = useMemo(() => {
@@ -142,7 +148,10 @@ export default function SpellLibraryTab() {
 		if (
 			!filterState.hasClassFilter &&
 			!filterState.hasLevelFilter &&
-			!filterState.hasSchoolFilter
+			!filterState.hasSchoolFilter &&
+			!filterState.showRitualOnly &&
+			!filterState.showReactionOnly &&
+			!filterState.showBonusActionOnly
 		) {
 			return baseSpells
 		}
@@ -169,6 +178,11 @@ export default function SpellLibraryTab() {
 					return false
 				}
 			}
+
+			// Quick filters
+			if (filterState.showRitualOnly && !spell.ritual) return false
+			if (filterState.showReactionOnly && !spell.casting_time?.toLowerCase().includes('reaction')) return false
+			if (filterState.showBonusActionOnly && !spell.casting_time?.toLowerCase().includes('bonus action')) return false
 
 			return true
 		})
@@ -421,6 +435,39 @@ export default function SpellLibraryTab() {
 					</Heading>
 
 					<AccordionRoot defaultValue={['classes']} multiple>
+						{/* Quick Filters */}
+						<AccordionItem value="quick" pl={4} py={2}>
+							<AccordionItemTrigger>
+								<Text fontWeight="semibold">Quick Filters</Text>
+								<AccordionItemIndicator />
+							</AccordionItemTrigger>
+							<AccordionItemContent>
+								<HStack gap={2} pt={2} flexWrap="wrap">
+									<Button
+										size="sm"
+										variant={showRitualOnly ? 'solid' : 'outline'}
+										aria-pressed={showRitualOnly}
+										onClick={() => setShowRitualOnly(!showRitualOnly)}>
+										Ritual
+									</Button>
+									<Button
+										size="sm"
+										variant={showReactionOnly ? 'solid' : 'outline'}
+										aria-pressed={showReactionOnly}
+										onClick={() => setShowReactionOnly(!showReactionOnly)}>
+										Reaction
+									</Button>
+									<Button
+										size="sm"
+										variant={showBonusActionOnly ? 'solid' : 'outline'}
+										aria-pressed={showBonusActionOnly}
+										onClick={() => setShowBonusActionOnly(!showBonusActionOnly)}>
+										Bonus Action
+									</Button>
+								</HStack>
+							</AccordionItemContent>
+						</AccordionItem>
+
 						{/* Class Filters - Expanded by default */}
 						<AccordionItem value="classes" pl={4} py={2}>
 							<AccordionItemTrigger>

@@ -15,7 +15,7 @@ import './SpellInterface.css'
  * SpellInterface - Main container component with tabbed interface
  *
  * Provides five horizontal tabs:
- * - "Spells of the Day": Daily random spell selection
+ * - "Daily": Daily random spell selection
  * - "Spellbook": Personal spell library management
  * - "Spell Deck": Active session spell management
  * - "Spell Library": Complete searchable spell index
@@ -91,7 +91,7 @@ export default function SpellInterface() {
 								<Tooltip.Trigger asChild>
 									<Box display="flex" alignItems="center" gap={2}>
 										<Icon name="spells-of-the-day" folder="tabs" />
-										Spells of the Day
+										Daily
 									</Box>
 								</Tooltip.Trigger>
 								<Tooltip.Positioner>
@@ -106,12 +106,12 @@ export default function SpellInterface() {
 								<Tooltip.Trigger asChild>
 									<Box display="flex" alignItems="center" gap={2}>
 										<Icon name="spellbook" folder="tabs" />
-										Book
+										Spellbook
 									</Box>
 								</Tooltip.Trigger>
 								<Tooltip.Positioner>
 									<Tooltip.Content style={{ textTransform: 'none' }}>
-										Spell Book - Your personal collection of saved spells
+										Spell Spellbook - Your personal collection of saved spells
 									</Tooltip.Content>
 								</Tooltip.Positioner>
 							</Tooltip.Root>
@@ -151,7 +151,7 @@ export default function SpellInterface() {
 								<Tooltip.Trigger asChild>
 									<Box display="flex" alignItems="center" gap={2}>
 										<Icon name="readme" folder="tabs" />
-										READ.ME
+										About
 									</Box>
 								</Tooltip.Trigger>
 								<Tooltip.Positioner>

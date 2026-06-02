@@ -9,3 +9,6 @@ export { useDailySpells } from './useDailySpells.js'
 
 // Search hooks (Fuse.js powered)
 export { useSpellSearchIndex, useSpellSearch } from './useSearchIndex.js'
+
+// Utility hooks
+export { useDebounce } from './useDebounce.js'

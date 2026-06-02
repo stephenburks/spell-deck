@@ -7,6 +7,7 @@ import SpellLibraryTab from './tabs/SpellLibraryTab.jsx'
 import ReadmeTab from './tabs/ReadmeTab.jsx'
 import { initializeLocalStorage } from '../utils/localStorage.js'
 import Icon from './IconRegistry.jsx'
+import { ColorModeButton } from './ui/color-mode'
 
 /**
  * SpellInterface - Main container component with tabbed interface
@@ -161,6 +162,7 @@ export default function SpellInterface() {
 								</Tooltip.Positioner>
 							</Tooltip.Root>
 						</Tabs.Trigger>
+						<ColorModeButton />
 					</Tabs.List>
 				</Box>
 

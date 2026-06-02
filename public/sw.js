@@ -1,5 +1,5 @@
 const CACHE_NAME = 'spell-deck-v1'
-const CRITICAL_ASSETS = ['/', '/index.html', '/data/spells.json', '/manifest.json']
+const CRITICAL_ASSETS = ['./', './index.html', './data/spells.json', './manifest.json']
 
 self.addEventListener('install', (event) => {
 	event.waitUntil(

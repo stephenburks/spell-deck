@@ -41,7 +41,7 @@ export function useSpellSearchIndex(spells) {
 			useExtendedSearch: false, // Keep it simple for performance
 			shouldSort: true, // Let Fuse handle sorting
 			distance: 50, // Shorter distance for more precise matches
-			maxPatternLength: 32, // Limit pattern length for performance
+			maxPatternLength: 64, // Accommodates long spell names (e.g., "Mordenkainen's magnificent mansion")
 			isCaseSensitive: false // Case insensitive search
 		}
 

@@ -48,6 +48,33 @@ export default function SpellLibraryTab() {
 		localStorage.setItem('spell-deck-view-mode', next)
 	}
 
+	// Initialize filters from URL params on mount
+	useEffect(() => {
+		const params = new URLSearchParams(window.location.search)
+		const q = params.get('q')
+		const cls = params.get('class')
+		const lvl = params.get('level')
+		const sch = params.get('school')
+
+		if (q) setSearchTerm(q)
+		if (cls) setSelectedClasses(cls.split(','))
+		if (lvl) setSelectedLevels(lvl.split(',').map(Number))
+		if (sch) setSelectedSchools(sch.split(','))
+	}, [])
+
+	// Sync filter state to URL params
+	useEffect(() => {
+		const params = new URLSearchParams()
+		if (searchTerm.trim()) params.set('q', searchTerm.trim())
+		if (selectedClasses.length) params.set('class', selectedClasses.join(','))
+		if (selectedLevels.length) params.set('level', selectedLevels.join(','))
+		if (selectedSchools.length) params.set('school', selectedSchools.join(','))
+
+		const search = params.toString()
+		const url = search ? `${window.location.pathname}?${search}` : window.location.pathname
+		window.history.replaceState(null, '', url)
+	}, [searchTerm, selectedClasses, selectedLevels, selectedSchools])
+
 	// Debounce search term to prevent excessive filtering
 	const { debouncedValue: debouncedSearchTerm, isDebouncing } = useDebounce(searchTerm, 400) // Increased for better performance
 

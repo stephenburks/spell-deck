@@ -6,5 +6,10 @@ export default defineConfig({
 	base: '/spell-deck/',
 	build: {
 		outDir: 'build'
+	},
+	test: {
+		environment: 'jsdom',
+		setupFiles: ['./src/setupTests.ts'],
+		globals: true
 	}
 })

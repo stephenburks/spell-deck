@@ -42,9 +42,21 @@ export default function SpellSlotTracker() {
 	const [state, setState] = useState(loadSlotState)
 	const slots = getSlotsForLevel(state.characterLevel, state.casterType)
 
+	// Save state changes to localStorage immediately, not via effect,
+	// so the burn handler in SpellDeckTab always reads the latest usedSlots.
+	const setStateAndSave = (updater) => {
+		setState((prev) => {
+			const next = typeof updater === 'function' ? updater(prev) : updater
+			saveSlotState(next)
+			return next
+		})
+	}
+
+	// Persist initial state on mount
 	useEffect(() => {
 		saveSlotState(state)
-	}, [state])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
 	useEffect(() => {
 		const handler = () => setState(loadSlotState())
@@ -53,7 +65,7 @@ export default function SpellSlotTracker() {
 	}, [])
 
 	const toggleSlot = (spellLevel, slotIndex) => {
-		setState((prev) => {
+		setStateAndSave((prev) => {
 			const key = spellLevel
 			const used = prev.usedSlots[key] || 0
 			const alreadyUsed = slotIndex < used
@@ -68,7 +80,7 @@ export default function SpellSlotTracker() {
 	}
 
 	const resetSlots = () => {
-		setState((prev) => ({ ...prev, usedSlots: {} }))
+		setStateAndSave((prev) => ({ ...prev, usedSlots: {} }))
 	}
 
 	const usedCount = Object.values(state.usedSlots).reduce((a, b) => a + b, 0)
@@ -97,7 +109,7 @@ export default function SpellSlotTracker() {
 						size="sm"
 						value={[String(state.characterLevel)]}
 						onValueChange={(e) =>
-							setState((prev) => ({
+							setStateAndSave((prev) => ({
 								...prev,
 								characterLevel: Number(e.value[0])
 							}))
@@ -121,7 +133,7 @@ export default function SpellSlotTracker() {
 						size="sm"
 						value={[state.casterType]}
 						onValueChange={(e) =>
-							setState((prev) => ({
+							setStateAndSave((prev) => ({
 								...prev,
 								casterType: e.value[0],
 								usedSlots: {}

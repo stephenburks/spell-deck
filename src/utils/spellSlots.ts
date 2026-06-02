@@ -3,7 +3,7 @@
  * Rows: character level, Columns: spell slots per spell level (1st-9th)
  */
 
-export const FULL_CASTER_SLOTS: Record<number, number[]> = {
+const FULL_CASTER_SLOTS: Record<number, number[]> = {
 	1: [2],
 	2: [3],
 	3: [4, 2],
@@ -26,7 +26,7 @@ export const FULL_CASTER_SLOTS: Record<number, number[]> = {
 	20: [4, 3, 3, 3, 3, 2, 2, 1, 1]
 }
 
-export const HALF_CASTER_SLOTS: Record<number, number[]> = {
+const HALF_CASTER_SLOTS: Record<number, number[]> = {
 	1: [],
 	2: [2],
 	3: [3],
@@ -49,7 +49,7 @@ export const HALF_CASTER_SLOTS: Record<number, number[]> = {
 	20: [4, 3, 3, 3, 2]
 }
 
-export const WARLOCK_SLOTS: Record<number, { count: number; level: number }> = {
+const WARLOCK_SLOTS: Record<number, { count: number; level: number }> = {
 	1: { count: 1, level: 1 },
 	2: { count: 2, level: 1 },
 	3: { count: 2, level: 2 },
@@ -101,7 +101,7 @@ export const CASTER_TYPES: { value: CasterType; label: string }[] = [
 
 export const STORAGE_KEY = 'spell-deck-slot-tracker'
 
-export interface SlotState {
+interface SlotState {
 	characterLevel: number
 	casterType: CasterType
 	usedSlots: Record<number, number> // spellLevel → count used

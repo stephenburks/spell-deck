@@ -35,9 +35,9 @@ export function Description({ spell }) {
 
 			default:
 				return (
-					<ReactMarkdown key={`${prefix}-${index}`} className="content-text">
-						{block.content}
-					</ReactMarkdown>
+					<div className="content-text" key={`${prefix}-${index}`}>
+						<ReactMarkdown>{block.content}</ReactMarkdown>
+					</div>
 				)
 		}
 	}

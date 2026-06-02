@@ -1,6 +1,6 @@
 const NOTES_KEY = 'spell-deck-notes'
 
-export const loadNotes = () => {
+const loadNotes = () => {
 	try {
 		const stored = localStorage.getItem(NOTES_KEY)
 		return stored ? JSON.parse(stored) : {}
@@ -9,7 +9,7 @@ export const loadNotes = () => {
 	}
 }
 
-export const saveNotes = (notes) => {
+const saveNotes = (notes) => {
 	localStorage.setItem(NOTES_KEY, JSON.stringify(notes))
 }
 

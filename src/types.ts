@@ -47,12 +47,12 @@ export interface SessionSpell extends Spell {
 	sessionId: string
 }
 
-export interface SpellCollection {
+interface SpellCollection {
 	spells: (Spell | SessionSpell)[]
 	lastModified: number
 }
 
-export interface DailySpellCollection {
+interface DailySpellCollection {
 	spells: Spell[]
 	generatedDate: string | null
 	lastModified: number

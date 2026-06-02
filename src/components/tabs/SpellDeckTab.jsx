@@ -119,6 +119,30 @@ export default function SpellDeckTab() {
 		return { cantrips, leveledSpells, total: sessionSpells.length }
 	}, [sessionSpells])
 
+	// Auto-mark spell slot as used when burning a spell
+	const markSlotUsed = (level) => {
+		try {
+			const raw = localStorage.getItem(SLOT_TRACKER_KEY)
+			if (!raw) return
+			const slotState = JSON.parse(raw)
+			if (!slotState || typeof slotState !== 'object') return
+			slotState.usedSlots = slotState.usedSlots || {}
+			slotState.usedSlots[level] = (slotState.usedSlots[level] || 0) + 1
+			slotState.characterLevel = slotState.characterLevel || 5
+			slotState.casterType = slotState.casterType || 'full'
+			localStorage.setItem(SLOT_TRACKER_KEY, JSON.stringify(slotState))
+			window.dispatchEvent(new Event('spell-deck:slot-changed'))
+			toaster.create({
+				title: 'Slot Used',
+				description: `Marked one level ${level} spell slot as used (${slotState.usedSlots[level]} total)`,
+				status: 'success',
+				duration: 2000
+			})
+		} catch (err) {
+			console.warn('Failed to auto-mark spell slot:', err)
+		}
+	}
+
 	// Burn spell (remove leveled spell from session)
 	const burnSpell = (sessionId) => {
 		// Find the spell to burn
@@ -156,23 +180,7 @@ export default function SpellDeckTab() {
 			)
 			setError(null)
 
-			// Auto-mark spell slot as used when burning a spell
-			try {
-				const slotState = JSON.parse(localStorage.getItem(SLOT_TRACKER_KEY) || '{}')
-				const level = spellToBurn.level
-				slotState.usedSlots = slotState.usedSlots || {}
-				slotState.usedSlots[level] = (slotState.usedSlots[level] || 0) + 1
-				slotState.characterLevel = slotState.characterLevel || 5
-				slotState.casterType = slotState.casterType || 'full'
-				localStorage.setItem(SLOT_TRACKER_KEY, JSON.stringify(slotState))
-				window.dispatchEvent(new Event('spell-deck:slot-changed'))
-				toaster.create({
-					title: 'Slot Used',
-					description: `Marked one level ${level} spell slot as used (${slotState.usedSlots[level]} total)`,
-					status: 'success',
-					duration: 2000
-				})
-			} catch {}
+			markSlotUsed(spellToBurn.level)
 
 			toaster.create({
 				title: 'Spell Burned',

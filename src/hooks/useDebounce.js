@@ -1,19 +1,21 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export function useDebounce(value, delay) {
 	const [debouncedValue, setDebouncedValue] = useState(value)
 	const [isDebouncing, setIsDebouncing] = useState(false)
+	const idRef = useRef(0)
 
 	useEffect(() => {
-		if (value !== debouncedValue) setIsDebouncing(true)
-
+		const id = ++idRef.current
+		setIsDebouncing(true)
 		const handler = setTimeout(() => {
-			setDebouncedValue(value)
-			setIsDebouncing(false)
+			if (id === idRef.current) {
+				setDebouncedValue(value)
+				setIsDebouncing(false)
+			}
 		}, delay)
-
 		return () => clearTimeout(handler)
-	}, [value, delay, debouncedValue])
+	}, [value, delay])
 
 	return { debouncedValue, isDebouncing }
 }

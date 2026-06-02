@@ -142,17 +142,14 @@ export default function SpellDeckTab() {
 			)
 			setError(null)
 
-			// Auto-decrement spell slot for the burned spell's level
+			// Auto-mark spell slot as used when burning a spell
 			try {
 				const slotState = JSON.parse(localStorage.getItem(SLOT_TRACKER_KEY) || '{}')
 				if (slotState.usedSlots) {
 					const level = spellToBurn.level
-					const used = slotState.usedSlots[level] || 0
-					if (used > 0) {
-						slotState.usedSlots[level] = used - 1
-						localStorage.setItem(SLOT_TRACKER_KEY, JSON.stringify(slotState))
-						window.dispatchEvent(new Event('spell-deck:slot-changed'))
-					}
+					slotState.usedSlots[level] = (slotState.usedSlots[level] || 0) + 1
+					localStorage.setItem(SLOT_TRACKER_KEY, JSON.stringify(slotState))
+					window.dispatchEvent(new Event('spell-deck:slot-changed'))
 				}
 			} catch {}
 

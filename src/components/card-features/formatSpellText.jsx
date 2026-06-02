@@ -9,13 +9,11 @@ export const formatSpellText = (text) => {
 	let paragraphs = []
 
 	if (Array.isArray(text)) {
-		// If it's an array, each element is potentially a separate paragraph
 		paragraphs = text
 			.filter((item) => item && typeof item === 'string')
 			.map((item) => item.trim())
 			.filter((item) => item.length > 0)
 	} else if (typeof text === 'string') {
-		// If it's a string, split by double line breaks
 		paragraphs = text
 			.split(/\n\s*\n/)
 			.map((p) => p.trim())
@@ -51,31 +49,13 @@ export const formatSpellText = (text) => {
 		if (/^\s*[-•*]/.test(trimmed)) {
 			const items = trimmed
 				.split('\n')
-				.map((line) => {
-					let item = line.replace(/^\s*[-•*]\s*/, '').trim()
-					// Apply bold formatting to list items too
-					item = item
-						.replace(/\*\*\*(.*?)\*\*\*/g, '<strong>$1</strong>')
-						.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-					return item
-				})
+				.map((line) => line.replace(/^\s*[-•*]\s*/, '').trim())
 				.filter(Boolean)
 			return { type: 'list', content: items }
 		}
 
-		// Handle bold text formatting - multiple patterns
-		let processedContent = trimmed
-			// Handle ***Text*** pattern
-			.replace(/\*\*\*(.*?)\*\*\*/g, '<strong>$1</strong>')
-			// Handle **Text** pattern
-			.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-			// Handle cases where there might be unmatched asterisks at the start of lines
-			.replace(/^\*\*\*([^*]+)\.\*\*\*/gm, '<strong>$1.</strong>')
-			// Handle quoted text for italics - matches text in double quotes
-			.replace(/"([^"]+)"/g, '<em>"$1"</em>')
-
-		// Regular paragraph
-		return { type: 'paragraph', content: processedContent }
+		// Regular paragraph — pass through as-is for react-markdown
+		return { type: 'paragraph', content: trimmed }
 	})
 
 	// Merge consecutive blocks of the same type (lists and tables)

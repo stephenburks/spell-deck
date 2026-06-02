@@ -1,4 +1,5 @@
 import { List, Table } from '@chakra-ui/react'
+import ReactMarkdown from 'react-markdown'
 import { formatSpellText } from './formatSpellText'
 
 export function Description({ spell }) {
@@ -9,7 +10,7 @@ export function Description({ spell }) {
 					<List.Root key={`${prefix}-${index}`} className="content-text">
 						{block.content.map((item, i) => (
 							<List.Item key={`${prefix}-${index}-${i}`} _marker={{ color: 'black' }}>
-								<span dangerouslySetInnerHTML={{ __html: item }} />
+								<ReactMarkdown components={{ p: 'span' }}>{item}</ReactMarkdown>
 							</List.Item>
 						))}
 					</List.Root>
@@ -23,7 +24,7 @@ export function Description({ spell }) {
 								<Table.Row key={`${prefix}-${index}-${i}`}>
 									{row.map((cell, j) => (
 										<Table.Cell key={`${prefix}-${index}-${i}-${j}`}>
-											<span dangerouslySetInnerHTML={{ __html: cell }} />
+											<ReactMarkdown components={{ p: 'span' }}>{cell}</ReactMarkdown>
 										</Table.Cell>
 									))}
 								</Table.Row>
@@ -34,10 +35,9 @@ export function Description({ spell }) {
 
 			default:
 				return (
-					<p
-						key={`${prefix}-${index}`}
-						dangerouslySetInnerHTML={{ __html: block.content }}
-					/>
+					<ReactMarkdown key={`${prefix}-${index}`} className="content-text">
+						{block.content}
+					</ReactMarkdown>
 				)
 		}
 	}

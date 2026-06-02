@@ -21,7 +21,7 @@ import {
 import Loading from '../ui/loading.jsx'
 import VirtualizedSpellList from '../VirtualizedSpellList.jsx'
 import { useAllSpells } from '../../hooks/useAllSpells.js'
-import { addSpellToSpellbook, addSpellToSessionDeck } from '../../utils/localStorage.js'
+import { addSpellToSpellbook, addSpellToSessionDeck, getActiveCampaign } from '../../utils/localStorage.js'
 import { validateSpellObject } from '../../utils/validation.js'
 import Icon from '../IconRegistry.jsx'
 import { useSpellSearchIndex, useSpellSearch } from '../../hooks/useSearchIndex.js'
@@ -226,7 +226,7 @@ export default function SpellLibraryTab() {
 			return false
 		}
 
-		const result = addSpellToSpellbook(spell)
+		const result = addSpellToSpellbook(spell, getActiveCampaign() !== "default" ? getActiveCampaign() : undefined)
 		if (result.success) {
 			setActionError(null)
 			toaster.create({
@@ -271,7 +271,7 @@ export default function SpellLibraryTab() {
 			return false
 		}
 
-		const result = addSpellToSessionDeck(spell)
+		const result = addSpellToSessionDeck(spell, getActiveCampaign() !== "default" ? getActiveCampaign() : undefined)
 
 		if (result.success) {
 			setActionError(null)

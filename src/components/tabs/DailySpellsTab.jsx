@@ -3,7 +3,7 @@ import { Box, Heading, Text, SimpleGrid, Alert, Button, HStack } from '@chakra-u
 import SpellCard from '../SpellCard.jsx'
 import Loading from '../ui/loading.jsx'
 import { useDailySpells } from '../../hooks/useDailySpells.js'
-import { addSpellToSpellbook, addSpellToSessionDeck } from '../../utils/localStorage.js'
+import { addSpellToSpellbook, addSpellToSessionDeck, getActiveCampaign } from '../../utils/localStorage.js'
 import { validateSpellObject } from '../../utils/validation.js'
 import { toaster } from '../ui/toaster'
 
@@ -31,7 +31,7 @@ export default function DailySpellsTab() {
 	 * Handle adding a spell to the user's spellbook
 	 */
 	const handleAddToSpellbook = useCallback((spell) => {
-		const result = addSpellToSpellbook(spell)
+		const result = addSpellToSpellbook(spell, getActiveCampaign() !== "default" ? getActiveCampaign() : undefined)
 		if (result.success) {
 			toaster.create({
 				title: 'Added to Spellbook',
@@ -63,7 +63,7 @@ export default function DailySpellsTab() {
 	 * Handle adding a spell to the spell deck
 	 */
 	const handleAddToSession = useCallback((spell) => {
-		const result = addSpellToSessionDeck(spell)
+		const result = addSpellToSessionDeck(spell, getActiveCampaign() !== "default" ? getActiveCampaign() : undefined)
 		if (result.success) {
 			toaster.create({
 				title: 'Added to Spell Deck',

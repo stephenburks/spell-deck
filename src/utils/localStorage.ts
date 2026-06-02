@@ -7,6 +7,57 @@ export const STORAGE_KEYS = {
 	DAILY_SPELLS: 'daily-spells'
 } as const
 
+const CAMPAIGN_KEY = 'spell-deck-campaigns'
+const ACTIVE_CAMPAIGN_KEY = 'spell-deck-active-campaign'
+
+export const scopeKey = (campaignId: string, key: string): string =>
+	`campaign-${campaignId}-${key}`
+
+export interface Campaign {
+	id: string
+	name: string
+	createdAt: string
+}
+
+export const getActiveCampaign = (): string => {
+	return localStorage.getItem(ACTIVE_CAMPAIGN_KEY) || 'default'
+}
+
+export const setActiveCampaign = (campaignId: string): void => {
+	localStorage.setItem(ACTIVE_CAMPAIGN_KEY, campaignId)
+}
+
+export const getCampaigns = (): Campaign[] => {
+	try {
+		const stored = localStorage.getItem(CAMPAIGN_KEY)
+		return stored ? JSON.parse(stored) : []
+	} catch {
+		return []
+	}
+}
+
+const saveCampaigns = (campaigns: Campaign[]): void => {
+	localStorage.setItem(CAMPAIGN_KEY, JSON.stringify(campaigns))
+}
+
+export const createCampaign = (name: string): Campaign => {
+	const campaigns = getCampaigns()
+	const id = `campaign-${Date.now()}`
+	const campaign: Campaign = { id, name: name.trim(), createdAt: new Date().toISOString() }
+	campaigns.push(campaign)
+	saveCampaigns(campaigns)
+	return campaign
+}
+
+export const deleteCampaign = (campaignId: string): void => {
+	if (campaignId === 'default') return
+	const campaigns = getCampaigns().filter((c) => c.id !== campaignId)
+	saveCampaigns(campaigns)
+	if (getActiveCampaign() === campaignId) {
+		setActiveCampaign('default')
+	}
+}
+
 type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS]
 
 export interface SpellCollectionData {
@@ -53,17 +104,25 @@ const createDataStructure = (spells: Spell[], generatedDate: string | null = nul
 	lastModified: new Date().toISOString()
 })
 
-export const loadSpellbook = (): SpellCollectionData =>
-	safeLoadFromStorage(STORAGE_KEYS.SPELLBOOK, createDataStructure([]))
+export const loadSpellbook = (campaignId?: string): SpellCollectionData => {
+	const key = campaignId ? scopeKey(campaignId, STORAGE_KEYS.SPELLBOOK) : STORAGE_KEYS.SPELLBOOK
+	return safeLoadFromStorage(key, createDataStructure([]))
+}
 
-export const saveSpellbook = (spells: Spell[]): boolean =>
-	safeSaveToStorage(STORAGE_KEYS.SPELLBOOK, createDataStructure(spells))
+export const saveSpellbook = (spells: Spell[], campaignId?: string): boolean => {
+	const key = campaignId ? scopeKey(campaignId, STORAGE_KEYS.SPELLBOOK) : STORAGE_KEYS.SPELLBOOK
+	return safeSaveToStorage(key, createDataStructure(spells))
+}
 
-export const loadSessionDeck = (): SpellCollectionData & { spells: SessionSpell[] } =>
-	safeLoadFromStorage(STORAGE_KEYS.SESSION_DECK, createDataStructure([]) as ReturnType<typeof createDataStructure> & { spells: SessionSpell[] })
+export const loadSessionDeck = (campaignId?: string): SpellCollectionData & { spells: SessionSpell[] } => {
+	const key = campaignId ? scopeKey(campaignId, STORAGE_KEYS.SESSION_DECK) : STORAGE_KEYS.SESSION_DECK
+	return safeLoadFromStorage(key, createDataStructure([])) as ReturnType<typeof createDataStructure> & { spells: SessionSpell[] }
+}
 
-export const saveSessionDeck = (spells: SessionSpell[]): boolean =>
-	safeSaveToStorage(STORAGE_KEYS.SESSION_DECK, createDataStructure(spells))
+export const saveSessionDeck = (spells: Spell[], campaignId?: string): boolean => {
+	const key = campaignId ? scopeKey(campaignId, STORAGE_KEYS.SESSION_DECK) : STORAGE_KEYS.SESSION_DECK
+	return safeSaveToStorage(key, createDataStructure(spells))
+}
 
 export const loadDailySpells = (): DailySpellData =>
 	safeLoadFromStorage(STORAGE_KEYS.DAILY_SPELLS, createDataStructure([], null))
@@ -141,32 +200,36 @@ const removeSpellFromCollection = (
 	}
 }
 
-export const addSpellToSpellbook = (spell: Spell): OperationResult =>
+export const addSpellToSpellbook = (spell: Spell, campaignId?: string): OperationResult =>
 	addSpellToCollection(
-		STORAGE_KEYS.SPELLBOOK,
-		loadSpellbook,
-		saveSpellbook,
+		campaignId ? scopeKey(campaignId, STORAGE_KEYS.SPELLBOOK) : STORAGE_KEYS.SPELLBOOK,
+		() => loadSpellbook(campaignId),
+		(spells: Spell[]) => saveSpellbook(spells, campaignId),
 		spell,
 		null,
 		(spells, s) => spells.some((existing) => existing.index === s.index)
 	)
 
-export const removeSpellFromSpellbook = (spellIndex: string): OperationResult =>
-	removeSpellFromCollection(loadSpellbook, saveSpellbook, (spell) => spell.index !== spellIndex)
+export const removeSpellFromSpellbook = (spellIndex: string, campaignId?: string): OperationResult =>
+	removeSpellFromCollection(
+		() => loadSpellbook(campaignId),
+		(spells: Spell[]) => saveSpellbook(spells, campaignId),
+		(spell) => spell.index !== spellIndex
+	)
 
-export const addSpellToSessionDeck = (spell: Spell): OperationResult =>
+export const addSpellToSessionDeck = (spell: Spell, campaignId?: string): OperationResult =>
 	addSpellToCollection(
-		STORAGE_KEYS.SESSION_DECK,
-		loadSessionDeck,
-		saveSessionDeck as (spells: Spell[]) => boolean,
+		campaignId ? scopeKey(campaignId, STORAGE_KEYS.SESSION_DECK) : STORAGE_KEYS.SESSION_DECK,
+		() => loadSessionDeck(campaignId),
+		(spells: Spell[]) => saveSessionDeck(spells, campaignId),
 		spell,
 		addSessionId
 	)
 
-export const removeSpellFromSessionDeck = (sessionId: string): OperationResult =>
+export const removeSpellFromSessionDeck = (sessionId: string, campaignId?: string): OperationResult =>
 	removeSpellFromCollection(
-		loadSessionDeck,
-		saveSessionDeck as (spells: Spell[]) => boolean,
+		() => loadSessionDeck(campaignId),
+		(spells: Spell[]) => saveSessionDeck(spells, campaignId),
 		(spell) => (spell as SessionSpell).sessionId !== sessionId
 	)
 

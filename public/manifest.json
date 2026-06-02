@@ -1,20 +1,22 @@
 {
 	"short_name": "D&D Spells",
 	"name": "D&D 5e Spell Library",
+	"description": "Browse, search, and manage D&D 5e spells for your campaign",
+	"categories": ["books", "utilities"],
 	"icons": [
 		{
-			"src": "favicon.svg",
-			"sizes": "any",
-			"type": "image/svg+xml"
+			"src": "android-chrome-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
 		},
 		{
-			"src": "favicon.ico",
-			"sizes": "64x64 32x32 24x24 16x16",
-			"type": "image/x-icon"
+			"src": "android-chrome-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
 		}
 	],
 	"start_url": ".",
 	"display": "standalone",
-	"theme_color": "#290000",
-	"background_color": "#290000"
+	"theme_color": "#4299e1",
+	"background_color": "#1a202c"
 }

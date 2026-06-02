@@ -16,7 +16,8 @@ import SpellCard from '../SpellCard.jsx'
 import {
 	loadSpellbook,
 	removeSpellFromSpellbook,
-	addSpellToSessionDeck
+	addSpellToSessionDeck,
+	getActiveCampaign
 } from '../../utils/localStorage.js'
 import { groupSpellsByLevel } from '../../utils/spellGrouping.js'
 import { validateSpellObject, getValidSpells } from '../../utils/validation.js'
@@ -30,7 +31,8 @@ export default function SpellbookTab() {
 	// Load spellbook data
 	const loadSpellbookData = () => {
 		try {
-			const spellbookData = loadSpellbook()
+			const campaignId = getActiveCampaign()
+			const spellbookData = loadSpellbook(campaignId !== 'default' ? campaignId : undefined)
 			const validSpells = getValidSpells(spellbookData.spells || [])
 			setSpellbookSpells(validSpells)
 		} catch (err) {
@@ -40,10 +42,16 @@ export default function SpellbookTab() {
 		}
 	}
 
-	// Load spellbook data on component mount
+	// Reload when campaign changes
 	useEffect(() => {
 		loadSpellbookData()
 		setLoading(false)
+		const handler = () => {
+			loadSpellbookData()
+			setError(null)
+		}
+		window.addEventListener('spell-deck:campaign-changed', handler)
+		return () => window.removeEventListener('spell-deck:campaign-changed', handler)
 	}, [])
 
 	// Listen for localStorage changes from other browser tabs
@@ -101,7 +109,8 @@ export default function SpellbookTab() {
 
 	// Remove spell from spellbook
 	const removeFromSpellbook = (spell) => {
-		const result = removeSpellFromSpellbook(spell.index)
+		const campaignId = getActiveCampaign()
+		const result = removeSpellFromSpellbook(spell.index, campaignId !== 'default' ? campaignId : undefined)
 
 		if (result.success) {
 			// Update local state immediately (optimistic update)
@@ -139,7 +148,8 @@ export default function SpellbookTab() {
 			return false
 		}
 
-		const result = addSpellToSessionDeck(spell)
+		const campaignId = getActiveCampaign()
+		const result = addSpellToSessionDeck(spell, campaignId !== 'default' ? campaignId : undefined)
 		if (result.success) {
 			setError(null)
 			toaster.create({

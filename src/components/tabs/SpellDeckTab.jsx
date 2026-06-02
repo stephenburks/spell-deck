@@ -17,7 +17,8 @@ import SpellCard from '../SpellCard.jsx'
 import {
 	loadSessionDeck,
 	removeSpellFromSessionDeck,
-	saveSessionDeck
+	saveSessionDeck,
+	getActiveCampaign
 } from '../../utils/localStorage.js'
 import { groupSpellsByLevel } from '../../utils/spellGrouping.js'
 import { validateSessionSpell, getValidSpells } from '../../utils/validation.js'
@@ -32,7 +33,8 @@ export default function SpellDeckTab() {
 	// Load spell deck data
 	const loadSessionDeckData = () => {
 		try {
-			const sessionDeckData = loadSessionDeck()
+			const campaignId = getActiveCampaign()
+			const sessionDeckData = loadSessionDeck(campaignId !== 'default' ? campaignId : undefined)
 			const validSpells = getValidSpells(sessionDeckData.spells || [])
 			// Filter to only include spells with sessionId (session spells)
 			const validSessionSpells = validSpells.filter(
@@ -46,10 +48,16 @@ export default function SpellDeckTab() {
 		}
 	}
 
-	// Load spell deck data on component mount
+	// Load and listen for campaign changes
 	useEffect(() => {
 		loadSessionDeckData()
 		setLoading(false)
+		const handler = () => {
+			loadSessionDeckData()
+			setError(null)
+		}
+		window.addEventListener('spell-deck:campaign-changed', handler)
+		return () => window.removeEventListener('spell-deck:campaign-changed', handler)
 	}, [])
 
 	// Listen for localStorage changes from other browser tabs
@@ -123,7 +131,8 @@ export default function SpellDeckTab() {
 			return false
 		}
 
-		const result = removeSpellFromSessionDeck(sessionId)
+		const campaignId = getActiveCampaign()
+		const result = removeSpellFromSessionDeck(sessionId, campaignId !== 'default' ? campaignId : undefined)
 		if (result.success) {
 			// Update local state immediately (optimistic update)
 			setSessionSpells(
@@ -154,7 +163,8 @@ export default function SpellDeckTab() {
 	const clearSession = () => {
 		try {
 			// Save empty session to localStorage
-			const success = saveSessionDeck([])
+			const campaignId = getActiveCampaign()
+		const success = saveSessionDeck([], campaignId !== 'default' ? campaignId : undefined)
 			if (!success) {
 				setError('Failed to clear session.')
 				toaster.create({

@@ -1,4 +1,4 @@
-const SPELLS_DATA_URL = `${process.env.PUBLIC_URL}/data/spells.json`
+const SPELLS_DATA_URL = `${import.meta.env.BASE_URL}data/spells.json`
 
 export async function getAllSpellDetails() {
 	const response = await fetch(SPELLS_DATA_URL)

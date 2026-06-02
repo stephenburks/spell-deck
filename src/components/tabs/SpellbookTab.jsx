@@ -12,7 +12,7 @@ import {
 	AccordionItemBody,
 	AccordionItemContent
 } from '@chakra-ui/react'
-import SpellCard from '../spellCard.jsx'
+import SpellCard from '../SpellCard.jsx'
 import {
 	loadSpellbook,
 	removeSpellFromSpellbook,

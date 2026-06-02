@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Box, SimpleGrid, Button, Spinner } from '@chakra-ui/react'
-import SpellCard from './spellCard.jsx'
+import SpellCard from './SpellCard.jsx'
 
 /**
  * Custom hook for pagination-based virtualization

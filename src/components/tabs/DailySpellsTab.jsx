@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { Box, Heading, Text, SimpleGrid, Alert, Button, HStack } from '@chakra-ui/react'
-import SpellCard from '../spellCard.jsx'
+import SpellCard from '../SpellCard.jsx'
 import Loading from '../ui/loading.jsx'
 import { useDailySpells } from '../../hooks/useDailySpells.js'
 import { addSpellToSpellbook, addSpellToSessionDeck } from '../../utils/localStorage.js'

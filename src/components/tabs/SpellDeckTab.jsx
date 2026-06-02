@@ -145,12 +145,19 @@ export default function SpellDeckTab() {
 			// Auto-mark spell slot as used when burning a spell
 			try {
 				const slotState = JSON.parse(localStorage.getItem(SLOT_TRACKER_KEY) || '{}')
-				if (slotState.usedSlots) {
-					const level = spellToBurn.level
-					slotState.usedSlots[level] = (slotState.usedSlots[level] || 0) + 1
-					localStorage.setItem(SLOT_TRACKER_KEY, JSON.stringify(slotState))
-					window.dispatchEvent(new Event('spell-deck:slot-changed'))
-				}
+				const level = spellToBurn.level
+				slotState.usedSlots = slotState.usedSlots || {}
+				slotState.usedSlots[level] = (slotState.usedSlots[level] || 0) + 1
+				slotState.characterLevel = slotState.characterLevel || 5
+				slotState.casterType = slotState.casterType || 'full'
+				localStorage.setItem(SLOT_TRACKER_KEY, JSON.stringify(slotState))
+				window.dispatchEvent(new Event('spell-deck:slot-changed'))
+				toaster.create({
+					title: 'Slot Used',
+					description: `Marked one level ${level} spell slot as used (${slotState.usedSlots[level]} total)`,
+					status: 'success',
+					duration: 2000
+				})
 			} catch {}
 
 			toaster.create({

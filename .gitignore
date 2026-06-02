@@ -21,3 +21,15 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# audit / agent work files
+ACTION_PLAN.md
+AUDIT_*.md
+CODEBASE_AUDIT.md
+DEEPSEEK_REVIEW_PROMPT.md
+GITHUB_PAGES_DEBUG.md
+REACT_DOCTOR_FIXES.md
+REVIEW_HANDOFF.md
+Scratch.md
+ideas.md
+src/css/CSS_NAMING_GUIDE.md

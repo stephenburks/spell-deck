@@ -1,8 +1,9 @@
-import { useMemo } from 'react'
-import { Badge, Card, Heading, Stat, Button, HStack } from '@chakra-ui/react'
+import { useMemo, useState, useEffect } from 'react'
+import { Badge, Card, Heading, Stat, Button, HStack, VStack, Textarea, Text } from '@chakra-ui/react'
 import { Tooltip } from './ui/tooltip.jsx'
 import { Description } from './card-features/description.jsx'
 import Icon from './IconRegistry'
+import { getSpellNote, setSpellNote } from '../utils/spellNotes.ts'
 import './SpellCard.css'
 
 // Helper function to render class icons
@@ -45,7 +46,7 @@ export default function SpellCard({
 	const spellIsCantrip = useMemo(() => spell.level === 0, [spell.level])
 
 	// Get context-specific actions
-	const getContextActions = useMemo(() => {
+	const contextActions = useMemo(() => {
 		if (!context || !onAction) return []
 
 		switch (context) {
@@ -116,6 +117,14 @@ export default function SpellCard({
 		if (onAction) {
 			onAction(actionType, spell, sessionId)
 		}
+	}
+
+	const [noteOpen, setNoteOpen] = useState(false)
+	const [noteText, setNoteText] = useState(() => getSpellNote(spell.index))
+
+	const handleNoteSave = () => {
+		setSpellNote(spell.index, noteText)
+		setNoteOpen(false)
 	}
 
 	// Get container class with cantrip styling for session context
@@ -228,10 +237,10 @@ export default function SpellCard({
 						)}
 
 						{/* Context-specific action buttons */}
-						{getContextActions.length > 0 && (
+						{contextActions.length > 0 && (
 							<div className="spell-card__actions">
 								<HStack spacing={2}>
-									{getContextActions.map((action, index) => (
+									{contextActions.map((action, index) => (
 										<Button
 											key={index}
 											size="sm"
@@ -244,6 +253,41 @@ export default function SpellCard({
 							</div>
 						)}
 					</Card.Footer>
+					{(context === 'book' || context === 'deck') && (
+						<Card.Footer>
+							{noteOpen ? (
+								<VStack gap={1} width="100%">
+									<Textarea
+										size="xs"
+										placeholder="Add a note..."
+										value={noteText}
+										onChange={(e) => setNoteText(e.target.value)}
+										rows={3}
+									/>
+									<HStack gap={1} width="100%" justifyContent="flex-end">
+										<Button size="xs" variant="ghost" onClick={() => setNoteOpen(false)}>
+											Cancel
+										</Button>
+										<Button size="xs" colorPalette="blue" onClick={handleNoteSave}>
+											Save
+										</Button>
+									</HStack>
+								</VStack>
+							) : (
+								<Button
+									size="xs"
+									variant="ghost"
+									onClick={() => setNoteOpen(true)}>
+									{noteText ? 'Edit note' : 'Add note'}
+								</Button>
+							)}
+							{!noteOpen && noteText && (
+								<Text fontSize="xs" color="text.secondary" fontStyle="italic" ml={1}>
+									{noteText.slice(0, 60)}{noteText.length > 60 ? '...' : ''}
+								</Text>
+							)}
+						</Card.Footer>
+					)}
 				</Card.Root>
 			</div>
 		</div>

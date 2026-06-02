@@ -25,31 +25,8 @@ import { addSpellToSpellbook, addSpellToSessionDeck } from '../../utils/localSto
 import { validateSpellObject } from '../../utils/validation.js'
 import Icon from '../IconRegistry.jsx'
 import { useSpellSearchIndex, useSpellSearch } from '../../hooks/useSearchIndex.js'
+import { useDebounce } from '../../hooks/useDebounce.js'
 import { toaster } from '../ui/toaster'
-
-// Custom hook for debouncing search input with immediate feedback
-function useDebounce(value, delay) {
-	const [debouncedValue, setDebouncedValue] = useState(value)
-	const [isDebouncing, setIsDebouncing] = useState(false)
-
-	useEffect(() => {
-		// Set debouncing state immediately when value changes
-		if (value !== debouncedValue) {
-			setIsDebouncing(true)
-		}
-
-		const handler = setTimeout(() => {
-			setDebouncedValue(value)
-			setIsDebouncing(false)
-		}, delay)
-
-		return () => {
-			clearTimeout(handler)
-		}
-	}, [value, delay, debouncedValue])
-
-	return { debouncedValue, isDebouncing }
-}
 
 export default function SpellLibraryTab() {
 	// Fetch all spells using the existing hook

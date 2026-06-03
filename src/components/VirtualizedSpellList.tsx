@@ -2,15 +2,23 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Box, SimpleGrid, Button, Spinner, VStack } from '@chakra-ui/react'
 import SpellCard from './SpellCard.jsx'
 import CompactSpellRow from './CompactSpellRow.jsx'
+import type { Spell } from '../types'
+import type { SpellCardContext } from './SpellCard.jsx'
+import type { CompactSpellContext } from './CompactSpellRow.jsx'
 import './VirtualizedSpellList.css'
+
+interface VirtualizedSpellListProps {
+	spells?: Spell[]
+	onAction?: (actionType: string, spell: Spell) => void
+	context?: SpellCardContext | CompactSpellContext
+	itemsPerPage?: number
+	viewMode?: 'card' | 'compact'
+}
 
 /**
  * Custom hook for pagination-based virtualization
- * @param {Array} items - Items to virtualize
- * @param {number} itemsPerPage - Items per page
- * @returns {Object} Virtualization state and controls
  */
-const useVirtualization = (items, itemsPerPage = 50) => {
+const useVirtualization = <T,>(items: T[], itemsPerPage: number = 50) => {
 	const [currentPage, setCurrentPage] = useState(0)
 	const [isLoading, setIsLoading] = useState(false)
 
@@ -54,8 +62,8 @@ const useVirtualization = (items, itemsPerPage = 50) => {
  * @param {Function} callback - Function to call when intersecting
  * @returns {Function} Ref setter for target element
  */
-const useIntersectionObserver = (callback) => {
-	const [targetRef, setTargetRef] = useState(null)
+const useIntersectionObserver = (callback: () => void) => {
+	const [targetRef, setTargetRef] = useState<Element | null>(null)
 
 	useEffect(() => {
 		if (!targetRef || !callback) return
@@ -92,7 +100,7 @@ export default function VirtualizedSpellList({
 	context = 'deck',
 	itemsPerPage = 50,
 	viewMode = 'card'
-}) {
+}: VirtualizedSpellListProps) {
 	const { visibleItems, loadMore, hasMore, isLoading, totalVisible, totalItems } =
 		useVirtualization(spells, itemsPerPage)
 

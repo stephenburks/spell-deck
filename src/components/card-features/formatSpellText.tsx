@@ -1,16 +1,21 @@
+interface TextBlock {
+	type: 'list' | 'table' | 'paragraph'
+	content: string[] | string[][]
+}
+
 /**
  * Formats spell text into readable blocks
- * @param {string|string[]} text - Raw spell text to format
- * @returns {Array} Formatted blocks with consecutive lists and tables merged
+ * @param text - Raw spell text to format (string array from API, or plain string)
+ * @returns Formatted blocks with consecutive lists and tables merged
  */
-export const formatSpellText = (text) => {
+export const formatSpellText = (text: string | string[] | undefined | null): TextBlock[] => {
 	if (!text) return []
 
-	let paragraphs = []
+	let paragraphs: string[] = []
 
 	if (Array.isArray(text)) {
 		paragraphs = text
-			.filter((item) => item && typeof item === 'string')
+			.filter((item): item is string => item != null && typeof item === 'string')
 			.map((item) => item.trim())
 			.filter((item) => item.length > 0)
 	} else if (typeof text === 'string') {
@@ -23,7 +28,7 @@ export const formatSpellText = (text) => {
 		return []
 	}
 
-	const blocks = paragraphs.map((paragraph) => {
+	const blocks: TextBlock[] = paragraphs.map((paragraph) => {
 		const trimmed = paragraph.trim()
 
 		// Detect markdown tables (lines with pipes)
@@ -59,7 +64,7 @@ export const formatSpellText = (text) => {
 	})
 
 	// Merge consecutive blocks of the same type (lists and tables)
-	return blocks.reduce((acc, block) => {
+	return blocks.reduce<TextBlock[]>((acc, block) => {
 		const lastBlock = acc[acc.length - 1]
 
 		if ((block.type === 'list' || block.type === 'table') && lastBlock?.type === block.type) {

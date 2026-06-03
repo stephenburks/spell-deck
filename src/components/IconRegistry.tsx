@@ -1,4 +1,8 @@
-import React from 'react'
+import type React from 'react'
+import type { FC, SVGProps } from 'react'
+
+// Icon registry — maps icon names to SVG components
+// Uses Vite's SVGR-like import for SVG files as React components
 
 // Import spell SVGs as React components
 import Abjuration from '../assets/icons/spell/abjuration.svg'
@@ -48,8 +52,22 @@ import SpellDeck from '../assets/icons/tabs/spell-deck.svg'
 import SpellLibrary from '../assets/icons/tabs/spell-library.svg'
 import Readme from '../assets/icons/tabs/readme.svg'
 
-// Icon registry
-const iconRegistry = {
+type IconFolder = 'spell' | 'classes' | 'ui' | 'tabs'
+
+interface IconProps {
+	name: string
+	folder?: IconFolder
+	className?: string
+	size?: number
+	color?: string
+	'aria-label'?: string
+	[key: string]: unknown
+}
+
+type IconComponentType = FC<SVGProps<SVGSVGElement>>
+
+// Icon registry — typed record of folder → name → SVG component
+const iconRegistry: Record<IconFolder, Record<string, IconComponentType>> = {
 	spell: {
 		abjuration: Abjuration,
 		concentration: Concentration,
@@ -108,7 +126,7 @@ const Icon = ({
 	size = 24,
 	color = 'currentColor',
 	...props
-}) => {
+}: IconProps) => {
 	const IconComponent = iconRegistry[folder]?.[name]
 
 	if (!IconComponent) {

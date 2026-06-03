@@ -4,16 +4,28 @@ import { Tooltip } from './ui/tooltip.jsx'
 import { Description } from './card-features/description.jsx'
 import Icon from './IconRegistry'
 import { getSpellNote, setSpellNote } from '../utils/spellNotes.ts'
+import type { Spell, SpellClass } from '../types'
 import './SpellCard.css'
 
+export type SpellCardContext = 'daily' | 'spellbook' | 'session' | 'deck'
+
+interface SpellCardProps {
+	spell: Spell
+	currentClass?: SpellClass
+	context?: SpellCardContext
+	onAction?: (actionType: string, spell: Spell, sessionId?: string) => void
+	sessionId?: string
+	isCantrip?: boolean
+}
+
 // Helper function to render class icons
-const renderClassIcon = (className) => {
+const renderClassIcon = (className: string) => {
 	const classKey = className.toLowerCase()
 
 	return <Icon name={classKey} folder="classes" size={20} aria-label={className} />
 }
 
-const createBadgeCopy = (spell) => {
+const createBadgeCopy = (spell: Spell) => {
 	const badges = []
 	if (spell.level > 0) badges.push(`Spell Level ${spell.level}`)
 	if (spell.school.name) badges.push(`(${spell.school.name})`)
@@ -28,7 +40,7 @@ export default function SpellCard({
 	onAction,
 	sessionId,
 	isCantrip
-}) {
+}: SpellCardProps) {
 	const badgeText = useMemo(() => createBadgeCopy(spell), [spell])
 
 	const spellClass = useMemo(() => {
@@ -113,7 +125,7 @@ export default function SpellCard({
 	}, [context, onAction, spellIsCantrip])
 
 	// Handle action button clicks
-	const handleAction = (actionType) => {
+	const handleAction = (actionType: string) => {
 		if (onAction) {
 			onAction(actionType, spell, sessionId)
 		}

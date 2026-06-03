@@ -1,13 +1,23 @@
 import { Badge, HStack, Button, Text, Box } from '@chakra-ui/react'
 import { Tooltip } from './ui/tooltip.jsx'
 import Icon from './IconRegistry'
+import type { Spell } from '../types'
+
+export type CompactSpellContext = 'daily' | 'library' | 'book' | 'deck'
+
+interface CompactSpellRowProps {
+	spell: Spell
+	context?: CompactSpellContext
+	onAction?: (actionType: string, spell: Spell) => void
+	sessionId?: string
+}
 
 export default function CompactSpellRow({
 	spell,
 	context,
 	onAction,
 	sessionId
-}) {
+}: CompactSpellRowProps) {
 	const levelLabel = spell.level === 0 ? 'Cantrip' : `Lv ${spell.level}`
 	const schoolClass = spell.school?.name?.toLowerCase()
 

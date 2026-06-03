@@ -1,9 +1,15 @@
 import { List, Table } from '@chakra-ui/react'
 import ReactMarkdown from 'react-markdown'
 import { formatSpellText } from './formatSpellText'
+import type { Spell } from '../../types'
 
-export function Description({ spell }) {
-	const renderFormatted = (block, index, prefix) => {
+interface TextBlock {
+	type: string
+	content: string | string[]
+}
+
+export function Description({ spell }: { spell: Spell }) {
+	const renderFormatted = (block: TextBlock, index: number, prefix: string) => {
 		switch (block.type) {
 			case 'list':
 				return (

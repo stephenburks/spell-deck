@@ -9,17 +9,23 @@ import {
 	VStack,
 	createListCollection
 } from '@chakra-ui/react'
-import { getSlotsForLevel, CASTER_TYPES, STORAGE_KEY } from '../utils/spellSlots'
+import { getSlotsForLevel, CASTER_TYPES, STORAGE_KEY, type CasterType } from '../utils/spellSlots'
 
-const loadSlotState = () => {
+interface SlotState {
+	characterLevel: number
+	casterType: CasterType
+	usedSlots: Record<number, number>
+}
+
+const loadSlotState = (): SlotState => {
 	try {
 		const stored = localStorage.getItem(STORAGE_KEY)
-		if (stored) return JSON.parse(stored)
+		if (stored) return JSON.parse(stored) as SlotState
 	} catch {}
 	return { characterLevel: 5, casterType: 'full', usedSlots: {} }
 }
 
-const saveSlotState = (state) => {
+const saveSlotState = (state: SlotState) => {
 	localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
 }
 
@@ -32,7 +38,7 @@ const levelCollection = createListCollection({
 
 const casterCollection = createListCollection({ items: CASTER_TYPES })
 
-function getOrdinal(n) {
+function getOrdinal(n: number): string {
 	const s = ['th', 'st', 'nd', 'rd']
 	const v = n % 100
 	return s[(v - 20) % 10] || s[v] || s[0]
@@ -44,7 +50,7 @@ export default function SpellSlotTracker() {
 
 	// Save state changes to localStorage immediately, not via effect,
 	// so the burn handler in SpellDeckTab always reads the latest usedSlots.
-	const setStateAndSave = (updater) => {
+	const setStateAndSave = (updater: SlotState | ((prev: SlotState) => SlotState)) => {
 		setState((prev) => {
 			const next = typeof updater === 'function' ? updater(prev) : updater
 			saveSlotState(next)
@@ -64,7 +70,7 @@ export default function SpellSlotTracker() {
 		return () => window.removeEventListener('spell-deck:slot-changed', handler)
 	}, [])
 
-	const toggleSlot = (spellLevel, slotIndex) => {
+	const toggleSlot = (spellLevel: number, slotIndex: number) => {
 		setStateAndSave((prev) => {
 			const key = spellLevel
 			const used = prev.usedSlots[key] || 0

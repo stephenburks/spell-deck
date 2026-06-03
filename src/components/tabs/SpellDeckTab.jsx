@@ -7,6 +7,7 @@ import {
 	Alert,
 	Button,
 	HStack,
+	Input,
 	SimpleGrid,
 	AccordionRoot,
 	AccordionItem,
@@ -34,11 +35,26 @@ import {
 	getRelativeTime
 } from '../../utils/burnHistory.ts'
 
+const STATS_STORAGE_KEY = 'spell-deck-character-stats'
+
+const loadCharacterStats = () => {
+	try {
+		const raw = localStorage.getItem(STATS_STORAGE_KEY)
+		if (raw) return JSON.parse(raw)
+	} catch {}
+	return { saveDC: 13, attackBonus: 5 }
+}
+
+const saveCharacterStats = (stats) => {
+	localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(stats))
+}
+
 export default function SpellDeckTab() {
 	const [sessionSpells, setSessionSpells] = useState([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 	const [burnHistory, setBurnHistory] = useState(loadBurnHistory)
+	const [characterStats, setCharacterStats] = useState(loadCharacterStats)
 
 	useEffect(() => {
 		const interval = setInterval(() => setBurnHistory([...loadBurnHistory()]), 30000)
@@ -308,6 +324,40 @@ export default function SpellDeckTab() {
 									)}
 								</Text>
 							)}
+							<HStack gap={3} mt={3} flexWrap="wrap">
+								<HStack gap={1}>
+									<Text fontSize="sm" color="gray.500" whiteSpace="nowrap">Save DC</Text>
+									<Input
+										type="number"
+										size="xs"
+										width="60px"
+										min={0}
+										max={30}
+										value={characterStats.saveDC}
+										onChange={(e) => {
+											const next = { ...characterStats, saveDC: Number(e.target.value) || 0 }
+											setCharacterStats(next)
+											saveCharacterStats(next)
+										}}
+									/>
+								</HStack>
+								<HStack gap={1}>
+									<Text fontSize="sm" color="gray.500" whiteSpace="nowrap">Attack Bonus</Text>
+									<Input
+										type="number"
+										size="xs"
+										width="60px"
+										min={0}
+										max={20}
+										value={characterStats.attackBonus}
+										onChange={(e) => {
+											const next = { ...characterStats, attackBonus: Number(e.target.value) || 0 }
+											setCharacterStats(next)
+											saveCharacterStats(next)
+										}}
+									/>
+								</HStack>
+							</HStack>
 						</Box>
 						{/* Clear Session Button */}
 						{sessionSpells.length > 0 && (

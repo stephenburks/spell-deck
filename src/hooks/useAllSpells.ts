@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { getAllSpellDetails } from '../api'
 import { mergeAdditionalSpells } from '../utils/additionalSpells'
+import { loadCustomSpells } from '../utils/customSpells'
 import type { Spell } from '../types'
 
 const CUSTOM_SPELLS: Spell[] = [
@@ -106,7 +107,10 @@ export function useAllSpells() {
 		retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
 	})
 
-	const allSpells = mergeAdditionalSpells(queryResult.data, CUSTOM_SPELLS)
+	const allSpells = mergeAdditionalSpells(
+		queryResult.data,
+		[...CUSTOM_SPELLS, ...loadCustomSpells()]
+	)
 
 	return {
 		...queryResult,

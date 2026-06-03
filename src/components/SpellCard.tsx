@@ -7,7 +7,7 @@ import { getSpellNote, setSpellNote } from '../utils/spellNotes.ts'
 import type { Spell, SpellClass } from '../types'
 import './SpellCard.css'
 
-export type SpellCardContext = 'daily' | 'spellbook' | 'session' | 'deck'
+export type SpellCardContext = 'daily' | 'spellbook' | 'session' | 'deck' | 'custom'
 
 interface SpellCardProps {
 	spell: Spell
@@ -32,6 +32,8 @@ const createBadgeCopy = (spell: Spell) => {
 	if (spell.level === 0) badges.push('cantrip')
 	return badges.join(' ')
 }
+
+const isCustomSpell = (spell: Spell) => spell.index?.startsWith('custom-')
 
 export default function SpellCard({
 	spell,
@@ -104,22 +106,37 @@ export default function SpellCard({
 						variant: 'surface'
 					}
 				]
-			case 'deck':
-				return [
-					{
-						label: 'Add to Spellbook',
-						action: 'addToSpellbook',
-						copy: '+ Spellbook',
-						variant: 'surface'
-					},
-					{
-						label: 'Add to Session',
-						action: 'addToSession',
-						copy: '+ Session',
-						variant: 'solid'
-					}
-				]
-			default:
+		case 'deck':
+			return [
+				{
+					label: 'Add to Spellbook',
+					action: 'addToSpellbook',
+					copy: '+ Spellbook',
+					variant: 'surface'
+				},
+				{
+					label: 'Add to Session',
+					action: 'addToSession',
+					copy: '+ Session',
+					variant: 'solid'
+				}
+			]
+		case 'custom':
+			return [
+				{
+					label: 'Edit Spell',
+					action: 'editCustomSpell',
+					copy: 'Edit',
+					variant: 'surface'
+				},
+				{
+					label: 'Delete Spell',
+					action: 'deleteCustomSpell',
+					copy: 'Delete',
+					variant: 'subtle'
+				}
+			]
+		default:
 				return []
 		}
 	}, [context, onAction, spellIsCantrip])
@@ -180,13 +197,18 @@ export default function SpellCard({
 						</Tooltip>
 					</div>
 
-					<Card.Header>
-						<Heading as="h2" size="md">
-							{spell.name}
-						</Heading>
+				<Card.Header>
+					<Heading as="h2" size="md">
+						{spell.name}
+					</Heading>
 
+					<HStack gap={1}>
 						<Badge variant="surface">{badgeText}</Badge>
-					</Card.Header>
+						{isCustomSpell(spell) && (
+							<Badge variant="solid" colorPalette="purple">Custom</Badge>
+						)}
+					</HStack>
+				</Card.Header>
 
 					<div className="section-divider"></div>
 

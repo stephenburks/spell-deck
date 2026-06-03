@@ -4,6 +4,7 @@ import DailySpellsTab from './tabs/DailySpellsTab.jsx'
 import SpellbookTab from './tabs/SpellbookTab.jsx'
 import SpellDeckTab from './tabs/SpellDeckTab.jsx'
 import SpellLibraryTab from './tabs/SpellLibraryTab.jsx'
+import CustomSpellsTab from './tabs/CustomSpellsTab.tsx'
 import ReadmeTab from './tabs/ReadmeTab.jsx'
 import { initializeLocalStorage } from '../utils/localStorage.js'
 import Icon from './IconRegistry.jsx'
@@ -14,11 +15,12 @@ import './SpellInterface.css'
 /**
  * SpellInterface - Main container component with tabbed interface
  *
- * Provides five horizontal tabs:
+ * Provides six horizontal tabs:
  * - "Daily": Daily random spell selection
  * - "Spellbook": Personal spell library management
  * - "Spell Deck": Active session spell management
  * - "Spell Library": Complete searchable spell index
+ * - "Custom Spells": Create and manage custom spells
  * - "About": Project information and documentation
  *
  * Features:
@@ -147,6 +149,21 @@ export default function SpellInterface() {
 							</Tooltip.Root>
 						</Tabs.Trigger>
 						<Tabs.Trigger value="4" flexShrink={0}>
+						<Tooltip.Root>
+							<Tooltip.Trigger asChild>
+								<Box display="flex" alignItems="center" gap={2}>
+									<Icon name="spellbook" folder="tabs" />
+									Custom
+								</Box>
+							</Tooltip.Trigger>
+							<Tooltip.Positioner>
+								<Tooltip.Content style={{ textTransform: 'none' }}>
+									Custom Spells - Create and manage your own custom spells
+								</Tooltip.Content>
+							</Tooltip.Positioner>
+						</Tooltip.Root>
+					</Tabs.Trigger>
+					<Tabs.Trigger value="5" flexShrink={0}>
 							<Tooltip.Root>
 								<Tooltip.Trigger asChild>
 									<Box display="flex" alignItems="center" gap={2}>
@@ -179,13 +196,17 @@ export default function SpellInterface() {
 					<SpellDeckTab />
 				</Tabs.Content>
 
-				<Tabs.Content value="3">
-					<SpellLibraryTab />
-				</Tabs.Content>
+			<Tabs.Content value="3">
+				<SpellLibraryTab />
+			</Tabs.Content>
 
-				<Tabs.Content value="4">
-					<ReadmeTab />
-				</Tabs.Content>
+			<Tabs.Content value="4">
+				<CustomSpellsTab />
+			</Tabs.Content>
+
+			<Tabs.Content value="5">
+				<ReadmeTab />
+			</Tabs.Content>
 			</Tabs.Root>
 		</Box>
 	)

@@ -16,6 +16,17 @@ export {
 export { mergeAdditionalSpells } from './additionalSpells.ts'
 
 export {
+	loadCustomSpells,
+	saveCustomSpells,
+	addCustomSpell,
+	updateCustomSpell,
+	deleteCustomSpell,
+	exportCustomSpellsJson,
+	importCustomSpellsJson,
+	generateCustomSpellIndex
+} from './customSpells.ts'
+
+export {
 	STORAGE_KEYS,
 	safeLoadFromStorage,
 	safeSaveToStorage,

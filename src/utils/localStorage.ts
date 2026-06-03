@@ -4,7 +4,8 @@ import { addSessionId } from './spellGrouping.ts'
 export const STORAGE_KEYS = {
 	SPELLBOOK: 'user-spellbook',
 	SESSION_DECK: 'session-deck',
-	DAILY_SPELLS: 'daily-spells'
+	DAILY_SPELLS: 'daily-spells',
+	CUSTOM_SPELLS: 'spell-deck-custom-spells'
 } as const
 
 const CAMPAIGN_KEY = 'spell-deck-campaigns'

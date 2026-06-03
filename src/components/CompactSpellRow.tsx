@@ -3,7 +3,7 @@ import { Tooltip } from './ui/tooltip.jsx'
 import Icon from './IconRegistry'
 import type { Spell } from '../types'
 
-export type CompactSpellContext = 'daily' | 'library' | 'book' | 'deck'
+export type CompactSpellContext = 'daily' | 'library' | 'book' | 'deck' | 'custom'
 
 interface CompactSpellRowProps {
 	spell: Spell
@@ -39,12 +39,17 @@ export default function CompactSpellRow({
 				return [
 					{ label: 'Remove from Spellbook', action: 'removeFromSpellbook', copy: 'Remove', variant: 'subtle' }
 				]
-			case 'deck':
-				return [
-					{ label: 'Remove from Deck', action: 'removeFromSessionDeck', copy: 'Remove', variant: 'subtle' },
-					{ label: 'Burn Spell', action: 'burnSpell', copy: 'Burn', variant: 'surface' }
-				]
-			default:
+		case 'deck':
+			return [
+				{ label: 'Remove from Deck', action: 'removeFromSessionDeck', copy: 'Remove', variant: 'subtle' },
+				{ label: 'Burn Spell', action: 'burnSpell', copy: 'Burn', variant: 'surface' }
+			]
+		case 'custom':
+			return [
+				{ label: 'Edit Spell', action: 'editCustomSpell', copy: 'Edit', variant: 'surface' },
+				{ label: 'Delete Spell', action: 'deleteCustomSpell', copy: 'Delete', variant: 'subtle' }
+			]
+		default:
 				return []
 		}
 	}
@@ -78,10 +83,16 @@ export default function CompactSpellRow({
 					{spell.name}
 				</Text>
 
-				<Text fontSize="sm" color="text.secondary" hideBelow="md">
-					{spell.school?.name}
-				</Text>
-			</HStack>
+			<Text fontSize="sm" color="text.secondary" hideBelow="md">
+				{spell.school?.name}
+			</Text>
+
+			{spell.index?.startsWith('custom-') && (
+				<Badge variant="solid" colorPalette="purple" size="sm">
+					Custom
+				</Badge>
+			)}
+		</HStack>
 
 			<HStack gap={1} flexShrink={0}>
 				{actions.map((act) => (

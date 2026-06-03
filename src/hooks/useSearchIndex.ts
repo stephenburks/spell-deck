@@ -1,8 +1,9 @@
 import { useMemo } from 'react'
 import Fuse from 'fuse.js'
+import type { Spell } from '../types'
 
 // Optimized search index hook that creates Fuse instance once
-export function useSpellSearchIndex(spells) {
+export function useSpellSearchIndex(spells: Spell[] | undefined | null) {
 	return useMemo(() => {
 		if (!spells?.length) return null
 
@@ -49,14 +50,14 @@ export function useSpellSearchIndex(spells) {
 		const fuse = new Fuse(spells, fuseOptions)
 
 		// Create a Map for quick spell lookups by index
-		const spellsById = new Map(spells.map((spell) => [spell.index, spell]))
+		const spellsById = new Map(spells.map((spell: Spell) => [spell.index, spell]))
 
 		return {
 			fuse,
 			spellsById,
 			totalSpells: spells.length,
 			// Return search function that uses the cached Fuse instance
-			search: (term) => {
+			search: (term: string) => {
 				if (!term?.trim() || term.length < 1) {
 					return []
 				}
@@ -75,7 +76,10 @@ export function useSpellSearchIndex(spells) {
 }
 
 // Simplified search hook that uses the cached Fuse instance with better performance
-export function useSpellSearch(searchIndex, searchTerm) {
+export function useSpellSearch(
+	searchIndex: ReturnType<typeof useSpellSearchIndex>,
+	searchTerm: string
+) {
 	return useMemo(() => {
 		// Early return for empty/short search terms
 		if (!searchIndex || !searchTerm?.trim() || searchTerm.trim().length < 1) {
@@ -87,8 +91,14 @@ export function useSpellSearch(searchIndex, searchTerm) {
 	}, [searchIndex, searchTerm])
 }
 
+interface SpellFilters {
+	classes?: string[]
+	levels?: number[]
+	schools?: string[]
+}
+
 // Hook for efficient filtering without recreating arrays
-export function useSpellFilter(spells, filters) {
+export function useSpellFilter(spells: Spell[], filters: SpellFilters) {
 	return useMemo(() => {
 		if (!spells?.length) return []
 

@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { getAllSpellDetails } from '../api'
 import { mergeAdditionalSpells } from '../utils/additionalSpells'
+import type { Spell } from '../types'
 
-const CUSTOM_SPELLS = [
+const CUSTOM_SPELLS: Spell[] = [
 	{
 		index: 'ray-of-sickness',
 		name: 'Ray of Sickness',
@@ -113,16 +114,16 @@ export function useAllSpells() {
 		isLoaded: !!queryResult.data && !queryResult.isLoading,
 		hasError: !!queryResult.error,
 		spellCount: allSpells.length,
-		getSpellsByLevel: (level) => {
-			return allSpells.filter((spell) => spell.level === level)
+		getSpellsByLevel: (level: number) => {
+			return allSpells.filter((spell: Spell) => spell.level === level)
 		},
-		searchSpells: (searchTerm) => {
+		searchSpells: (searchTerm: string) => {
 			if (!searchTerm) return allSpells
 			const term = searchTerm.toLowerCase()
 			return allSpells.filter(
-				(spell) =>
+				(spell: Spell) =>
 					spell.name.toLowerCase().includes(term) ||
-					spell.desc?.some((desc) => desc.toLowerCase().includes(term))
+					spell.desc?.some((desc: string) => desc.toLowerCase().includes(term))
 			)
 		}
 	}

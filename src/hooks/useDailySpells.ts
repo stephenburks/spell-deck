@@ -2,11 +2,12 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAllSpells } from './useAllSpells'
 import { loadDailySpells, saveDailySpells } from '../utils/localStorage'
 import { validateSpellObject } from '../utils/validation'
+import type { Spell } from '../types'
 
 /**
  * Simple PRNG seeded by a string — produces deterministic results for the same date
  */
-const seededRandom = (seed) => {
+const seededRandom = (seed: string) => {
 	let h = 0
 	for (let i = 0; i < seed.length; i++) {
 		h = (Math.imul(31, h) + seed.charCodeAt(i)) | 0
@@ -22,7 +23,7 @@ const seededRandom = (seed) => {
 /**
  * Fisher-Yates shuffle with a seeded PRNG — deterministic for the same seed
  */
-const seededShuffle = (array, seed) => {
+const seededShuffle = <T>(array: T[], seed: string): T[] => {
 	const result = [...array]
 	const random = seededRandom(seed)
 	for (let i = result.length - 1; i > 0; i--) {
@@ -37,8 +38,8 @@ const seededShuffle = (array, seed) => {
  * Picks 12 random spells from the cached spell data, seeded by date for consistency
  */
 export function useDailySpells() {
-	const [dailySpells, setDailySpells] = useState([])
-	const [lastGenerated, setLastGenerated] = useState(null)
+	const [dailySpells, setDailySpells] = useState<Spell[]>([])
+	const [lastGenerated, setLastGenerated] = useState<string | null>(null)
 	const [isGenerating, setIsGenerating] = useState(false)
 
 	const { spells: allSpells, isLoaded } = useAllSpells()

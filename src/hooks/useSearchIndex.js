@@ -57,7 +57,7 @@ export function useSpellSearchIndex(spells) {
 			totalSpells: spells.length,
 			// Return search function that uses the cached Fuse instance
 			search: (term) => {
-				if (!term?.trim() || term.length < 2) {
+				if (!term?.trim() || term.length < 1) {
 					return []
 				}
 
@@ -78,7 +78,7 @@ export function useSpellSearchIndex(spells) {
 export function useSpellSearch(searchIndex, searchTerm) {
 	return useMemo(() => {
 		// Early return for empty/short search terms
-		if (!searchIndex || !searchTerm?.trim() || searchTerm.trim().length < 2) {
+		if (!searchIndex || !searchTerm?.trim() || searchTerm.trim().length < 1) {
 			return []
 		}
 

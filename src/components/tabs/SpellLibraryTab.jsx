@@ -412,7 +412,7 @@ export default function SpellLibraryTab() {
 						onChange={(e) => setSearchTerm(e.target.value)}
 						size="lg"
 					/>
-					{isDebouncing && searchTerm.length >= 2 && (
+					{isDebouncing && searchTerm.length >= 1 && (
 						<Box
 							position="absolute"
 							right="12px"

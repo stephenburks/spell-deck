@@ -19,7 +19,7 @@ import './SpellInterface.css'
  * - "Spellbook": Personal spell library management
  * - "Spell Deck": Active session spell management
  * - "Spell Library": Complete searchable spell index
- * - "README": Project information and documentation
+ * - "About": Project information and documentation
  *
  * Features:
  * - Tab state persistence during user session
@@ -111,7 +111,7 @@ export default function SpellInterface() {
 								</Tooltip.Trigger>
 								<Tooltip.Positioner>
 									<Tooltip.Content style={{ textTransform: 'none' }}>
-										Spell Spellbook - Your personal collection of saved spells
+										Spellbook - Your personal collection of saved spells
 									</Tooltip.Content>
 								</Tooltip.Positioner>
 							</Tooltip.Root>
@@ -121,7 +121,7 @@ export default function SpellInterface() {
 								<Tooltip.Trigger asChild>
 									<Box display="flex" alignItems="center" gap={2}>
 										<Icon name="session-deck" folder="tabs" />
-										Deck
+										Spell Deck
 									</Box>
 								</Tooltip.Trigger>
 								<Tooltip.Positioner>
@@ -136,7 +136,7 @@ export default function SpellInterface() {
 								<Tooltip.Trigger asChild>
 									<Box display="flex" alignItems="center" gap={2}>
 										<Icon name="spell-deck" folder="tabs" />
-										Library
+										Spell Library
 									</Box>
 								</Tooltip.Trigger>
 								<Tooltip.Positioner>

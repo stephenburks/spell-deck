@@ -1,159 +1,107 @@
-# D&D 5e Spell Library
+# Spell Deck
 
-A comprehensive React application for managing Dungeons & Dragons 5th Edition spells. Built for
-players and dungeon masters who want a powerful, intuitive spell management system that works
-entirely in your browser.
+A D&D 5e spell reference PWA. Browse, search, filter, and manage spells for your tabletop sessions. Everything runs in your browser — no accounts, no backend, offline-capable.
 
-## ✨ Features
+**Live:** [stephenburks.github.io/spell-deck](https://stephenburks.github.io/spell-deck)
 
-### 🎲 Spells of the Day
+## Features
 
-Discover new spells with daily randomized selections organized by character class. Perfect for
-finding inspiration or learning about spells you might have overlooked.
+**Five tabs:**
+- **Daily** — 12 randomly selected spells, refreshed each day
+- **Spellbook** — Save spells to a personal collection for quick reference
+- **Spell Deck** — Active session spell management with spell slot tracking and burn history
+- **Spell Library** — Full searchable D&D 5e SRD spell database with class, level, and school filters
+- **About** — Usage guide
 
-### 📚 Personal Spellbook
+**Other:**
+- Fuzzy search by spell name, class, level, school, or description text
+- Spell slot tracker (full caster, half caster, warlock progression) with interactive pips
+- Campaign-scoped data (namespace spells, slots, and notes per campaign)
+- Per-spell player notes on spell cards
+- Dark mode
+- Card and compact list views
+- URL-based filter state (shareable `?q=`, `?class=`, `?level=` params)
+- PWA with cache-first service worker for offline use
 
-Save and organize your favorite spells for quick reference. Build your personal collection and never
-lose track of that perfect spell again.
+## Getting Started
 
-### ⚔️ Spell Deck
-
-Manage spells during active gameplay with real-time spell slot tracking. Add spells to your session,
-"burn" leveled spells when used, and keep cantrips available for unlimited use.
-
-### 🔍 Complete Spell Database
-
-Search and filter through all D&D 5e spells with advanced filtering options:
-
-- **Smart Search**: Fuzzy search across spell names, descriptions, and components
-- **Class Filtering**: Browse spells by character class with themed styling
-- **Level & School Filtering**: Narrow down by spell level and magic school
-- **Detailed Information**: View comprehensive spell details including components, range, duration,
-  and full descriptions
-
-### 🎨 Additional Features
-
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
-- **Local Storage**: All your data persists locally in your browser - no accounts needed
-- **Performance Optimized**: Virtualized lists and smart caching for smooth browsing
-- **Accessibility**: Built with screen readers and keyboard navigation in mind
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js (version 16 or higher)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
-
-    ```bash
-    git clone <repository-url>
-    cd d-d-5e-spell-library
-    ```
-
-2. Install dependencies:
-    ```bash
-    npm install
-    ```
+```bash
+git clone <repo-url>
+cd spell-deck
+npm install
+```
 
 ### Development
 
-Run the development server:
-
 ```bash
-npm start
+npm run dev      # Vite dev server at localhost:3000
+npm test         # Run all tests (Vitest)
+npm run build    # Production build to /build
+npm run deploy   # Build + deploy to GitHub Pages
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the app in your browser.
-
-### Build
-
-Create a production build:
+### Run a single test file
 
 ```bash
-npm run build
+npx vitest run --reporter=verbose path/to/test.test.ts
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **React 18** - Modern UI framework with hooks and concurrent features
-- **Chakra UI** - Component library and design system for consistent styling
-- **TanStack Query** - Powerful data fetching, caching, and synchronization
-- **React Window** - Virtualized lists for optimal performance with large datasets
-- **Fuse.js** - Fuzzy search functionality for intelligent spell discovery
-- **Local Storage API** - Client-side data persistence without external dependencies
+| Layer | Technology |
+|-------|-----------|
+| Build | Vite 8 |
+| UI framework | React 18 (functional components, hooks) |
+| Component library | Chakra UI v3 |
+| Data fetching | TanStack Query (React Query) |
+| Search | Fuse.js (fuzzy search) |
+| Testing | Vitest + React Testing Library |
+| TypeScript | Partial (~50% migrated) |
+| Deployment | GitHub Pages via GitHub Actions |
 
-## 🙏 Data Sources & Attribution
+## Project Structure
 
-This project wouldn't exist without these incredible open-source resources and the communities that
-maintain them:
-
-### D&D 5e API
-
-All spell data is sourced from the comprehensive **D&D 5e API** maintained by the community at
-[5e-bits](https://github.com/5e-bits/5e-srd-api). This API provides structured access to the D&D 5e
-System Reference Document, making it possible to build applications like this one.
-
-**Repository**: [github.com/5e-bits/5e-srd-api](https://github.com/5e-bits/5e-srd-api)  
-**API Endpoint**: [www.dnd5eapi.co](https://www.dnd5eapi.co/)
-
-### Icons & Visual Assets
-
-The beautiful class icons, spell school symbols, and UI iconography are sourced from the
-community-maintained collection at **tw-dnd** by
-[intrinsical](https://github.com/intrinsical/tw-dnd). These SVG icons bring the D&D aesthetic to
-life and make the interface both functional and visually appealing.
-
-**Repository**: [github.com/intrinsical/tw-dnd](https://github.com/intrinsical/tw-dnd)
-
-### Special Thanks
-
-- The **D&D 5e community** for maintaining comprehensive, accessible spell databases
-- **Wizards of the Coast** for making the System Reference Document available under the OGL
-- All the **open-source contributors** who make projects like this possible
-
-## 📖 How to Use
-
-1. **Start Exploring**: Begin with "Spells of the Day" to discover new spells
-2. **Build Your Collection**: Use "Spellbook" to save spells you want to remember
-3. **Manage Sessions**: Use "Spell Deck" during gameplay to track spell usage
-4. **Deep Dive**: Explore the complete "Spell Library" with advanced search and filtering
-5. **Learn More**: Check the "README" tab for detailed information about the project
-
-## 🔧 Development & Contributing
-
-This is an open-source project built with modern web technologies. The application runs entirely in
-your browser with no backend required, ensuring your data stays private and the app works offline
-after the initial load.
-
-### Local Development
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm start
-
-# Run tests
-npm test
-
-# Build for production
-npm run build
+```
+src/
+  api.js                  # Spell data fetching (batched, rate-limited)
+  types.ts                # Spell, SessionSpell, and related interfaces
+  App.jsx                 # Root component — providers, dark mode, routing
+  hooks/
+    useAllSpells.js       # Spell DB + custom spells merged, React Query cache
+    useDailySpells.js     # Seeded daily random spells
+    useSearchIndex.js     # Fuse.js fuzzy search index
+    useDebounce.js        # Debounce hook
+  components/
+    SpellInterface.jsx    # Tab layout, tab state persistence
+    SpellCard.jsx         # Spell detail card (used across tabs)
+    SpellSlotTracker.jsx  # Spell slot tracking UI (pip grid)
+    CampaignSelector.tsx  # Campaign creation/switching
+    VirtualizedSpellList.jsx  # Efficient rendering for large spell lists
+    tabs/
+      DailySpellsTab.jsx
+      SpellbookTab.jsx
+      SpellDeckTab.jsx
+      SpellLibraryTab.jsx
+      ReadmeTab.jsx
+    card-features/        # Spell card sub-components (description, formatting)
+    ui/                   # Chakra UI wrappers, theme config, toaster, loading
+  utils/
+    localStorage.ts       # All localStorage read/write, campaign scoping
+    spellSlots.ts         # D&D 5e spell slot progression tables
+    spellGrouping.ts      # Group spells by level, generate session IDs
+    validation.ts         # Spell object validation
+    burnHistory.ts        # Burned spell history (name, level, timestamp)
 ```
 
-## 📄 License
+## Data Sources
 
-This project is open source and available under the [MIT License](LICENSE).
+- Spell data: [D&D 5e SRD API](https://www.dnd5eapi.co/) ([5e-bits](https://github.com/5e-bits/5e-srd-api))
+- Class/school icons: [tw-dnd](https://github.com/intrinsical/tw-dnd) by intrinsical
 
-## 🗺️ Road Map
+## Roadmap
 
-Want to see what's coming next or contribute ideas? Check out our [Road Map](ideas.md) for upcoming
-features, technical improvements, and future possibilities.
+See [ROADMAP.md](ROADMAP.md) for planned features and current progress.
 
----
+## License
 
-**Built with ❤️ for the D&D community** • No data collection • Privacy-first • Open Source
+MIT
